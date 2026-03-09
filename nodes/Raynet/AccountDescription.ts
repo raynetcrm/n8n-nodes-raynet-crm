@@ -3,7 +3,7 @@
  */
 
 import type { INodeProperties, IExecuteFunctions, ILoadOptionsFunctions, INodePropertyOptions } from 'n8n-workflow';
-import { loadPicklist, flattenFixedCollection, processCommonField } from './helpers';
+import { loadPicklist, flattenFixedCollection, processCommonField, FILTER_OPERATORS } from './helpers';
 import type { EntityConfig } from './helpers';
 
 // ---------------------------------------------------------------------------
@@ -35,20 +35,6 @@ const SORT_COLUMNS = [
 ];
 
 const SORT_DIRECTIONS = [{ name: 'Ascending', value: 'ASC' }, { name: 'Descending', value: 'DESC' }];
-
-const FILTER_OPERATORS = [
-  { name: 'Equals',                  value: 'EQ' },
-  { name: 'Not equals',              value: 'NE' },
-  { name: 'Like',                    value: 'LIKE' },
-  { name: 'Like (case insensitive)', value: 'LIKE_NOCASE' },
-  { name: 'In',                      value: 'IN' },
-  { name: 'Greater than',            value: 'GT' },
-  { name: 'Greater or equal',        value: 'GE' },
-  { name: 'Less than',               value: 'LT' },
-  { name: 'Less or equal',           value: 'LE' },
-  { name: 'Equals or null',          value: 'EQ_OR_NULL' },
-  { name: 'Not equals or null',      value: 'NE_OR_NULL' },
-];
 
 // Shared address field list used in both Create and Update
 const ADDRESS_VALUES: INodeProperties[] = [
@@ -89,7 +75,7 @@ const CREATE_OPTIONAL_FIELDS: INodeProperties[] = [
   { displayName: 'Title before name',            name: 'titleBefore',  type: 'string',  default: '' },
   { displayName: 'Title after name',             name: 'titleAfter',   type: 'string',  default: '' },
   { displayName: 'Salutation',                   name: 'salutation',   type: 'string',  default: '' },
-  { displayName: 'Security Level',               name: 'securityLevel',type: 'number',  default: 0,  description: 'Security Level ID' },
+  { displayName: 'Security Level', name: 'securityLevel', type: 'options', default: '', typeOptions: { loadOptionsMethod: 'getSecurityLevels' } },
   { displayName: 'Owner',       name: 'owner',       type: 'options', default: '', typeOptions: { loadOptionsMethod: 'getOwners' } },
   { displayName: 'Note to account',              name: 'notice',       type: 'string',  default: '' },
   { displayName: 'Category',    name: 'category',    type: 'options', default: '', typeOptions: { loadOptionsMethod: 'getAccountCategories' } },

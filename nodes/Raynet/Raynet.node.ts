@@ -13,7 +13,7 @@ import type {
   IDataObject,
 } from 'n8n-workflow';
 
-import { raynetRequest, getListParams, loadOwners } from './helpers';
+import { raynetRequest, getListParams, loadOwners, loadSecurityLevels } from './helpers';
 import type { EntityConfig } from './helpers';
 
 import { getAccountProperties, accountLoadOptions, accountConfig } from './AccountDescription';
@@ -35,6 +35,7 @@ const ENTITY_MAP: Record<string, EntityConfig> = {
 
 const allLoadOptions: Record<string, (this: ILoadOptionsFunctions) => Promise<INodePropertyOptions[]>> = {
   getOwners: loadOwners,
+  getSecurityLevels: loadSecurityLevels,
   ...accountLoadOptions,
   ...personLoadOptions,
 };
