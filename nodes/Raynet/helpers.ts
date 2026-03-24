@@ -2,26 +2,28 @@
  * Shared helpers for Raynet CRM node.
  */
 
-import type {
-  IExecuteFunctions,
-  ILoadOptionsFunctions,
-  INodePropertyOptions,
-} from 'n8n-workflow';
+import type { IExecuteFunctions, ILoadOptionsFunctions, INodeProperties, INodePropertyOptions, NodePropertyTypes } from 'n8n-workflow';
 
 // ---------------------------------------------------------------------------
 // Auth & request
 // ---------------------------------------------------------------------------
 
+/**
+ * Generates the base URL for the Raynet API based on the provided credentials.
+ * @param credentials 
+ * @returns The base URL for the Raynet API
+ */
 export function getBaseUrl(credentials: { server?: string }): string {
-  const base = credentials?.server?.trim()
-    ? credentials.server.replace(/\/$/, '')
-    : 'https://app.raynet.cz';
+  const base = credentials?.server?.trim() ? credentials.server.replace(/\/$/, '') : 'https://app.raynet.cz';
   return `${base}/api/v2`;
 }
 
-export function getAuthHeaders(
-  credentials: { username?: string; apiKey?: string; instanceName?: string },
-): Record<string, string> {
+/**
+ * Generates the authentication headers for the Raynet API based on the provided credentials.
+ * @param credentials 
+ * @returns Generated headers including Authorization and X-Instance-Name
+ */
+export function getAuthHeaders(credentials: { username?: string; apiKey?: string; instanceName?: string }): Record<string, string> {
   const basic = Buffer.from(`${credentials.username ?? ''}:${credentials.apiKey ?? ''}`).toString('base64');
   return {
     Authorization: `Basic ${basic}`,
@@ -30,12 +32,21 @@ export function getAuthHeaders(
   };
 }
 
+/**
+ * Generic http request to the Raynet API, using credentials from the node and returning the parsed JSON response. Automatically cleans query string parameters by removing undefined or empty values.
+ * @param this Execution or load options context, used to get credentials and make the HTTP request
+ * @param method The HTTP method to use
+ * @param path The API endpoint path
+ * @param body The request body
+ * @param qs The query string parameters
+ * @returns A promise resolving to the parsed JSON response
+ */
 export async function raynetRequest(
-  this: IExecuteFunctions,
+  this: IExecuteFunctions | ILoadOptionsFunctions,
   method: 'GET' | 'POST' | 'PUT' | 'DELETE',
   path: string,
   body?: object,
-  qs?: Record<string, string | number | boolean | undefined>,
+  qs?: Record<string, string | number | boolean | undefined>
 ): Promise<unknown> {
   const credentials = await this.getCredentials('raynetApi');
   const url = `${getBaseUrl(credentials as { server?: string })}${path}`;
@@ -68,38 +79,42 @@ export async function raynetRequest(
 // Shared picklist loaders
 // ---------------------------------------------------------------------------
 
-export async function loadPicklist(
-  this: ILoadOptionsFunctions,
-  path: string,
-): Promise<INodePropertyOptions[]> {
+/**
+ * Loads a generic picklist from the given API path, mapping it to an array of INodePropertyOptions.
+ * @param this Current ILoadOptionsFunctions context, used to get credentials and make the HTTP request
+ * @param path The API endpoint for the picklist, e.g '/securityLevel/'
+ * @returns A promise resolving to an array of INodePropertyOptions
+ */
+export async function loadPicklist(this: ILoadOptionsFunctions, path: string): Promise<INodePropertyOptions[]> {
   const credentials = await this.getCredentials('raynetApi');
-  const res = await this.helpers.httpRequest({
+  const res = (await this.helpers.httpRequest({
     url: `${getBaseUrl(credentials as { server?: string })}${path}`,
     headers: getAuthHeaders(credentials as { username?: string; apiKey?: string; instanceName?: string }),
     json: true,
-  }) as { data?: Array<{ id: number; code01?: string; value?: string; name?: string }> };
+  })) as { data?: Array<{ id: number; code01?: string; value?: string; name?: string }> };
   return (res?.data ?? []).map((p) => ({
-    name: (p.code01 ?? p.value ?? p.name) ?? `ID ${p.id}`,
+    name: p.code01 ?? p.value ?? p.name ?? `ID ${p.id}`,
     value: p.id,
   }));
 }
 
-export async function loadSecurityLevels(
-  this: ILoadOptionsFunctions,
-): Promise<INodePropertyOptions[]> {
+export async function loadSecurityLevels(this: ILoadOptionsFunctions): Promise<INodePropertyOptions[]> {
   return loadPicklist.call(this, '/securityLevel/');
 }
 
-export async function loadOwners(
-  this: ILoadOptionsFunctions,
-): Promise<INodePropertyOptions[]> {
+/**
+ * Loads all users from the Raynet API and maps them to INodePropertyOptions, which can be used in owner fields across multiple entities.
+ * @param this 
+ * @returns A promise resolving to an array of INodePropertyOptions representing users
+ */
+export async function loadOwners(this: ILoadOptionsFunctions): Promise<INodePropertyOptions[]> {
   const credentials = await this.getCredentials('raynetApi');
-  const res = await this.helpers.httpRequest({
+  const res = (await this.helpers.httpRequest({
     url: `${getBaseUrl(credentials as { server?: string })}/person/`,
     headers: getAuthHeaders(credentials as { username?: string; apiKey?: string; instanceName?: string }),
     json: true,
     qs: { 'userAccount-id[NE]': '', limit: 100, sortColumn: 'lastName', sortDirection: 'ASC' },
-  }) as { data?: Array<{ id: number; firstName?: string; lastName?: string; fullName?: string }> };
+  })) as { data?: Array<{ id: number; firstName?: string; lastName?: string; fullName?: string }> };
   return (res?.data ?? []).map((p) => ({
     name: (p.fullName ?? [p.firstName, p.lastName].filter(Boolean).join(' ')) || `ID ${p.id}`,
     value: p.id,
@@ -112,17 +127,17 @@ export async function loadOwners(
 
 /** Standard filter operators supported by all Raynet list endpoints. */
 export const FILTER_OPERATORS = [
-  { name: 'Equals',                  value: 'EQ' },
-  { name: 'Not equals',              value: 'NE' },
-  { name: 'Like',                    value: 'LIKE' },
+  { name: 'Equals', value: 'EQ' },
+  { name: 'Not equals', value: 'NE' },
+  { name: 'Like', value: 'LIKE' },
   { name: 'Like (case insensitive)', value: 'LIKE_NOCASE' },
-  { name: 'In',                      value: 'IN' },
-  { name: 'Greater than',            value: 'GT' },
-  { name: 'Greater or equal',        value: 'GE' },
-  { name: 'Less than',               value: 'LT' },
-  { name: 'Less or equal',           value: 'LE' },
-  { name: 'Equals or null',          value: 'EQ_OR_NULL' },
-  { name: 'Not equals or null',      value: 'NE_OR_NULL' },
+  { name: 'In', value: 'IN' },
+  { name: 'Greater than', value: 'GT' },
+  { name: 'Greater or equal', value: 'GE' },
+  { name: 'Less than', value: 'LT' },
+  { name: 'Less or equal', value: 'LE' },
+  { name: 'Equals or null', value: 'EQ_OR_NULL' },
+  { name: 'Not equals or null', value: 'NE_OR_NULL' },
 ];
 
 // ---------------------------------------------------------------------------
@@ -130,11 +145,7 @@ export const FILTER_OPERATORS = [
 // ---------------------------------------------------------------------------
 
 /** Flattens a single-group fixedCollection into a plain object. */
-export function flattenFixedCollection(
-  value: unknown,
-  groupName: string,
-  skipZero = false,
-): Record<string, unknown> | undefined {
+export function flattenFixedCollection(value: unknown, groupName: string, skipZero = false): Record<string, unknown> | undefined {
   const group = (value as Record<string, Record<string, unknown>>)?.[groupName];
   if (!group || typeof group !== 'object') return undefined;
   const out: Record<string, unknown> = {};
@@ -150,13 +161,12 @@ export function flattenFixedCollection(
  * Handles fields shared across entities: tags (CSV → array) and birthday (trim to date).
  * Returns true if the key was handled so the caller can skip it.
  */
-export function processCommonField(
-  body: Record<string, unknown>,
-  key: string,
-  value: unknown,
-): boolean {
+export function processCommonField(body: Record<string, unknown>, key: string, value: unknown): boolean {
   if (key === 'tags' && typeof value === 'string') {
-    body.tags = value.split(',').map((s) => s.trim()).filter(Boolean);
+    body.tags = value
+      .split(',')
+      .map((s) => s.trim())
+      .filter(Boolean);
     return true;
   }
   if (key === 'birthday' && typeof value === 'string' && value) {
@@ -170,9 +180,10 @@ export function processCommonField(
 // Get Many: shared query-string builder
 // ---------------------------------------------------------------------------
 
-export function getListParams(
-  this: IExecuteFunctions,
-): Record<string, string | number | boolean | undefined> {
+/**
+ * Builds the query string for list endpoints based on common node parameters: pagination, sorting, full-text search, view, and filters. Used in the GET_MANY operation of all entities.
+ */
+export function getListParams(this: IExecuteFunctions): Record<string, string | number | boolean | undefined> {
   const returnAll = this.getNodeParameter('returnAll', 0) as boolean;
   const limit = returnAll ? 1000 : (this.getNodeParameter('limit', 0) as number);
 
@@ -193,9 +204,7 @@ export function getListParams(
     | Array<{ field?: string; operator?: string; value?: string }>
     | { field?: string; operator?: string; value?: string };
 
-  const filters = Array.isArray(rawFilters)
-    ? rawFilters
-    : rawFilters?.field ? [rawFilters] : [];
+  const filters = Array.isArray(rawFilters) ? rawFilters : rawFilters?.field ? [rawFilters] : [];
 
   for (const f of filters) {
     if (!f.field) continue;
@@ -210,6 +219,7 @@ export function getListParams(
 // Entity config type used by the router
 // ---------------------------------------------------------------------------
 
+/** Configuration for a Raynet entity, defining its API endpoints and body-building logic. */
 export interface EntityConfig {
   listPath: string;
   singlePath: string;
