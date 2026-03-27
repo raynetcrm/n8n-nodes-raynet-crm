@@ -266,3 +266,11 @@ export function createPicklistLoader(path: string) {
     return loadPicklist.call(this, path);
   };
 }
+
+/** Converts operation types to display options for a given resource.
+ *  @param operations Single operation or array of operations that the options should be shown for
+ *  @param resource The resource for which to show options
+ */
+export function showOptionsForOp(operations: OperationType | OperationType[], resource: string) {
+  return { show: { resource: [resource], operation: ([] as OperationType[]).concat(operations) } };
+}

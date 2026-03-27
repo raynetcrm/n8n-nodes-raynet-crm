@@ -3,8 +3,8 @@
  */
 
 import type { INodeProperties, IExecuteFunctions, ILoadOptionsFunctions, INodePropertyOptions } from 'n8n-workflow';
-import { loadPicklist, flattenFixedCollection, processCommonField, FILTER_OPERATORS } from './helpers';
-import type { EntityConfig } from './helpers';
+import { flattenFixedCollection, processCommonField, FILTER_OPERATORS, showOptionsForOp, createPicklistLoader } from './helpers';
+import { EntityConfig, OperationType } from './helpers';
 
 // ---------------------------------------------------------------------------
 // Static option lists
@@ -119,9 +119,27 @@ const SHARED_OPTIONAL_FIELDS: INodeProperties[] = [
   { displayName: 'Security Level', name: 'securityLevel', type: 'options', default: '', typeOptions: { loadOptionsMethod: 'getSecurityLevels' } },
   { displayName: 'Owner', name: 'owner', type: 'options', default: '', typeOptions: { loadOptionsMethod: 'getOwners' } },
   { displayName: 'Category', name: 'category', type: 'options', default: '', typeOptions: { loadOptionsMethod: 'getPersonCategories' } },
-  { displayName: 'Classification 1', name: 'personClassification1', type: 'options', default: '', typeOptions: { loadOptionsMethod: 'getPersonClassifications1' } },
-  { displayName: 'Classification 2', name: 'personClassification2', type: 'options', default: '', typeOptions: { loadOptionsMethod: 'getPersonClassifications2' } },
-  { displayName: 'Classification 3', name: 'personClassification3', type: 'options', default: '', typeOptions: { loadOptionsMethod: 'getPersonClassifications3' } },
+  {
+    displayName: 'Classification 1',
+    name: 'personClassification1',
+    type: 'options',
+    default: '',
+    typeOptions: { loadOptionsMethod: 'getPersonClassifications1' },
+  },
+  {
+    displayName: 'Classification 2',
+    name: 'personClassification2',
+    type: 'options',
+    default: '',
+    typeOptions: { loadOptionsMethod: 'getPersonClassifications2' },
+  },
+  {
+    displayName: 'Classification 3',
+    name: 'personClassification3',
+    type: 'options',
+    default: '',
+    typeOptions: { loadOptionsMethod: 'getPersonClassifications3' },
+  },
   { displayName: 'Birthday', name: 'birthday', type: 'dateTime', default: '' },
   { displayName: 'Language', name: 'language', type: 'options', default: '', typeOptions: { loadOptionsMethod: 'getLanguages' } },
   { displayName: 'Marital Status', name: 'maritalStatus', type: 'options', default: '', typeOptions: { loadOptionsMethod: 'getMaritalStatuses' } },
@@ -137,7 +155,9 @@ const SHARED_OPTIONAL_FIELDS: INodeProperties[] = [
 
 const UPDATE_OPTIONAL_FIELDS: INodeProperties[] = [{ displayName: 'Last Name', name: 'lastName', type: 'string', default: '' }, ...SHARED_OPTIONAL_FIELDS];
 
-const op = (operations: string[]) => ({ show: { resource: ['person'], operation: operations } });
+const op = (operations: OperationType | OperationType[]) => {
+  return showOptionsForOp(operations, 'person');
+};
 
 // ---------------------------------------------------------------------------
 // UI properties
@@ -169,7 +189,7 @@ export function getPersonProperties(): INodeProperties[] {
     },
 
     // Create – required
-    { displayName: 'Last Name', name: 'lastName', type: 'string', required: true, default: '', displayOptions: op(['create']) },
+    { displayName: 'Last Name', name: 'lastName', type: 'string', required: true, default: '', displayOptions: op([OperationType.CREATE]) },
 
     // Create – optional
     {
@@ -178,12 +198,12 @@ export function getPersonProperties(): INodeProperties[] {
       type: 'collection',
       placeholder: 'Add field',
       default: {},
-      displayOptions: op(['create']),
+      displayOptions: op(OperationType.CREATE),
       options: SHARED_OPTIONAL_FIELDS,
     },
 
     // Update – required ID
-    { displayName: 'Contact ID', name: 'personId', type: 'number', required: true, default: 0, displayOptions: op(['update']) },
+    { displayName: 'Contact ID', name: 'personId', type: 'number', required: true, default: 0, displayOptions: op([OperationType.UPDATE]) },
 
     // Update – optional fields
     {
@@ -192,20 +212,48 @@ export function getPersonProperties(): INodeProperties[] {
       type: 'collection',
       placeholder: 'Add field',
       default: {},
-      displayOptions: op(['update']),
+      displayOptions: op([OperationType.UPDATE]),
       options: UPDATE_OPTIONAL_FIELDS,
     },
 
     // Get
-    { displayName: 'Contact ID', name: 'personId', type: 'number', required: true, default: 0, displayOptions: op(['get']) },
+    { displayName: 'Contact ID', name: 'personId', type: 'number', required: true, default: 0, displayOptions: op([OperationType.GET]) },
 
     // Get Many
-    { displayName: 'Return All', name: 'returnAll', type: 'boolean', default: false, description: 'Whether to return all results (max 1000)', displayOptions: op(['getMany']) },
-    { displayName: 'Limit', name: 'limit', type: 'number', default: 50, typeOptions: { minValue: 1, maxValue: 1000 }, displayOptions: op(['getMany']) },
-    { displayName: 'Offset', name: 'offset', type: 'number', default: 0, displayOptions: op(['getMany']) },
-    { displayName: 'Sort Column', name: 'sortColumn', type: 'options', default: 'lastName', options: SORT_COLUMNS, displayOptions: op(['getMany']) },
-    { displayName: 'Sort Direction', name: 'sortDirection', type: 'options', default: 'ASC', options: SORT_DIRECTIONS, displayOptions: op(['getMany']) },
-    { displayName: 'Full-text Search', name: 'fulltext', type: 'string', default: '', displayOptions: op(['getMany']) },
+    {
+      displayName: 'Return All',
+      name: 'returnAll',
+      type: 'boolean',
+      default: false,
+      description: 'Whether to return all results (max 1000)',
+      displayOptions: op([OperationType.GET_MANY]),
+    },
+    {
+      displayName: 'Limit',
+      name: 'limit',
+      type: 'number',
+      default: 50,
+      typeOptions: { minValue: 1, maxValue: 1000 },
+      displayOptions: op([OperationType.GET_MANY]),
+    },
+    { displayName: 'Offset', name: 'offset', type: 'number', default: 0, displayOptions: op([OperationType.GET_MANY]) },
+    {
+      displayName: 'Sort Column',
+      name: 'sortColumn',
+      type: 'options',
+      default: 'lastName',
+      options: SORT_COLUMNS,
+      displayOptions: op([OperationType.GET_MANY]),
+    },
+    {
+      displayName: 'Sort Direction',
+      name: 'sortDirection',
+      type: 'options',
+      default: 'ASC',
+      options: SORT_DIRECTIONS,
+      displayOptions: op([OperationType.GET_MANY]),
+    },
+    { displayName: 'Full-text Search', name: 'fulltext', type: 'string', default: '', displayOptions: op([OperationType.GET_MANY]) },
     {
       displayName: 'Filters',
       name: 'filters',
@@ -213,7 +261,7 @@ export function getPersonProperties(): INodeProperties[] {
       typeOptions: { multipleValues: true },
       placeholder: 'Add filter',
       default: {},
-      displayOptions: op(['getMany']),
+      displayOptions: op([OperationType.GET_MANY]),
       options: [
         {
           displayName: 'Filter',
@@ -256,23 +304,37 @@ export function getPersonProperties(): INodeProperties[] {
       type: 'number',
       default: 0,
       description: 'Filter by the ID of a related company',
-      displayOptions: op(['getMany']),
+      displayOptions: op([OperationType.GET_MANY]),
     },
-    { displayName: 'View', name: 'view', type: 'string', default: '', description: "Pass 'rowInfo' to return only status metadata", displayOptions: op(['getMany']) },
+    {
+      displayName: 'View',
+      name: 'view',
+      type: 'string',
+      default: '',
+      description: "Pass 'rowInfo' to return only status metadata",
+      displayOptions: op([OperationType.GET_MANY]),
+    },
 
     // Delete
-    { displayName: 'Contact ID', name: 'personId', type: 'number', required: true, default: 0, displayOptions: op(['delete']) },
+    { displayName: 'Contact ID', name: 'personId', type: 'number', required: true, default: 0, displayOptions: op([OperationType.DELETE]) },
 
     // Lock / Unlock / Invalidate / Renew Validity
-    { displayName: 'Contact ID', name: 'personId', type: 'number', required: true, default: 0, displayOptions: op(['lock', 'unlock', 'invalidate', 'renewValidity']) },
+    {
+      displayName: 'Contact ID',
+      name: 'personId',
+      type: 'number',
+      required: true,
+      default: 0,
+      displayOptions: op([OperationType.LOCK, OperationType.UNLOCK, OperationType.INVALIDATE, OperationType.RENEW_VALIDITY]),
+    },
 
     // Add Tag
-    { displayName: 'Contact ID', name: 'personId', type: 'number', required: true, default: 0, displayOptions: op(['addTag']) },
-    { displayName: 'Tag', name: 'tag', type: 'string', required: true, default: '', displayOptions: op(['addTag']) },
+    { displayName: 'Contact ID', name: 'personId', type: 'number', required: true, default: 0, displayOptions: op([OperationType.ADD_TAG]) },
+    { displayName: 'Tag', name: 'tag', type: 'string', required: true, default: '', displayOptions: op([OperationType.ADD_TAG]) },
 
     // Remove Tag
-    { displayName: 'Contact ID', name: 'personId', type: 'number', required: true, default: 0, displayOptions: op(['deleteTag']) },
-    { displayName: 'Tag', name: 'tag', type: 'string', required: true, default: '', displayOptions: op(['deleteTag']) },
+    { displayName: 'Contact ID', name: 'personId', type: 'number', required: true, default: 0, displayOptions: op([OperationType.DELETE_TAG]) },
+    { displayName: 'Tag', name: 'tag', type: 'string', required: true, default: '', displayOptions: op([OperationType.DELETE_TAG]) },
   ];
 }
 
@@ -336,27 +398,13 @@ const PICKLIST_PATHS = {
 } as const;
 
 export const personLoadOptions: Record<string, (this: ILoadOptionsFunctions) => Promise<INodePropertyOptions[]>> = {
-  getPersonCategories(this: ILoadOptionsFunctions) {
-    return loadPicklist.call(this, PICKLIST_PATHS.personCategories);
-  },
-  getPersonClassifications1(this: ILoadOptionsFunctions) {
-    return loadPicklist.call(this, PICKLIST_PATHS.personClassifications1);
-  },
-  getPersonClassifications2(this: ILoadOptionsFunctions) {
-    return loadPicklist.call(this, PICKLIST_PATHS.personClassifications2);
-  },
-  getPersonClassifications3(this: ILoadOptionsFunctions) {
-    return loadPicklist.call(this, PICKLIST_PATHS.personClassifications3);
-  },
-  getLanguages(this: ILoadOptionsFunctions) {
-    return loadPicklist.call(this, PICKLIST_PATHS.languages);
-  },
-  getMaritalStatuses(this: ILoadOptionsFunctions) {
-    return loadPicklist.call(this, PICKLIST_PATHS.maritalStatuses);
-  },
-  getTelTypes(this: ILoadOptionsFunctions) {
-    return loadPicklist.call(this, PICKLIST_PATHS.telTypes);
-  },
+  getPersonCategories: createPicklistLoader(PICKLIST_PATHS.personCategories),
+  getPersonClassifications1: createPicklistLoader(PICKLIST_PATHS.personClassifications1),
+  getPersonClassifications2: createPicklistLoader(PICKLIST_PATHS.personClassifications2),
+  getPersonClassifications3: createPicklistLoader(PICKLIST_PATHS.personClassifications3),
+  getLanguages: createPicklistLoader(PICKLIST_PATHS.languages),
+  getMaritalStatuses: createPicklistLoader(PICKLIST_PATHS.maritalStatuses),
+  getTelTypes: createPicklistLoader(PICKLIST_PATHS.telTypes),
 };
 
 // ---------------------------------------------------------------------------

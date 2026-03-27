@@ -10,6 +10,7 @@ import {
   getCustomFields,
   createPicklistLoader,
   OperationType,
+  showOptionsForOp,
 } from './helpers';
 import type { EntityConfig } from './helpers';
 
@@ -153,7 +154,9 @@ const UPDATE_OPTIONAL_FIELDS: INodeProperties[] = [
 /** Converts operation types to display options.
  *  @param operations Single operation or array of operations that the options should be shown for
  */
-const op = (operations: OperationType | OperationType[]) => ({ show: { resource: ['account'], operation: ([] as OperationType[]).concat(operations) } });
+const op = (operations: OperationType | OperationType[]) => {
+  return showOptionsForOp(operations, 'account');
+};
 
 // ---------------------------------------------------------------------------
 // UI properties
