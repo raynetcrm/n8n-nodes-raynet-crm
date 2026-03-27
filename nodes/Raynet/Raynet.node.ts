@@ -3,18 +3,10 @@
  * Thin router: delegates to entity-specific configs for body building / loadOptions.
  */
 
-import type {
-  IExecuteFunctions,
-  INodeExecutionData,
-  INodeType,
-  INodeTypeDescription,
-  ILoadOptionsFunctions,
-  INodePropertyOptions,
-  IDataObject,
-} from 'n8n-workflow';
+import type { IExecuteFunctions, INodeExecutionData, INodeType, INodeTypeDescription, ILoadOptionsFunctions, INodePropertyOptions, IDataObject } from 'n8n-workflow';
 
-import { raynetRequest, getListParams, loadOwners, loadSecurityLevels } from './helpers';
-import type { EntityConfig } from './helpers';
+import { raynetRequest, getListParams, loadOwners, loadSecurityLevels, stringToOperationType } from './helpers';
+import { EntityConfig, OperationType } from './helpers';
 
 import { getAccountProperties, accountLoadOptions, accountConfig } from './AccountDescription';
 import { getPersonProperties, personLoadOptions, personConfig } from './PersonDescription';
@@ -25,16 +17,16 @@ import { getPersonProperties, personLoadOptions, personConfig } from './PersonDe
 
 const RESOURCE_OPTIONS = [
   { name: 'Account', value: 'account', description: 'Contact – account (company or individual)' },
-  { name: 'Person',  value: 'person',  description: 'Contact – person (individual contact)' },
+  { name: 'Person', value: 'person', description: 'Contact – person (individual contact)' },
 ];
 
 const ENTITY_MAP: Record<string, EntityConfig> = {
   account: accountConfig,
-  person:  personConfig,
+  person: personConfig,
 };
 
 const allLoadOptions: Record<string, (this: ILoadOptionsFunctions) => Promise<INodePropertyOptions[]>> = {
-  getOwners: loadOwners,
+  getUsers: loadOwners,
   getSecurityLevels: loadSecurityLevels,
   ...accountLoadOptions,
   ...personLoadOptions,
@@ -77,20 +69,20 @@ export class Raynet implements INodeType {
   };
 
   async execute(this: IExecuteFunctions): Promise<INodeExecutionData[][]> {
-    const resource  = this.getNodeParameter('resource', 0) as string;
-    const operation = this.getNodeParameter('operation', 0) as string;
-    const items     = this.getInputData();
+    const resource = this.getNodeParameter('resource', 0) as string;
+    const operation = stringToOperationType(this.getNodeParameter('operation', 0)) as OperationType;
+    const items = this.getInputData();
     const returnData: INodeExecutionData[] = [];
 
-    const cfg = ENTITY_MAP[resource];
-    if (!cfg) throw new Error(`Resource "${resource}" is not implemented.`);
+    const config = ENTITY_MAP[resource];
+    if (!config) throw new Error(`Resource "${resource}" is not implemented.`);
 
     // ----- Get Many -----
-    if (operation === 'getMany') {
+    if (operation === OperationType.GET_MANY) {
       const qs = getListParams.call(this);
-      if (cfg.getManyExtraQs) Object.assign(qs, cfg.getManyExtraQs(this));
+      if (config.getManyExtraQs) Object.assign(qs, config.getManyExtraQs(this));
 
-      const res = await raynetRequest.call(this, 'GET', cfg.listPath, undefined, qs) as {
+      const res = (await raynetRequest.call(this, 'GET', config.listPath, undefined, qs)) as {
         data?: unknown[];
       };
       for (let i = 0; i < (res?.data ?? []).length; i++) {
@@ -100,51 +92,70 @@ export class Raynet implements INodeType {
     }
 
     // ----- Single-item operations -----
-    const iterations = operation === 'create' ? 1 : items.length;
+    const iterations = operation === OperationType.CREATE ? 1 : items.length;
 
     const postActions: Record<string, string> = {
-      lock: 'lock', unlock: 'unlock', invalidate: 'invalid', renewValidity: 'valid',
+      [OperationType.LOCK]: 'lock',
+      [OperationType.UNLOCK]: 'unlock',
+      [OperationType.INVALIDATE]: 'invalid',
+      [OperationType.RENEW_VALIDITY]: 'valid',
     };
 
     for (let i = 0; i < iterations; i++) {
+      let id: number;
+      let body: object | undefined;
+      let res: any;
+      let tag: string;
       try {
-        if (operation === 'create') {
-          const body = cfg.buildBody(this, 'create');
-          const res = await raynetRequest.call(this, 'PUT', cfg.listPath, body) as { success?: boolean; data?: { id: number } };
-          returnData.push({ json: { id: res?.data?.id, success: res?.success } as IDataObject, pairedItem: { item: i } });
+        switch (operation) {
+          case OperationType.CREATE:
+            body = config.buildBody(this, 'create');
+            res = (await raynetRequest.call(this, 'PUT', config.listPath, body)) as { success?: boolean; data?: { id: number } };
+            returnData.push({ json: { id: res?.data?.id, success: res?.success } as IDataObject, pairedItem: { item: i } });
+            break;
 
-        } else if (operation === 'update') {
-          const id = this.getNodeParameter(cfg.idParam, i) as number;
-          const body = cfg.buildBody(this, 'update');
-          await raynetRequest.call(this, 'POST', `${cfg.singlePath}${id}/`, body);
-          returnData.push({ json: { id, success: true } as IDataObject, pairedItem: { item: i } });
+          case OperationType.UPDATE:
+            id = this.getNodeParameter(config.idParam, i) as number;
+            body = config.buildBody(this, 'update');
+            await raynetRequest.call(this, 'POST', `${config.singlePath}${id}/`, body);
+            returnData.push({ json: { id, success: true } as IDataObject, pairedItem: { item: i } });
+            break;
 
-        } else if (operation === 'get') {
-          const id = this.getNodeParameter(cfg.idParam, i) as number;
-          const res = await raynetRequest.call(this, 'GET', `${cfg.singlePath}${id}/`) as { data?: unknown };
-          returnData.push({ json: (res?.data as IDataObject) ?? {}, pairedItem: { item: i } });
+          case OperationType.GET:
+            id = this.getNodeParameter(config.idParam, i) as number;
+            res = (await raynetRequest.call(this, 'GET', `${config.singlePath}${id}/`)) as { data?: unknown };
+            returnData.push({ json: (res?.data as IDataObject) ?? {}, pairedItem: { item: i } });
+            break;
 
-        } else if (operation === 'delete') {
-          const id = this.getNodeParameter(cfg.idParam, i) as number;
-          await raynetRequest.call(this, 'DELETE', `${cfg.singlePath}${id}/`);
-          returnData.push({ json: { id, success: true } as IDataObject, pairedItem: { item: i } });
+          case OperationType.DELETE:
+            id = this.getNodeParameter(config.idParam, i) as number;
+            await raynetRequest.call(this, 'DELETE', `${config.singlePath}${id}/`);
+            returnData.push({ json: { id, success: true } as IDataObject, pairedItem: { item: i } });
+            break;
 
-        } else if (postActions[operation]) {
-          const id = this.getNodeParameter(cfg.idParam, i) as number;
-          await raynetRequest.call(this, 'POST', `${cfg.singlePath}${id}/${postActions[operation]}`);
-          returnData.push({ json: { id, success: true } as IDataObject, pairedItem: { item: i } });
+          case OperationType.ADD_TAG:
+            id = this.getNodeParameter(config.idParam, i) as number;
+            tag = this.getNodeParameter('tag', i) as string;
+            await raynetRequest.call(this, 'PUT', `${config.singlePath}${id}/tag`, { tag });
+            returnData.push({ json: { id, tag, success: true } as IDataObject, pairedItem: { item: i } });
+            break;
 
-        } else if (operation === 'addTag') {
-          const id  = this.getNodeParameter(cfg.idParam, i) as number;
-          const tag = this.getNodeParameter('tag', i) as string;
-          await raynetRequest.call(this, 'PUT', `${cfg.singlePath}${id}/tag`, { tag });
-          returnData.push({ json: { id, tag, success: true } as IDataObject, pairedItem: { item: i } });
+          case OperationType.DELETE_TAG:
+            id = this.getNodeParameter(config.idParam, i) as number;
+            tag = this.getNodeParameter('tag', i) as string;
+            await raynetRequest.call(this, 'DELETE', `${config.singlePath}${id}/tag`, { tag });
+            returnData.push({ json: { id, tag, success: true } as IDataObject, pairedItem: { item: i } });
+            break;
 
-        } else if (operation === 'deleteTag') {
-          const id  = this.getNodeParameter(cfg.idParam, i) as number;
-          const tag = this.getNodeParameter('tag', i) as string;
-          await raynetRequest.call(this, 'DELETE', `${cfg.singlePath}${id}/tag`, { tag });
-          returnData.push({ json: { id, tag, success: true } as IDataObject, pairedItem: { item: i } });
+          default:
+            // Post-only actions (lock/unlock, invalidate/renew validity)
+            if (Object.keys(postActions).includes(operation)) {
+              const id = this.getNodeParameter(config.idParam, i) as number;
+              await raynetRequest.call(this, 'POST', `${config.singlePath}${id}/${postActions[operation]}`);
+              returnData.push({ json: { id, success: true } as IDataObject, pairedItem: { item: i } });
+            } else {
+              throw new Error(`Operation "${operation}" is not implemented for resource "${resource}".`);
+            }
         }
       } catch (err) {
         if (this.continueOnFail()) {
@@ -154,7 +165,6 @@ export class Raynet implements INodeType {
         }
       }
     }
-
     return [returnData];
   }
 }
