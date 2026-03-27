@@ -3,7 +3,14 @@
  */
 
 import type { INodeProperties, IExecuteFunctions, ILoadOptionsFunctions, INodePropertyOptions } from 'n8n-workflow';
-import { loadPicklist, flattenFixedCollection, processCommonField, FILTER_OPERATORS } from './helpers';
+import {
+  flattenFixedCollection,
+  processCommonField,
+  FILTER_OPERATORS,
+  getCustomFields,
+  createPicklistLoader,
+  OperationType,
+} from './helpers';
 import type { EntityConfig } from './helpers';
 
 // ---------------------------------------------------------------------------
@@ -143,7 +150,10 @@ const UPDATE_OPTIONAL_FIELDS: INodeProperties[] = [
   ...CREATE_OPTIONAL_FIELDS,
 ];
 
-const op = (operations: string[]) => ({ show: { resource: ['account'], operation: operations } });
+/** Converts operation types to display options.
+ *  @param operations Single operation or array of operations that the options should be shown for
+ */
+const op = (operations: OperationType | OperationType[]) => ({ show: { resource: ['account'], operation: ([] as OperationType[]).concat(operations) } });
 
 // ---------------------------------------------------------------------------
 // UI properties
@@ -175,10 +185,26 @@ export function getAccountProperties(): INodeProperties[] {
     },
 
     // Create – required fields
-    { displayName: 'Name', name: 'name', type: 'string', required: true, default: '', displayOptions: op(['create']) },
-    { displayName: 'Rating', name: 'rating', type: 'options', required: true, default: 'A', options: RATING_OPTIONS, displayOptions: op(['create']) },
-    { displayName: 'Status', name: 'state', type: 'options', required: true, default: 'A_POTENTIAL', options: STATE_OPTIONS, displayOptions: op(['create']) },
-    { displayName: 'Relationship', name: 'role', type: 'options', required: true, default: 'B_PARTNER', options: ROLE_OPTIONS, displayOptions: op(['create']) },
+    { displayName: 'Name', name: 'name', type: 'string', required: true, default: '', displayOptions: op(OperationType.CREATE) },
+    { displayName: 'Rating', name: 'rating', type: 'options', required: true, default: 'A', options: RATING_OPTIONS, displayOptions: op(OperationType.CREATE) },
+    {
+      displayName: 'Status',
+      name: 'state',
+      type: 'options',
+      required: true,
+      default: 'A_POTENTIAL',
+      options: STATE_OPTIONS,
+      displayOptions: op(OperationType.CREATE),
+    },
+    {
+      displayName: 'Relationship',
+      name: 'role',
+      type: 'options',
+      required: true,
+      default: 'B_PARTNER',
+      options: ROLE_OPTIONS,
+      displayOptions: op(OperationType.CREATE),
+    },
 
     // Create – optional fields
     {
@@ -187,12 +213,12 @@ export function getAccountProperties(): INodeProperties[] {
       type: 'collection',
       placeholder: 'Add field',
       default: {},
-      displayOptions: op(['create']),
+      displayOptions: op(OperationType.CREATE),
       options: CREATE_OPTIONAL_FIELDS,
     },
 
     // Update – required ID
-    { displayName: 'Account ID', name: 'accountId', type: 'number', required: true, default: 0, displayOptions: op(['update']) },
+    { displayName: 'Account ID', name: 'accountId', type: 'number', required: true, default: 0, displayOptions: op(OperationType.UPDATE) },
 
     // Update – optional fields
     {
@@ -201,20 +227,41 @@ export function getAccountProperties(): INodeProperties[] {
       type: 'collection',
       placeholder: 'Add field',
       default: {},
-      displayOptions: op(['update']),
+      displayOptions: op(OperationType.UPDATE),
       options: UPDATE_OPTIONAL_FIELDS,
     },
 
     // Get
-    { displayName: 'Account ID', name: 'accountId', type: 'number', required: true, default: 0, displayOptions: op(['get']) },
+    { displayName: 'Account ID', name: 'accountId', type: 'number', required: true, default: 0, displayOptions: op(OperationType.GET) },
 
     // Get Many
-    { displayName: 'Return All', name: 'returnAll', type: 'boolean', default: false, description: 'Whether to return all results (max 1000)', displayOptions: op(['getMany']) },
-    { displayName: 'Limit', name: 'limit', type: 'number', default: 50, typeOptions: { minValue: 1, maxValue: 1000 }, displayOptions: op(['getMany']) },
-    { displayName: 'Offset', name: 'offset', type: 'number', default: 0, displayOptions: op(['getMany']) },
-    { displayName: 'Sort Column', name: 'sortColumn', type: 'options', default: 'name', options: SORT_COLUMNS, displayOptions: op(['getMany']) },
-    { displayName: 'Sort Direction', name: 'sortDirection', type: 'options', default: 'ASC', options: SORT_DIRECTIONS, displayOptions: op(['getMany']) },
-    { displayName: 'Full-text Search', name: 'fulltext', type: 'string', default: '', displayOptions: op(['getMany']) },
+    {
+      displayName: 'Return All',
+      name: 'returnAll',
+      type: 'boolean',
+      default: false,
+      description: 'Whether to return all results (max 1000)',
+      displayOptions: op(OperationType.GET_MANY),
+    },
+    {
+      displayName: 'Limit',
+      name: 'limit',
+      type: 'number',
+      default: 50,
+      typeOptions: { minValue: 1, maxValue: 1000 },
+      displayOptions: op(OperationType.GET_MANY),
+    },
+    { displayName: 'Offset', name: 'offset', type: 'number', default: 0, displayOptions: op(OperationType.GET_MANY) },
+    { displayName: 'Sort Column', name: 'sortColumn', type: 'options', default: 'name', options: SORT_COLUMNS, displayOptions: op(OperationType.GET_MANY) },
+    {
+      displayName: 'Sort Direction',
+      name: 'sortDirection',
+      type: 'options',
+      default: 'ASC',
+      options: SORT_DIRECTIONS,
+      displayOptions: op(OperationType.GET_MANY),
+    },
+    { displayName: 'Full-text Search', name: 'fulltext', type: 'string', default: '', displayOptions: op(OperationType.GET_MANY) },
     {
       displayName: 'Filters',
       name: 'filters',
@@ -222,12 +269,12 @@ export function getAccountProperties(): INodeProperties[] {
       typeOptions: { multipleValues: true },
       placeholder: 'Add filter',
       default: {},
-      displayOptions: op(['getMany']),
+      displayOptions: op(OperationType.GET_MANY),
       options: [
         {
           displayName: 'Filter',
           name: 'filter',
-        values: [
+          values: [
             {
               displayName: 'Field',
               name: 'field',
@@ -259,26 +306,39 @@ export function getAccountProperties(): INodeProperties[] {
                 { name: 'Row Access', value: 'rowInfo.rowAccess' },
               ],
             },
-          { displayName: 'Operator', name: 'operator', type: 'options', default: 'EQ', options: FILTER_OPERATORS },
+            { displayName: 'Operator', name: 'operator', type: 'options', default: 'EQ', options: FILTER_OPERATORS },
             { displayName: 'Value', name: 'value', type: 'string', default: '' },
           ],
         },
-        ],
-      }],
+      ],
     },
-    { displayName: 'View', name: 'view', type: 'string', default: '', description: "Pass 'rowInfo' to return only status metadata", displayOptions: op(['getMany']) },
+    {
+      displayName: 'View',
+      name: 'view',
+      type: 'string',
+      default: '',
+      description: "Pass 'rowInfo' to return only status metadata",
+      displayOptions: op(OperationType.GET_MANY),
+    },
 
     // Delete / Lock / Unlock / Invalidate / Renew Validity – just need an ID
-    { displayName: 'Account ID', name: 'accountId', type: 'number', required: true, default: 0, displayOptions: op(['delete']) },
-    { displayName: 'Account ID', name: 'accountId', type: 'number', required: true, default: 0, displayOptions: op(['lock', 'unlock', 'invalidate', 'renewValidity']) },
+    { displayName: 'Account ID', name: 'accountId', type: 'number', required: true, default: 0, displayOptions: op(OperationType.DELETE) },
+    {
+      displayName: 'Account ID',
+      name: 'accountId',
+      type: 'number',
+      required: true,
+      default: 0,
+      displayOptions: op([OperationType.LOCK, OperationType.UNLOCK, OperationType.INVALIDATE, OperationType.RENEW_VALIDITY]),
+    },
 
     // Add Tag
-    { displayName: 'Account ID', name: 'accountId', type: 'number', required: true, default: 0, displayOptions: op(['addTag']) },
-    { displayName: 'Tag', name: 'tag', type: 'string', required: true, default: '', displayOptions: op(['addTag']) },
+    { displayName: 'Account ID', name: 'accountId', type: 'number', required: true, default: 0, displayOptions: op(OperationType.ADD_TAG) },
+    { displayName: 'Tag', name: 'tag', type: 'string', required: true, default: '', displayOptions: op(OperationType.ADD_TAG) },
 
     // Remove Tag
-    { displayName: 'Account ID', name: 'accountId', type: 'number', required: true, default: 0, displayOptions: op(['deleteTag']) },
-    { displayName: 'Tag', name: 'tag', type: 'string', required: true, default: '', displayOptions: op(['deleteTag']) },
+    { displayName: 'Account ID', name: 'accountId', type: 'number', required: true, default: 0, displayOptions: op(OperationType.DELETE_TAG) },
+    { displayName: 'Tag', name: 'tag', type: 'string', required: true, default: '', displayOptions: op(OperationType.DELETE_TAG) },
   ];
 }
 
@@ -350,39 +410,17 @@ const PICKLIST_PATHS = {
 } as const;
 
 export const accountLoadOptions: Record<string, (this: ILoadOptionsFunctions) => Promise<INodePropertyOptions[]>> = {
-  getAccountCategories(this: ILoadOptionsFunctions) {
-    return loadPicklist.call(this, PICKLIST_PATHS.accountCategories);
-  },
-  getContactSources(this: ILoadOptionsFunctions) {
-    return loadPicklist.call(this, PICKLIST_PATHS.contactSources);
-  },
-  getEmployeesNumbers(this: ILoadOptionsFunctions) {
-    return loadPicklist.call(this, PICKLIST_PATHS.employeesNumbers);
-  },
-  getLegalForms(this: ILoadOptionsFunctions) {
-    return loadPicklist.call(this, PICKLIST_PATHS.legalForms);
-  },
-  getPaymentTerms(this: ILoadOptionsFunctions) {
-    return loadPicklist.call(this, PICKLIST_PATHS.paymentTerms);
-  },
-  getCompanyTurnovers(this: ILoadOptionsFunctions) {
-    return loadPicklist.call(this, PICKLIST_PATHS.companyTurnovers);
-  },
-  getEconomyActivities(this: ILoadOptionsFunctions) {
-    return loadPicklist.call(this, PICKLIST_PATHS.economyActivities);
-  },
-  getCompanyClassifications1(this: ILoadOptionsFunctions) {
-    return loadPicklist.call(this, PICKLIST_PATHS.companyClassifications1);
-  },
-  getCompanyClassifications2(this: ILoadOptionsFunctions) {
-    return loadPicklist.call(this, PICKLIST_PATHS.companyClassifications2);
-  },
-  getCompanyClassifications3(this: ILoadOptionsFunctions) {
-    return loadPicklist.call(this, PICKLIST_PATHS.companyClassifications3);
-  },
-  getTerritories(this: ILoadOptionsFunctions) {
-    return loadPicklist.call(this, PICKLIST_PATHS.territories);
-  },
+  getAccountCategories: createPicklistLoader(PICKLIST_PATHS.accountCategories),
+  getContactSources: createPicklistLoader(PICKLIST_PATHS.contactSources),
+  getEmployeesNumbers: createPicklistLoader(PICKLIST_PATHS.employeesNumbers),
+  getLegalForms: createPicklistLoader(PICKLIST_PATHS.legalForms),
+  getPaymentTerms: createPicklistLoader(PICKLIST_PATHS.paymentTerms),
+  getCompanyTurnovers: createPicklistLoader(PICKLIST_PATHS.companyTurnovers),
+  getEconomyActivities: createPicklistLoader(PICKLIST_PATHS.economyActivities),
+  getCompanyClassifications1: createPicklistLoader(PICKLIST_PATHS.companyClassifications1),
+  getCompanyClassifications2: createPicklistLoader(PICKLIST_PATHS.companyClassifications2),
+  getCompanyClassifications3: createPicklistLoader(PICKLIST_PATHS.companyClassifications3),
+  getTerritories: createPicklistLoader(PICKLIST_PATHS.territories),
 };
 
 // ---------------------------------------------------------------------------

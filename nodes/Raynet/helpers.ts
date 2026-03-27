@@ -10,7 +10,7 @@ import type { IExecuteFunctions, ILoadOptionsFunctions, INodeProperties, INodePr
 
 /**
  * Generates the base URL for the Raynet API based on the provided credentials.
- * @param credentials 
+ * @param credentials
  * @returns The base URL for the Raynet API
  */
 export function getBaseUrl(credentials: { server?: string }): string {
@@ -20,7 +20,7 @@ export function getBaseUrl(credentials: { server?: string }): string {
 
 /**
  * Generates the authentication headers for the Raynet API based on the provided credentials.
- * @param credentials 
+ * @param credentials
  * @returns Generated headers including Authorization and X-Instance-Name
  */
 export function getAuthHeaders(credentials: { username?: string; apiKey?: string; instanceName?: string }): Record<string, string> {
@@ -104,7 +104,6 @@ export async function loadSecurityLevels(this: ILoadOptionsFunctions): Promise<I
 
 /**
  * Loads all users from the Raynet API and maps them to INodePropertyOptions, which can be used in owner fields across multiple entities.
- * @param this 
  * @returns A promise resolving to an array of INodePropertyOptions representing users
  */
 export async function loadOwners(this: ILoadOptionsFunctions): Promise<INodePropertyOptions[]> {
@@ -226,4 +225,44 @@ export interface EntityConfig {
   idParam: string;
   buildBody: (ctx: IExecuteFunctions, op: 'create' | 'update') => Record<string, unknown>;
   getManyExtraQs?: (ctx: IExecuteFunctions) => Record<string, string | number | boolean | undefined>;
+}
+
+
+/**
+ * Standard set of operations across all entities, plus some extra ones for specific entities (e.g. lock/unlock for companies and contacts).
+ */
+export enum OperationType {
+  CREATE = 'create',
+  UPDATE = 'update',
+  GET_MANY = 'getMany',
+  GET = 'get',
+  DELETE = 'delete',
+  ADD_TAG = 'addTag',
+  DELETE_TAG = 'deleteTag',
+  LOCK = 'lock',
+  UNLOCK = 'unlock',
+  INVALIDATE = 'invalidate',
+  RENEW_VALIDITY = 'renewValidity',
+}
+
+/**
+ * Converts a string to an OperationType, throwing an error if it's not valid.
+ * Useful for strings coming from node parameters that need to be mapped to the enum.
+ * @param s The string to convert
+ * @returns Either the corresponding OperationType or an error if the string is not a valid operation type
+ */
+export function stringToOperationType(s: string): OperationType {
+  if (!Object.values(OperationType).includes(s as OperationType)) throw new Error(`Invalid operation type: ${s}`);
+  return s as OperationType;
+}
+
+/**
+ * Generates a function to load picklists for a specific API path, which can be used in the options of node parameters.
+ * @param path The API endpoint for the picklist, e.g. '/securityLevel/'
+ * @returns A function that can be used in the options of node parameters to load the picklist options from the API
+ */
+export function createPicklistLoader(path: string) {
+  return function (this: ILoadOptionsFunctions): Promise<INodePropertyOptions[]> {
+    return loadPicklist.call(this, path);
+  };
 }
