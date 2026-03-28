@@ -9,6 +9,7 @@ import { raynetRequest, getListParams, loadOwners, loadSecurityLevels, stringToO
 
 import { getAccountProperties, accountLoadOptions, accountConfig } from './account';
 import { getPersonProperties, personLoadOptions, personConfig } from './person';
+import { getDealProperties, dealLoadOptions, dealConfig } from './deal';
 
 // ---------------------------------------------------------------------------
 // Resources & entity registry
@@ -16,11 +17,13 @@ import { getPersonProperties, personLoadOptions, personConfig } from './person';
 
 const RESOURCE_OPTIONS = [
   { name: 'Account', value: 'account', description: 'Contact – account (company or individual)' },
+  { name: 'Deal', value: 'deal', description: 'Business case / deal' },
   { name: 'Person', value: 'person', description: 'Contact – person (individual contact)' },
 ];
 
 const ENTITY_MAP: Record<string, EntityConfig> = {
   account: accountConfig,
+  deal: dealConfig,
   person: personConfig,
 };
 
@@ -29,6 +32,7 @@ const allLoadOptions: Record<string, (this: ILoadOptionsFunctions) => Promise<IN
   getSecurityLevels: loadSecurityLevels,
   ...accountLoadOptions,
   ...personLoadOptions,
+  ...dealLoadOptions,
 };
 
 // ---------------------------------------------------------------------------
@@ -59,6 +63,7 @@ export class Raynet implements INodeType {
         options: RESOURCE_OPTIONS,
       },
       ...getAccountProperties(),
+      ...getDealProperties(),
       ...getPersonProperties(),
     ],
 		usableAsTool: true,
@@ -92,7 +97,11 @@ export class Raynet implements INodeType {
     }
 
     // ----- Single-item operations -----
-    const iterations = operation === OperationType.CREATE ? 1 : items.length;
+    // GET and CREATE always run once regardless of input item count.
+    // UPDATE, DELETE, tags, lifecycle, and item operations run once per input item
+    // so expressions like {{ $json.id }} can be used to process a batch.
+    const singleRunOps = new Set<OperationType>([OperationType.CREATE, OperationType.GET]);
+    const iterations = singleRunOps.has(operation) ? 1 : items.length;
 
     const postActions: Record<string, string> = {
       [OperationType.LOCK]: 'lock',
@@ -124,7 +133,9 @@ export class Raynet implements INodeType {
           case OperationType.GET: {
             id = this.getNodeParameter(config.idParam, i) as number;
             const getRes = (await raynetRequest.call(this, 'GET', `${config.singlePath}${id}/`)) as { data?: unknown };
-            returnData.push({ json: (getRes?.data as IDataObject) ?? {}, pairedItem: { item: i } });
+            const raw = getRes?.data;
+            const record = Array.isArray(raw) ? ((raw[0] ?? {}) as IDataObject) : ((raw ?? {}) as IDataObject);
+            returnData.push({ json: record, pairedItem: { item: i } });
             break;
           }
 
@@ -147,6 +158,31 @@ export class Raynet implements INodeType {
             await raynetRequest.call(this, 'DELETE', `${config.singlePath}${id}/tag`, { tag });
             returnData.push({ json: { id, tag, success: true } as IDataObject, pairedItem: { item: i } });
             break;
+
+          case OperationType.ADD_ITEM: {
+            id = this.getNodeParameter(config.idParam, i) as number;
+            const addBody = config.buildAddItemBody!(this, i);
+            await raynetRequest.call(this, 'PUT', `${config.singlePath}${id}/item`, addBody);
+            returnData.push({ json: { dealId: id, success: true } as IDataObject, pairedItem: { item: i } });
+            break;
+          }
+
+          case OperationType.MODIFY_ITEM: {
+            id = this.getNodeParameter(config.idParam, i) as number;
+            const itemId = this.getNodeParameter(config.itemIdParam!, i) as number;
+            const modifyBody = config.buildModifyItemBody!(this, i);
+            await raynetRequest.call(this, 'POST', `${config.singlePath}${id}/item/${itemId}/`, modifyBody);
+            returnData.push({ json: { dealId: id, itemId, success: true } as IDataObject, pairedItem: { item: i } });
+            break;
+          }
+
+          case OperationType.DELETE_ITEM: {
+            id = this.getNodeParameter(config.idParam, i) as number;
+            const itemId = this.getNodeParameter(config.itemIdParam!, i) as number;
+            await raynetRequest.call(this, 'DELETE', `${config.singlePath}${id}/item/${itemId}/`);
+            returnData.push({ json: { dealId: id, itemId, success: true } as IDataObject, pairedItem: { item: i } });
+            break;
+          }
 
           default:
             // Post-only actions (lock/unlock, invalidate/renew validity)

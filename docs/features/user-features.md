@@ -10,7 +10,7 @@ last_reviewed: 2026-03-28
 
 ## Purpose and Product Scope
 
-The **Raynet CRM** n8n node lets users read and manage CRM data from inside any n8n workflow without writing custom API code. It exposes the two core Raynet CRM contact entities — **Accounts** and **Persons** — with full CRUD, lifecycle management, and tagging operations.
+The **Raynet CRM** n8n node lets users read and manage CRM data from inside any n8n workflow without writing custom API code. It exposes three core Raynet CRM entities — **Accounts**, **Persons**, and **Deals** — with full CRUD, lifecycle management, tagging, and (for Deals) item management operations.
 
 All picklist fields (categories, classifications, owners, security levels, phone types, etc.) are populated dynamically at runtime from the user's own Raynet instance, so dropdown options always reflect the actual CRM configuration.
 
@@ -78,6 +78,38 @@ Then restart n8n. The **Raynet CRM** node will appear in the node palette.
 | Renew Validity | Restore a previously invalidated account | Account |
 | Add Tag | Label an account with a tag | Account, Tag |
 | Remove Tag | Remove a tag from an account | Account, Tag |
+
+---
+
+### Deal (business case)
+
+**User outcomes:** Automate deal creation from inbound leads, quotes, or external pipelines. Track deal progress through phases. Manage deal items (products/services) programmatically.
+
+**Behavior:** Manages business case / deal records in Raynet CRM. Supports full CRUD, lifecycle management, and tagging. Deals are linked to an Account (required) and optionally to a Person and a Project. Deal items can be added, updated, and removed individually.
+
+**Business constraints:**
+- Name and Account ID are required to create a deal.
+- Locked deals cannot be modified until unlocked.
+- Invalidated deals can be restored with Renew Validity.
+- Tags are additive — Add Tag and Remove Tag operate on individual tags.
+- When adding an item, either a product ID, product code, or item name must be provided.
+
+| Capability | User Value | Key Domain Entities |
+|---|---|---|
+| Create | Add a new deal linked to an account | Deal, Account |
+| Update | Modify any field on an existing deal | Deal |
+| Get | Retrieve full deal detail for downstream processing | Deal |
+| Get Many | List, search, filter, and paginate deals | Deal |
+| Delete | Remove a deal record | Deal |
+| Lock | Prevent further changes to a deal | Deal |
+| Unlock | Re-enable editing on a locked deal | Deal |
+| Invalidate | Mark a deal as invalid | Deal |
+| Renew Validity | Restore a previously invalidated deal | Deal |
+| Add Tag | Label a deal with a tag | Deal, Tag |
+| Remove Tag | Remove a tag from a deal | Deal, Tag |
+| Add Item | Add a product or service line item to a deal | Deal, Item |
+| Modify Item | Update a line item in a deal | Deal, Item |
+| Delete Item | Remove a line item from a deal | Deal, Item |
 
 ---
 

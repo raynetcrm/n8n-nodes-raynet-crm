@@ -32,6 +32,10 @@ This document covers component relationships and dependency rules. It does not c
 | **account/AccountProperties.ts** | Account UI property definitions (`INodeProperties[]`) |
 | **account/AccountBody.ts** | Account request body builder (`buildAccountBody`) |
 | **account/AccountLoadOptions.ts** | Account dynamic picklist loaders (`accountLoadOptions` object) |
+| **deal/index.ts** | `EntityConfig` for the Deal resource — exports `dealConfig`, `getDealProperties`, `dealLoadOptions` |
+| **deal/DealProperties.ts** | Deal UI property definitions (`INodeProperties[]`) |
+| **deal/DealBody.ts** | Deal request body builders (`buildDealBody`, `buildAddItemBody`, `buildModifyItemBody`) |
+| **deal/DealLoadOptions.ts** | Deal dynamic picklist loaders (`dealLoadOptions` object) |
 | **person/index.ts** | `EntityConfig` for the Person resource — exports `personConfig`, `getPersonProperties`, `personLoadOptions` |
 | **person/PersonProperties.ts** | Person UI property definitions (`INodeProperties[]`) |
 | **person/PersonBody.ts** | Person request body builder (`buildPersonBody`) |
@@ -55,6 +59,11 @@ Raynet.node.ts              ← dispatches by resource + operation
     │       ├── AccountBody.ts         → buildAccountBody() → request payload
     │       └── AccountLoadOptions.ts  → accountLoadOptions → picklist population
     │
+    ├── deal/index.ts       ← dealConfig (EntityConfig)
+    │       ├── DealProperties.ts      → n8n UI (INodeProperties[])
+    │       ├── DealBody.ts            → buildDealBody() / buildAddItemBody() / buildModifyItemBody() → request payload
+    │       └── DealLoadOptions.ts     → dealLoadOptions → picklist population
+    │
     ├── person/index.ts     ← personConfig (EntityConfig)
     │       ├── PersonProperties.ts    → n8n UI (INodeProperties[])
     │       ├── PersonBody.ts          → buildPersonBody() → request payload
@@ -76,8 +85,8 @@ Raynet.node.ts              ← dispatches by resource + operation
 
 ### Allowed
 
-- `Raynet.node.ts` → `account/index.ts`, `person/index.ts`, `helpers.ts`
-- `account/*.ts`, `person/*.ts` → `helpers.ts`
+- `Raynet.node.ts` → `account/index.ts`, `deal/index.ts`, `person/index.ts`, `helpers.ts`
+- `account/*.ts`, `deal/*.ts`, `person/*.ts` → `helpers.ts`
 - All source files → `n8n-workflow` types (interfaces, enums)
 - `helpers.ts` → n8n `IExecuteFunctions` / `ILoadOptionsFunctions` for HTTP and credential access
 

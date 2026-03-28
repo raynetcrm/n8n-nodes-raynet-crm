@@ -67,6 +67,107 @@ Supports any account field as a filter. Available operators: Equals, Not equals,
 
 ---
 
+## Deal (business case)
+
+API endpoint: `GET|PUT|POST|DELETE /api/v2/businessCase/`
+
+| Operation        | Description |
+|------------------|-------------|
+| **Create**       | Create a new deal linked to an account |
+| **Update**       | Update any field on an existing deal |
+| **Get**          | Retrieve full deal detail by ID |
+| **Get Many**     | List deals with sorting, pagination, full-text search, field filters, and status / product filters |
+| **Delete**       | Delete a deal record |
+| **Lock**         | Lock a deal to prevent further changes |
+| **Unlock**       | Unlock a previously locked deal |
+| **Invalidate**   | Mark a deal as invalid |
+| **Renew Validity** | Restore a previously invalidated deal |
+| **Add Tag**      | Add a tag to a deal |
+| **Remove Tag**   | Remove a tag from a deal |
+| **Add Item**     | Add a product / service line item to a deal |
+| **Modify Item**  | Update a line item in a deal |
+| **Delete Item**  | Remove a line item from a deal |
+
+### Required fields (Create)
+
+| Field | Type | Description |
+|-------|------|-------------|
+| Name | string | Deal subject / title |
+| Account ID | number | ID of the account this deal belongs to |
+
+### Optional fields (Create & Update)
+
+| Field | Description |
+|-------|-------------|
+| Owner | User responsible for the deal (loaded from Raynet) |
+| Security Level | Access control level (loaded from Raynet) |
+| Contact Person ID | ID of a related person (contact) |
+| Project ID | ID of a related project |
+| Final Price | Total deal value |
+| Estimated Costs | Estimated cost figure |
+| Probability (%) | Win probability, 0–100 |
+| Open From | Date the deal was opened (validFrom) |
+| Note | Free-text description |
+| Currency | Deal currency (loaded from Raynet) |
+| Exchange Rate | Rate for conversion to CRM default currency |
+| Contact Source | How the deal was sourced (loaded from Raynet) |
+| Category | Deal category (loaded from Raynet) |
+| Phase | Business case phase / stage (loaded from Raynet) |
+| Classification 1 / 2 / 3 | Three-level classification (loaded from Raynet) |
+| Tags | Comma-separated list of tags |
+
+### Update-only fields
+
+| Field | Description |
+|-------|-------------|
+| Name | Deal name (not required in update) |
+| Account ID | Re-link to a different account |
+| Closed Date | Date the deal was closed (validTill) |
+
+### Get Many — filters
+
+Supports field filters with operators (Equals, Not equals, Like, In, Greater than, etc.) on: Name, Account ID, Valid From, Valid Till, Scheduled End, Phase ID, Deal Type ID, ID, Created At, Updated At, Last Modified At.
+
+Additional filter parameters:
+
+| Parameter | Description |
+|-----------|-------------|
+| Status | Filter by deal status: Active, Won, Lost, Cancelled |
+| Product Category ID | Filter by product category |
+| Product Line ID | Filter by product line |
+
+### Add Item — fields
+
+| Field | Description |
+|-------|-------------|
+| Name | Item name (required if no product ID or code) |
+| Product ID | Raynet product ID |
+| Product Code | Product lookup by code |
+| Price List ID | Limit product search to a specific price list |
+| Selling Price | Price per unit |
+| Tax (%) | Tax rate |
+| Quantity | Number of units |
+| Discount (%) | Discount percentage |
+| Cost per Piece | Internal cost |
+| Unit | Unit of measure |
+| Note | Item description |
+
+### Modify Item — fields
+
+| Field | Description |
+|-------|-------------|
+| Price List Item ID | Required to identify the price list item |
+| Name | Item name |
+| Selling Price | Price per unit |
+| Tax (%) | Tax rate |
+| Quantity | Number of units |
+| Discount (%) | Discount percentage |
+| Cost per Piece | Internal cost |
+| Unit | Unit of measure |
+| Note | Item description |
+
+---
+
 ## Person (individual contact)
 
 API endpoint: `GET|PUT|POST|DELETE /api/v2/person/`

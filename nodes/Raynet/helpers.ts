@@ -225,6 +225,12 @@ export interface EntityConfig {
   idParam: string;
   buildBody: (ctx: IExecuteFunctions, op: 'create' | 'update') => Record<string, unknown>;
   getManyExtraQs?: (ctx: IExecuteFunctions) => Record<string, string | number | boolean | undefined>;
+  /** Parameter name holding the sub-resource item ID (e.g. 'itemId') */
+  itemIdParam?: string;
+  /** Body builder for Add Item sub-operation */
+  buildAddItemBody?: (ctx: IExecuteFunctions, i: number) => Record<string, unknown>;
+  /** Body builder for Modify Item sub-operation */
+  buildModifyItemBody?: (ctx: IExecuteFunctions, i: number) => Record<string, unknown>;
 }
 
 
@@ -243,6 +249,9 @@ export enum OperationType {
   UNLOCK = 'unlock',
   INVALIDATE = 'invalidate',
   RENEW_VALIDITY = 'renewValidity',
+  ADD_ITEM = 'addItem',
+  MODIFY_ITEM = 'modifyItem',
+  DELETE_ITEM = 'deleteItem',
 }
 
 /**
