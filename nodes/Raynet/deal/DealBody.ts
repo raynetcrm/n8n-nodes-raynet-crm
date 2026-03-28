@@ -1,6 +1,8 @@
 import type { IExecuteFunctions } from 'n8n-workflow';
 import { processCommonField } from '../helpers';
 
+const DATE_FIELDS = new Set(['validFrom', 'validTill', 'scheduledEnd']);
+
 export function buildDealBody(ctx: IExecuteFunctions, operation: 'create' | 'update'): Record<string, unknown> {
   const body: Record<string, unknown> = {};
 
@@ -15,6 +17,10 @@ export function buildDealBody(ctx: IExecuteFunctions, operation: 'create' | 'upd
   for (const [key, value] of Object.entries(additional)) {
     if (value === undefined || value === null || value === '') continue;
     if (processCommonField(body, key, value)) continue;
+    if (DATE_FIELDS.has(key) && typeof value === 'string') {
+      body[key] = value.substring(0, 10);
+      continue;
+    }
     body[key] = value;
   }
 
