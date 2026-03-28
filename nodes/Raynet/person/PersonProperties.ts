@@ -153,12 +153,11 @@ const UPDATE_OPTIONAL_FIELDS: INodeProperties[] = [{ displayName: 'Last Name', n
 const op = (operations: OperationType | OperationType[]) => showOptionsForOp(operations, 'person');
 
 // ---------------------------------------------------------------------------
-// UI properties
+// Per-operation property helpers
 // ---------------------------------------------------------------------------
 
-export function getPersonProperties(): INodeProperties[] {
+function getOperationSelector(): INodeProperties[] {
   return [
-    // Operation selector
     {
       displayName: 'Operation',
       name: 'operation',
@@ -180,11 +179,12 @@ export function getPersonProperties(): INodeProperties[] {
         { name: 'Remove Tag', value: 'deleteTag', description: 'Remove a tag from a contact' },
       ],
     },
+  ];
+}
 
-    // Create – required
+function getCreateProperties(): INodeProperties[] {
+  return [
     { displayName: 'Last Name', name: 'lastName', type: 'string', required: true, default: '', displayOptions: op([OperationType.CREATE]) },
-
-    // Create – optional
     {
       displayName: 'Additional Fields',
       name: 'additionalFields',
@@ -194,11 +194,12 @@ export function getPersonProperties(): INodeProperties[] {
       displayOptions: op(OperationType.CREATE),
       options: SHARED_OPTIONAL_FIELDS,
     },
+  ];
+}
 
-    // Update – required ID
+function getUpdateProperties(): INodeProperties[] {
+  return [
     { displayName: 'Contact ID', name: 'personId', type: 'number', required: true, default: 0, displayOptions: op([OperationType.UPDATE]) },
-
-    // Update – optional fields
     {
       displayName: 'Fields to Update',
       name: 'updateAdditionalFields',
@@ -208,11 +209,15 @@ export function getPersonProperties(): INodeProperties[] {
       displayOptions: op([OperationType.UPDATE]),
       options: UPDATE_OPTIONAL_FIELDS,
     },
+  ];
+}
 
-    // Get
-    { displayName: 'Contact ID', name: 'personId', type: 'number', required: true, default: 0, displayOptions: op([OperationType.GET]) },
+function getGetProperties(): INodeProperties[] {
+  return [{ displayName: 'Contact ID', name: 'personId', type: 'number', required: true, default: 0, displayOptions: op([OperationType.GET]) }];
+}
 
-    // Get Many
+function getGetManyProperties(): INodeProperties[] {
+  return [
     {
       displayName: 'Return All',
       name: 'returnAll',
@@ -307,11 +312,15 @@ export function getPersonProperties(): INodeProperties[] {
       description: "Pass 'rowInfo' to return only status metadata",
       displayOptions: op([OperationType.GET_MANY]),
     },
+  ];
+}
 
-    // Delete
-    { displayName: 'Contact ID', name: 'personId', type: 'number', required: true, default: 0, displayOptions: op([OperationType.DELETE]) },
+function getDeleteProperties(): INodeProperties[] {
+  return [{ displayName: 'Contact ID', name: 'personId', type: 'number', required: true, default: 0, displayOptions: op([OperationType.DELETE]) }];
+}
 
-    // Lock / Unlock / Invalidate / Renew Validity
+function getLifecycleProperties(): INodeProperties[] {
+  return [
     {
       displayName: 'Contact ID',
       name: 'personId',
@@ -320,13 +329,31 @@ export function getPersonProperties(): INodeProperties[] {
       default: 0,
       displayOptions: op([OperationType.LOCK, OperationType.UNLOCK, OperationType.INVALIDATE, OperationType.RENEW_VALIDITY]),
     },
+  ];
+}
 
-    // Add Tag
+function getTagProperties(): INodeProperties[] {
+  return [
     { displayName: 'Contact ID', name: 'personId', type: 'number', required: true, default: 0, displayOptions: op([OperationType.ADD_TAG]) },
     { displayName: 'Tag', name: 'tag', type: 'string', required: true, default: '', displayOptions: op([OperationType.ADD_TAG]) },
-
-    // Remove Tag
     { displayName: 'Contact ID', name: 'personId', type: 'number', required: true, default: 0, displayOptions: op([OperationType.DELETE_TAG]) },
     { displayName: 'Tag', name: 'tag', type: 'string', required: true, default: '', displayOptions: op([OperationType.DELETE_TAG]) },
+  ];
+}
+
+// ---------------------------------------------------------------------------
+// UI properties
+// ---------------------------------------------------------------------------
+
+export function getPersonProperties(): INodeProperties[] {
+  return [
+    ...getOperationSelector(),
+    ...getCreateProperties(),
+    ...getUpdateProperties(),
+    ...getGetProperties(),
+    ...getGetManyProperties(),
+    ...getDeleteProperties(),
+    ...getLifecycleProperties(),
+    ...getTagProperties(),
   ];
 }

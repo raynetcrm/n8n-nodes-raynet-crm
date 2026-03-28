@@ -141,12 +141,11 @@ const UPDATE_OPTIONAL_FIELDS: INodeProperties[] = [
 const op = (operations: OperationType | OperationType[]) => showOptionsForOp(operations, 'account');
 
 // ---------------------------------------------------------------------------
-// UI properties
+// Per-operation property helpers
 // ---------------------------------------------------------------------------
 
-export function getAccountProperties(): INodeProperties[] {
+function getOperationSelector(): INodeProperties[] {
   return [
-    // Operation selector
     {
       displayName: 'Operation',
       name: 'operation',
@@ -168,8 +167,11 @@ export function getAccountProperties(): INodeProperties[] {
         { name: 'Remove Tag', value: 'deleteTag', description: 'Remove a tag from an account' },
       ],
     },
+  ];
+}
 
-    // Create – required fields
+function getCreateProperties(): INodeProperties[] {
+  return [
     { displayName: 'Name', name: 'name', type: 'string', required: true, default: '', displayOptions: op(OperationType.CREATE) },
     { displayName: 'Rating', name: 'rating', type: 'options', required: true, default: 'A', options: RATING_OPTIONS, displayOptions: op(OperationType.CREATE) },
     {
@@ -190,8 +192,6 @@ export function getAccountProperties(): INodeProperties[] {
       options: ROLE_OPTIONS,
       displayOptions: op(OperationType.CREATE),
     },
-
-    // Create – optional fields
     {
       displayName: 'Additional Fields',
       name: 'additionalFields',
@@ -201,11 +201,12 @@ export function getAccountProperties(): INodeProperties[] {
       displayOptions: op(OperationType.CREATE),
       options: CREATE_OPTIONAL_FIELDS,
     },
+  ];
+}
 
-    // Update – required ID
+function getUpdateProperties(): INodeProperties[] {
+  return [
     { displayName: 'Account ID', name: 'accountId', type: 'number', required: true, default: 0, displayOptions: op(OperationType.UPDATE) },
-
-    // Update – optional fields
     {
       displayName: 'Fields to Update',
       name: 'updateAdditionalFields',
@@ -215,11 +216,15 @@ export function getAccountProperties(): INodeProperties[] {
       displayOptions: op(OperationType.UPDATE),
       options: UPDATE_OPTIONAL_FIELDS,
     },
+  ];
+}
 
-    // Get
-    { displayName: 'Account ID', name: 'accountId', type: 'number', required: true, default: 0, displayOptions: op(OperationType.GET) },
+function getGetProperties(): INodeProperties[] {
+  return [{ displayName: 'Account ID', name: 'accountId', type: 'number', required: true, default: 0, displayOptions: op(OperationType.GET) }];
+}
 
-    // Get Many
+function getGetManyProperties(): INodeProperties[] {
+  return [
     {
       displayName: 'Return All',
       name: 'returnAll',
@@ -305,9 +310,15 @@ export function getAccountProperties(): INodeProperties[] {
       description: "Pass 'rowInfo' to return only status metadata",
       displayOptions: op(OperationType.GET_MANY),
     },
+  ];
+}
 
-    // Delete / Lock / Unlock / Invalidate / Renew Validity – just need an ID
-    { displayName: 'Account ID', name: 'accountId', type: 'number', required: true, default: 0, displayOptions: op(OperationType.DELETE) },
+function getDeleteProperties(): INodeProperties[] {
+  return [{ displayName: 'Account ID', name: 'accountId', type: 'number', required: true, default: 0, displayOptions: op(OperationType.DELETE) }];
+}
+
+function getLifecycleProperties(): INodeProperties[] {
+  return [
     {
       displayName: 'Account ID',
       name: 'accountId',
@@ -316,13 +327,31 @@ export function getAccountProperties(): INodeProperties[] {
       default: 0,
       displayOptions: op([OperationType.LOCK, OperationType.UNLOCK, OperationType.INVALIDATE, OperationType.RENEW_VALIDITY]),
     },
+  ];
+}
 
-    // Add Tag
+function getTagProperties(): INodeProperties[] {
+  return [
     { displayName: 'Account ID', name: 'accountId', type: 'number', required: true, default: 0, displayOptions: op(OperationType.ADD_TAG) },
     { displayName: 'Tag', name: 'tag', type: 'string', required: true, default: '', displayOptions: op(OperationType.ADD_TAG) },
-
-    // Remove Tag
     { displayName: 'Account ID', name: 'accountId', type: 'number', required: true, default: 0, displayOptions: op(OperationType.DELETE_TAG) },
     { displayName: 'Tag', name: 'tag', type: 'string', required: true, default: '', displayOptions: op(OperationType.DELETE_TAG) },
+  ];
+}
+
+// ---------------------------------------------------------------------------
+// UI properties
+// ---------------------------------------------------------------------------
+
+export function getAccountProperties(): INodeProperties[] {
+  return [
+    ...getOperationSelector(),
+    ...getCreateProperties(),
+    ...getUpdateProperties(),
+    ...getGetProperties(),
+    ...getGetManyProperties(),
+    ...getDeleteProperties(),
+    ...getLifecycleProperties(),
+    ...getTagProperties(),
   ];
 }
