@@ -15,6 +15,10 @@ This index is the entry point for all documentation in this repository. Use the 
 | Topic | Canonical doc | Source of truth |
 |-------|---------------|-----------------|
 | Product capabilities, installation, credentials | [docs/features/user-features.md](docs/features/user-features.md) | Yes |
+| Account capabilities | [docs/features/account.md](docs/features/account.md) | Yes |
+| Deal capabilities | [docs/features/deal.md](docs/features/deal.md) | Yes |
+| Quote capabilities | [docs/features/quote.md](docs/features/quote.md) | Yes |
+| Person capabilities | [docs/features/person.md](docs/features/person.md) | Yes |
 | Architecture and component boundaries | [docs/system-overview.md](docs/system-overview.md) | Yes |
 | Raynet CRM API integration contract | [docs/integrations/raynet-api.md](docs/integrations/raynet-api.md) | No (mirrors API) |
 | Full resource & field reference | [docs/resources.md](docs/resources.md) | Yes |
@@ -38,7 +42,7 @@ This index is the entry point for all documentation in this repository. Use the 
 
 ## Change Rules
 
-- `docs/features/user-features.md` is the source of truth for what the node currently supports. Update it when adding or removing operations.
+- `docs/features/user-features.md` is the index for setup and common behaviour. `docs/features/<entity>.md` files are the source of truth for per-entity capabilities. Update the relevant entity file when adding or removing operations.
 - `docs/system-overview.md` is the source of truth for component boundaries. Update it when the node architecture changes.
 - `docs/resources.md` is the source of truth for field-level detail. Update it when fields, operations, or filters change.
 - `docs/integrations/raynet-api.md` mirrors the external API contract. Update it when Raynet API behaviour or supported endpoints change.
