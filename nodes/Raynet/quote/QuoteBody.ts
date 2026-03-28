@@ -1,15 +1,13 @@
 import type { IExecuteFunctions } from 'n8n-workflow';
 import { processCommonField } from '../helpers';
 
-const ID_REF_FIELDS = ['company', 'person', 'businessCase', 'category', 'offerStatus'];
-
 export function buildQuoteBody(ctx: IExecuteFunctions, operation: 'create' | 'update'): Record<string, unknown> {
   const body: Record<string, unknown> = {};
 
   if (operation === 'create') {
     body.name = ctx.getNodeParameter('name', 0) as string;
-    body.company = { id: ctx.getNodeParameter('company', 0) as number };
-    body.businessCase = { id: ctx.getNodeParameter('businessCase', 0) as number };
+    body.company = ctx.getNodeParameter('company', 0) as number;
+    body.businessCase = ctx.getNodeParameter('businessCase', 0) as number;
   }
 
   const paramName = operation === 'update' ? 'updateAdditionalFields' : 'additionalFields';
@@ -18,10 +16,6 @@ export function buildQuoteBody(ctx: IExecuteFunctions, operation: 'create' | 'up
   for (const [key, value] of Object.entries(additional)) {
     if (value === undefined || value === null || value === '') continue;
     if (processCommonField(body, key, value)) continue;
-    if (ID_REF_FIELDS.includes(key)) {
-      body[key] = { id: value };
-      continue;
-    }
     body[key] = value;
   }
 
