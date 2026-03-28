@@ -2,7 +2,7 @@
  * Shared helpers for Raynet CRM node.
  */
 
-import type { IExecuteFunctions, ILoadOptionsFunctions, INodePropertyOptions } from 'n8n-workflow';
+import type { IExecuteFunctions, IHttpRequestMethods, ILoadOptionsFunctions, INodePropertyOptions } from 'n8n-workflow';
 
 // ---------------------------------------------------------------------------
 // Auth & request
@@ -50,28 +50,21 @@ export async function raynetRequest(
 ): Promise<unknown> {
   const credentials = await this.getCredentials('raynetApi');
   const url = `${getBaseUrl(credentials as { server?: string })}${path}`;
-  const headers = getAuthHeaders(credentials as { username?: string; apiKey?: string; instanceName?: string });
 
-  const options: {
-    url: string;
-    method: typeof method;
-    headers: Record<string, string>;
-    body?: object;
-    qs?: Record<string, string | number | boolean>;
-    json: boolean;
-  } = { url, method, headers, json: true };
-
-  if (body && method !== 'GET') options.body = body;
-
+  const cleaned: Record<string, string | number | boolean> = {};
   if (qs) {
-    const cleaned: Record<string, string | number | boolean> = {};
     for (const [k, v] of Object.entries(qs)) {
       if (v !== undefined && v !== '') cleaned[k] = v as string | number | boolean;
     }
-    if (Object.keys(cleaned).length > 0) options.qs = cleaned;
   }
 
-  const res = await this.helpers.httpRequest(options);
+  const res = await this.helpers.httpRequest({
+    url,
+    method: method as IHttpRequestMethods,
+    headers: getAuthHeaders(credentials as { username?: string; apiKey?: string; instanceName?: string }),
+    body: body && method !== 'GET' ? JSON.stringify(body) : undefined,
+    qs: Object.keys(cleaned).length > 0 ? cleaned : undefined,
+  });
   return typeof res === 'object' && res !== null ? res : {};
 }
 
@@ -90,7 +83,6 @@ export async function loadPicklist(this: ILoadOptionsFunctions, path: string): P
   const res = (await this.helpers.httpRequest({
     url: `${getBaseUrl(credentials as { server?: string })}${path}`,
     headers: getAuthHeaders(credentials as { username?: string; apiKey?: string; instanceName?: string }),
-    json: true,
   })) as { data?: Array<{ id: number; code01?: string; value?: string; name?: string }> };
   return (res?.data ?? []).map((p) => ({
     name: p.code01 ?? p.value ?? p.name ?? `ID ${p.id}`,
@@ -111,7 +103,6 @@ export async function loadOwners(this: ILoadOptionsFunctions): Promise<INodeProp
   const res = (await this.helpers.httpRequest({
     url: `${getBaseUrl(credentials as { server?: string })}/person/`,
     headers: getAuthHeaders(credentials as { username?: string; apiKey?: string; instanceName?: string }),
-    json: true,
     qs: { 'userAccount-id[NE]': '', limit: 100, sortColumn: 'lastName', sortDirection: 'ASC' },
   })) as { data?: Array<{ id: number; firstName?: string; lastName?: string; fullName?: string }> };
   return (res?.data ?? []).map((p) => ({

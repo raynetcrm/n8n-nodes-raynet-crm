@@ -16,8 +16,7 @@ export class RaynetApi implements ICredentialType {
     type: 'generic',
     properties: {
       headers: {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        Authorization: '=Basic {{Buffer.from($credentials.username + ":" + $credentials.apiKey).toString("base64")}}' as any,
+        Authorization: '=Basic {{btoa($credentials.username + ":" + $credentials.apiKey)}}',
         'X-Instance-Name': '={{$credentials.instanceName}}',
       },
     },
