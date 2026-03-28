@@ -10,6 +10,7 @@ import { raynetRequest, getListParams, loadOwners, loadSecurityLevels, stringToO
 import { getAccountProperties, accountLoadOptions, accountConfig } from './account';
 import { getPersonProperties, personLoadOptions, personConfig } from './person';
 import { getDealProperties, dealLoadOptions, dealConfig } from './deal';
+import { getQuoteProperties, quoteLoadOptions, quoteConfig } from './quote';
 
 // ---------------------------------------------------------------------------
 // Resources & entity registry
@@ -19,12 +20,14 @@ const RESOURCE_OPTIONS = [
   { name: 'Account', value: 'account', description: 'Contact – account (company or individual)' },
   { name: 'Deal', value: 'deal', description: 'Business case / deal' },
   { name: 'Person', value: 'person', description: 'Contact – person (individual contact)' },
+  { name: 'Quote', value: 'quote', description: 'Quote (offer)' },
 ];
 
 const ENTITY_MAP: Record<string, EntityConfig> = {
   account: accountConfig,
   deal: dealConfig,
   person: personConfig,
+  quote: quoteConfig,
 };
 
 const allLoadOptions: Record<string, (this: ILoadOptionsFunctions) => Promise<INodePropertyOptions[]>> = {
@@ -33,6 +36,7 @@ const allLoadOptions: Record<string, (this: ILoadOptionsFunctions) => Promise<IN
   ...accountLoadOptions,
   ...personLoadOptions,
   ...dealLoadOptions,
+  ...quoteLoadOptions,
 };
 
 // ---------------------------------------------------------------------------
@@ -65,6 +69,7 @@ export class Raynet implements INodeType {
       ...getAccountProperties(),
       ...getDealProperties(),
       ...getPersonProperties(),
+      ...getQuoteProperties(),
     ],
 		usableAsTool: true,
   };

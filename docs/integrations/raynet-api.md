@@ -91,6 +91,20 @@ Credentials are resolved from the n8n credential store at execution time — the
 | Person | `POST` | `/person/{id}/validityRenew` | Renew Validity |
 | Person | `POST` | `/person/{id}/tag` | Add Tag |
 | Person | `DELETE` | `/person/{id}/tag` | Remove Tag |
+| Quote | `PUT` | `/offer/` | Create |
+| Quote | `POST` | `/offer/{id}/` | Update |
+| Quote | `GET` | `/offer/{id}/` | Get |
+| Quote | `GET` | `/offer/` | Get Many (with query params) |
+| Quote | `DELETE` | `/offer/{id}/` | Delete |
+| Quote | `POST` | `/offer/{id}/lock` | Lock |
+| Quote | `POST` | `/offer/{id}/unlock` | Unlock |
+| Quote | `POST` | `/offer/{id}/invalid` | Invalidate |
+| Quote | `POST` | `/offer/{id}/valid` | Renew Validity |
+| Quote | `PUT` | `/offer/{id}/tag` | Add Tag |
+| Quote | `DELETE` | `/offer/{id}/tag` | Remove Tag |
+| Quote | `PUT` | `/offer/{id}/item` | Add Item |
+| Quote | `POST` | `/offer/{id}/item/{itemId}/` | Modify Item |
+| Quote | `DELETE` | `/offer/{id}/item/{itemId}/` | Delete Item |
 
 ### Dynamic Picklist Endpoints
 

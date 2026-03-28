@@ -168,6 +168,104 @@ Additional filter parameters:
 
 ---
 
+## Quote (offer)
+
+API endpoint: `GET|PUT|POST|DELETE /api/v2/offer/`
+
+| Operation | Description |
+|---|---|
+| **Create** | Create a new quote linked to an account and deal |
+| **Update** | Update any field on an existing quote |
+| **Get** | Retrieve full quote detail by ID |
+| **Get Many** | List quotes with sorting, pagination, full-text search, field filters, and status / product filters |
+| **Delete** | Delete a quote record |
+| **Lock** | Lock a quote to prevent further changes |
+| **Unlock** | Unlock a previously locked quote |
+| **Invalidate** | Mark a quote as invalid |
+| **Renew Validity** | Restore a previously invalidated quote |
+| **Add Tag** | Add a tag to a quote |
+| **Remove Tag** | Remove a tag from a quote |
+| **Add Item** | Add a product / service line item to a quote |
+| **Modify Item** | Update a line item in a quote |
+| **Delete Item** | Remove a line item from a quote |
+
+### Required fields (Create)
+
+| Field | Type | Description |
+|---|---|---|
+| Name | string | Quote subject / title |
+| Account ID | number | ID of the account the quote is created for |
+| Deal ID | number | ID of the deal this quote belongs to |
+
+### Optional fields (Create & Update)
+
+| Field | Description |
+|---|---|
+| Owner | User responsible for the quote (loaded from Raynet) |
+| Security Level | Access control level (loaded from Raynet) |
+| Contact Person ID | ID of a related person on the account side |
+| Final Price | Total quote value (totalAmount) |
+| Estimated Costs | Estimated cost figure (estimatedValue) |
+| Open From | Date the quote was opened (validFrom) |
+| Open Till | Date the quote was closed (validTill) |
+| Valid To | Quote expiration date (expirationDate) |
+| Note | Free-text description |
+| Category | Quote category (loaded from Raynet) |
+| Status | Quote status (loaded from Raynet) |
+| Tags | Comma-separated list of tags |
+
+### Update-only fields
+
+| Field | Description |
+|---|---|
+| Name | Quote name (not required in update) |
+| Account ID | Re-link to a different account |
+| Deal ID | Re-link to a different deal |
+
+### Get Many — filters
+
+Supports field filters with operators (Equals, Not equals, Like, In, Greater than, etc.) on: Name, Account ID, Deal ID, Open From, Open Till, Valid To, ID, Created At, Updated At, Last Modified At.
+
+Additional filter parameters:
+
+| Parameter | Description |
+|---|---|
+| Status | Filter by quote status: Active, Won, Lost, Cancelled |
+| Product Category ID | Filter by product category |
+| Product Line ID | Filter by product line |
+
+### Add Item — fields
+
+| Field | Description |
+|---|---|
+| Name | Item name |
+| Product ID | Raynet product ID |
+| Product Code | Product lookup by code |
+| Price List ID | Limit product search to a specific price list |
+| Selling Price | Price per unit |
+| Tax (%) | Tax rate |
+| Quantity | Number of units |
+| Discount (%) | Discount percentage |
+| Cost per Piece | Internal cost |
+| Unit | Unit of measure |
+| Note | Item description |
+
+### Modify Item — fields
+
+| Field | Description |
+|---|---|
+| Price List Item ID | Required to identify the price list item |
+| Name | Item name |
+| Selling Price | Price per unit |
+| Tax (%) | Tax rate |
+| Quantity | Number of units |
+| Discount (%) | Discount percentage |
+| Cost per Piece | Internal cost |
+| Unit | Unit of measure |
+| Note | Item description |
+
+---
+
 ## Person (individual contact)
 
 API endpoint: `GET|PUT|POST|DELETE /api/v2/person/`

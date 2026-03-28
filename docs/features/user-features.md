@@ -10,7 +10,7 @@ last_reviewed: 2026-03-28
 
 ## Purpose and Product Scope
 
-The **Raynet CRM** n8n node lets users read and manage CRM data from inside any n8n workflow without writing custom API code. It exposes three core Raynet CRM entities — **Accounts**, **Persons**, and **Deals** — with full CRUD, lifecycle management, tagging, and (for Deals) item management operations.
+The **Raynet CRM** n8n node lets users read and manage CRM data from inside any n8n workflow without writing custom API code. It exposes four core Raynet CRM entities — **Accounts**, **Persons**, **Deals**, and **Quotes** — with full CRUD, lifecycle management, tagging, and (for Deals and Quotes) item management operations.
 
 All picklist fields (categories, classifications, owners, security levels, phone types, etc.) are populated dynamically at runtime from the user's own Raynet instance, so dropdown options always reflect the actual CRM configuration.
 
@@ -110,6 +110,38 @@ Then restart n8n. The **Raynet CRM** node will appear in the node palette.
 | Add Item | Add a product or service line item to a deal | Deal, Item |
 | Modify Item | Update a line item in a deal | Deal, Item |
 | Delete Item | Remove a line item from a deal | Deal, Item |
+
+---
+
+### Quote (offer)
+
+**User outcomes:** Create quotes tied to deals and accounts from automated workflows. Track quote lifecycle (active → won / lost / cancelled). Manage quote line items programmatically.
+
+**Behavior:** Manages quote (offer) records in Raynet CRM. Supports full CRUD, lifecycle management, tagging, and item sub-operations. Quotes are linked to an Account (required) and a Deal (required).
+
+**Business constraints:**
+- Name, Account ID, and Deal ID are required to create a quote.
+- Locked quotes cannot be modified until unlocked.
+- Invalidated quotes can be restored with Renew Validity.
+- Tags are additive — Add Tag and Remove Tag operate on individual tags.
+- When adding an item, either a product ID, product code, or item name must be provided.
+
+| Capability | User Value | Key Domain Entities |
+|---|---|---|
+| Create | Add a new quote linked to an account and deal | Quote, Account, Deal |
+| Update | Modify any field on an existing quote | Quote |
+| Get | Retrieve full quote detail for downstream processing | Quote |
+| Get Many | List, search, filter, and paginate quotes | Quote |
+| Delete | Remove a quote record | Quote |
+| Lock | Prevent further changes to a quote | Quote |
+| Unlock | Re-enable editing on a locked quote | Quote |
+| Invalidate | Mark a quote as invalid | Quote |
+| Renew Validity | Restore a previously invalidated quote | Quote |
+| Add Tag | Label a quote with a tag | Quote, Tag |
+| Remove Tag | Remove a tag from a quote | Quote, Tag |
+| Add Item | Add a product or service line item to a quote | Quote, Item |
+| Modify Item | Update a line item in a quote | Quote, Item |
+| Delete Item | Remove a line item from a quote | Quote, Item |
 
 ---
 
