@@ -1,163 +1,55 @@
-# n8n-nodes-raynet
+# n8n-nodes-raynet — Documentation Index
 
 A community node package for [n8n](https://n8n.io) that integrates with [Raynet CRM v2](https://app.raynet.cz) REST API.
 
 ---
 
-## Contents
+## Purpose
 
-- [What it does](#what-it-does)
-- [Resources & operations](#resources--operations)
-- [Credentials](#credentials)
-- [Installation](#installation)
-- [Development](#development)
-- [Project structure](#project-structure)
-- [API reference](#api-reference)
+This index is the entry point for all documentation in this repository. Use the canonical sources table below to navigate to authoritative information about each area.
 
 ---
 
-## What it does
+## Canonical Sources
 
-The **Raynet CRM** node lets you read and manage your CRM data from inside any n8n workflow. It covers the two core contact entities — **Accounts** (companies or individuals) and **Persons** (individual contacts) — with full CRUD plus lifecycle and tagging operations.
-
-All dropdown fields (categories, classifications, owners, security levels, phone types, etc.) are populated dynamically at runtime from your Raynet instance, so the options always reflect your actual CRM configuration.
-
----
-
-## Resources & operations
-
-Two resources are implemented: **Account** and **Person**. Each supports 11 operations: Create, Update, Get, Get Many, Delete, Lock, Unlock, Invalidate, Renew Validity, Add Tag, Remove Tag.
-
-See the full field reference: [docs/resources.md](docs/resources.md)
+| Topic | Canonical doc | Source of truth |
+|-------|---------------|-----------------|
+| Product capabilities, installation, credentials | [docs/features/user-features.md](docs/features/user-features.md) | Yes |
+| Architecture and component boundaries | [docs/system-overview.md](docs/system-overview.md) | Yes |
+| Raynet CRM API integration contract | [docs/integrations/raynet-api.md](docs/integrations/raynet-api.md) | No (mirrors API) |
+| Full resource & field reference | [docs/resources.md](docs/resources.md) | Yes |
+| Architecture decision records | [docs/adr/README.md](docs/adr/README.md) | Yes |
+| External Raynet API docs | [Raynet CRM v2 API (EN)](https://app.raynet.cz/api/doc/index-en.html) | External |
 
 ---
 
-## Credentials
+## Reading Order
 
-The node uses a dedicated **Raynet CRM API** credential with the following fields:
+**New users** (installing the node):
+1. [docs/features/user-features.md](docs/features/user-features.md) — what the node does and how to set it up
+2. [docs/resources.md](docs/resources.md) — full field reference for all operations
 
-| Field | Description |
-|-------|-------------|
-| **Username (e-mail)** | E-mail of the user to whom the API key belongs |
-| **API Key** | Generated in Raynet CRM under Settings > API Keys |
-| **Name of instance** | Your instance slug (e.g. `demo` from `https://app.raynet.cz/demo/`) |
-| **Server** | Your Raynet server — one of `app.raynet.cz`, `app.raynetcrm.sk`, `app.raynetcrm.com`, `eu.raynetcrm.com` |
-
-Authentication uses HTTP Basic Auth (`username:apiKey` Base64-encoded) plus the `X-Instance-Name` header required by the Raynet API.
+**Developers** (contributing or extending):
+1. [docs/system-overview.md](docs/system-overview.md) — architecture and component map
+2. [docs/integrations/raynet-api.md](docs/integrations/raynet-api.md) — API runtime contract
+3. [docs/adr/README.md](docs/adr/README.md) — rationale behind key design decisions
 
 ---
 
-## Installation
+## Change Rules
 
-### In a self-hosted n8n instance
-
-1. Navigate to your n8n data directory (typically `~/.n8n`).
-2. Install the package:
-   ```bash
-   npm install /path/to/n8n-nodes-raynet
-   # or, once published to npm:
-   npm install n8n-nodes-raynet
-   ```
-3. Restart n8n. The **Raynet CRM** node will appear in the node palette.
-
-### Via n8n community nodes UI
-
-1. Go to **Settings > Community Nodes**.
-2. Click **Install** and enter `n8n-nodes-raynet`.
-3. Confirm and restart n8n.
+- `docs/features/user-features.md` is the source of truth for what the node currently supports. Update it when adding or removing operations.
+- `docs/system-overview.md` is the source of truth for component boundaries. Update it when the node architecture changes.
+- `docs/resources.md` is the source of truth for field-level detail. Update it when fields, operations, or filters change.
+- `docs/integrations/raynet-api.md` mirrors the external API contract. Update it when Raynet API behaviour or supported endpoints change.
+- ADR records in `docs/adr/` are immutable once accepted. Add a new ADR to supersede an old one.
 
 ---
 
-## Development
+## Related Docs
 
-### Prerequisites
-
-- Node.js >= 18
-- npm
-
-### Setup
-
-```bash
-npm install
-```
-
-### Build
-
-Compiles TypeScript to `dist/`:
-
-```bash
-npm run build
-```
-
-### Watch mode (rebuild on file change)
-
-```bash
-npm run dev
-```
-
-### Lint
-
-```bash
-npm run lint
-
-# Auto-fix
-npm run lint:fix
-```
-
-### Link to a local n8n installation
-
-After building, symlink the package so changes are reflected without reinstalling:
-
-```bash
-# In this project directory
-npm link
-
-# In your n8n directory (e.g. ~/.n8n)
-npm link n8n-nodes-raynet
-```
-
-Then start n8n with custom nodes enabled:
-
-```bash
-N8N_CUSTOM_EXTENSIONS="/path/to/n8n-nodes-raynet" npx n8n start
-```
-
-Or add it to your n8n config file (`~/.n8n/config`):
-
-```json
-{
-  "nodes": {
-    "include": ["/path/to/n8n-nodes-raynet/dist"]
-  }
-}
-```
-
----
-
-## Project structure
-
-```
-n8n-rewrite/
-├── credentials/
-│   └── RaynetApi.credentials.ts   # Credential definition
-├── nodes/
-│   └── Raynet/
-│       ├── Raynet.node.ts         # Main node class – thin operation router
-│       ├── AccountDescription.ts  # Account UI, body builder, loadOptions, entity config
-│       ├── PersonDescription.ts   # Person UI, body builder, loadOptions, entity config
-│       ├── helpers.ts             # Shared: auth, HTTP, picklists, body utilities
-│       └── raynetCrm.svg          # Node icon
-├── docs/
-│   └── resources.md               # Full resource & field reference
-├── dist/                          # Compiled output (generated by npm run build)
-└── package.json
-```
-
-The node follows a **resource + action** pattern with a thin router. `Raynet.node.ts` holds no entity-specific logic — it dispatches to the `EntityConfig` objects exported by each description file. `helpers.ts` provides all utilities shared across entities.
-
----
-
-## API reference
-
-- [Raynet CRM v2 API documentation (EN)](https://app.raynet.cz/api/doc/index-en.html)
-- Supported servers: `app.raynet.cz` · `app.raynetcrm.sk` · `app.raynetcrm.com` · `eu.raynetcrm.com`
+- [docs/features/user-features.md](docs/features/user-features.md)
+- [docs/system-overview.md](docs/system-overview.md)
+- [docs/resources.md](docs/resources.md)
+- [docs/integrations/raynet-api.md](docs/integrations/raynet-api.md)
+- [docs/adr/README.md](docs/adr/README.md)
