@@ -12,6 +12,7 @@ import { getPersonProperties, personLoadOptions, personConfig } from './person';
 import { getDealProperties, dealLoadOptions, dealConfig } from './deal';
 import { getQuoteProperties, quoteLoadOptions, quoteConfig } from './quote';
 import { getSalesOrderProperties, salesOrderLoadOptions, salesOrderConfig } from './salesOrder';
+import { getProjectProperties, projectLoadOptions, projectConfig } from './project';
 
 // ---------------------------------------------------------------------------
 // Resources & entity registry
@@ -22,6 +23,7 @@ const RESOURCE_OPTIONS = [
     { name: 'Deal', value: 'deal', description: 'Business case / deal' },
     { name: 'Person', value: 'person', description: 'Contact – person (individual contact)' },
     { name: 'Quote', value: 'quote', description: 'Quote (offer)' },
+    { name: 'Project', value: 'project', description: 'Project' },
     { name: 'Sales Order', value: 'salesOrder', description: 'Sales order' },
 ];
 
@@ -30,6 +32,7 @@ const ENTITY_MAP: Record<string, EntityConfig> = {
     deal: dealConfig,
     person: personConfig,
     quote: quoteConfig,
+    project: projectConfig,
     salesOrder: salesOrderConfig,
 };
 
@@ -40,6 +43,7 @@ const allLoadOptions: Record<string, (this: ILoadOptionsFunctions) => Promise<IN
     ...personLoadOptions,
     ...dealLoadOptions,
     ...quoteLoadOptions,
+    ...projectLoadOptions,
     ...salesOrderLoadOptions,
 };
 
@@ -74,6 +78,7 @@ export class Raynet implements INodeType {
             ...getDealProperties(),
             ...getPersonProperties(),
             ...getQuoteProperties(),
+            ...getProjectProperties(),
             ...getSalesOrderProperties(),
         ],
         usableAsTool: true,
@@ -222,6 +227,36 @@ export class Raynet implements INodeType {
                             json: { dealId: id, itemId, success: true } as IDataObject,
                             pairedItem: { item: i },
                         });
+                        break;
+                    }
+
+                    case OperationType.ADD_PARTICIPANT: {
+                        id = this.getNodeParameter(config.idParam, i) as number;
+                        const addParticipantBody = config.buildAddParticipantBody!(this, i);
+                        const addParticipantRes = (await raynetRequest.call(this, 'PUT', `${config.singlePath}${id}/${config.participantPath}`, addParticipantBody)) as { data?: unknown[] };
+                        for (const record of addParticipantRes?.data ?? []) {
+                            returnData.push({ json: record as IDataObject, pairedItem: { item: i } });
+                        }
+                        break;
+                    }
+
+                    case OperationType.DELETE_PARTICIPANT: {
+                        id = this.getNodeParameter(config.idParam, i) as number;
+                        const participantId = this.getNodeParameter(config.participantIdParam!, i) as number;
+                        await raynetRequest.call(this, 'DELETE', `${config.singlePath}${id}/${config.participantPath}/${participantId}/`);
+                        returnData.push({
+                            json: { projectId: id, participantId, success: true } as IDataObject,
+                            pairedItem: { item: i },
+                        });
+                        break;
+                    }
+
+                    case OperationType.LIST_PARTICIPANTS: {
+                        id = this.getNodeParameter(config.idParam, i) as number;
+                        const listParticipantsRes = (await raynetRequest.call(this, 'GET', `${config.singlePath}${id}/${config.participantPath}/`)) as { data?: unknown[] };
+                        for (const record of listParticipantsRes?.data ?? []) {
+                            returnData.push({ json: record as IDataObject, pairedItem: { item: i } });
+                        }
                         break;
                     }
 

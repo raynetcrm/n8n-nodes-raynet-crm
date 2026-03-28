@@ -219,6 +219,12 @@ export interface EntityConfig {
     buildAddItemBody?: (ctx: IExecuteFunctions, i: number) => Record<string, unknown>;
     /** Body builder for Modify Item sub-operation */
     buildModifyItemBody?: (ctx: IExecuteFunctions, i: number) => Record<string, unknown>;
+    /** Sub-resource path for participants, e.g. 'participants' */
+    participantPath?: string;
+    /** Parameter name holding the participant ID */
+    participantIdParam?: string;
+    /** Body builder for Add Participant sub-operation */
+    buildAddParticipantBody?: (ctx: IExecuteFunctions, i: number) => Record<string, unknown>;
 }
 
 /**
@@ -239,6 +245,9 @@ export enum OperationType {
     ADD_ITEM = 'addItem',
     MODIFY_ITEM = 'modifyItem',
     DELETE_ITEM = 'deleteItem',
+    ADD_PARTICIPANT = 'addParticipant',
+    DELETE_PARTICIPANT = 'deleteParticipant',
+    LIST_PARTICIPANTS = 'listParticipants',
 }
 
 /**
