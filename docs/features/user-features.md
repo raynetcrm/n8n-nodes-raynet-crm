@@ -1,6 +1,6 @@
 ---
 doc_id: features-raynet-crm
-version: 2
+version: 3
 source_of_truth: true
 owner: n8n-nodes-raynet maintainer
 last_reviewed: 2026-03-28
@@ -10,7 +10,7 @@ last_reviewed: 2026-03-28
 
 ## Purpose and Product Scope
 
-The **Raynet CRM** n8n node lets users read and manage CRM data from inside any n8n workflow without writing custom API code. It exposes four core Raynet CRM entities — **Accounts**, **Persons**, **Deals**, and **Quotes** — with full CRUD, lifecycle management, tagging, and (for Deals and Quotes) item management operations.
+The **Raynet CRM** n8n node lets users read and manage CRM data from inside any n8n workflow without writing custom API code. It exposes five core Raynet CRM entities — **Accounts**, **Persons**, **Deals**, **Quotes**, and **Sales Orders** — with full CRUD, lifecycle management, tagging, and (for Deals, Quotes, and Sales Orders) item management operations.
 
 All picklist fields (categories, classifications, owners, security levels, phone types, etc.) are populated dynamically at runtime from the user's own Raynet instance, so dropdown options always reflect the actual CRM configuration.
 
@@ -59,6 +59,7 @@ Then restart n8n. The **Raynet CRM** node will appear in the node palette.
 | Deal | Business case / deal | [deal.md](deal.md) |
 | Quote | Quote (offer) | [quote.md](quote.md) |
 | Person | Individual contact | [person.md](person.md) |
+| Sales Order | Sales order | [sales-order.md](sales-order.md) |
 
 ---
 
@@ -68,6 +69,7 @@ Then restart n8n. The **Raynet CRM** node will appear in the node palette.
 - **Continue on fail** — when enabled, per-item errors are captured and execution continues rather than aborting the workflow.
 - **Tags** — accept a comma-separated string and are split into an array before sending to the API.
 - **Birthday / Anniversary** — accept a full datetime input but only the date portion (`YYYY-MM-DD`) is sent to the API.
+- **Date fields on Deals, Quotes, Sales Orders** — `validFrom`, `validTill`, `expirationDate`, `requestDeliveryDate` are also truncated to `YYYY-MM-DD` before sending.
 
 ---
 
@@ -77,6 +79,7 @@ Then restart n8n. The **Raynet CRM** node will appear in the node palette.
 - [deal.md](deal.md) — Deal capabilities
 - [quote.md](quote.md) — Quote capabilities
 - [person.md](person.md) — Person capabilities
+- [sales-order.md](sales-order.md) — Sales Order capabilities
 - [../resources.md](../resources.md) — full field reference for all operations and filters
 - [../system-overview.md](../system-overview.md) — node architecture
 - [../integrations/raynet-api.md](../integrations/raynet-api.md) — Raynet API integration contract

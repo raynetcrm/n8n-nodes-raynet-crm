@@ -1,6 +1,6 @@
 ---
 doc_id: system-overview-raynet-crm
-version: 1
+version: 2
 source_of_truth: true
 ---
 
@@ -44,6 +44,10 @@ This document covers component relationships and dependency rules. It does not c
 | **person/PersonProperties.ts** | Person UI property definitions (`INodeProperties[]`) |
 | **person/PersonBody.ts** | Person request body builder (`buildPersonBody`) |
 | **person/PersonLoadOptions.ts** | Person dynamic picklist loaders (`personLoadOptions` object) |
+| **salesOrder/index.ts** | `EntityConfig` for the Sales Order resource — exports `salesOrderConfig`, `getSalesOrderProperties`, `salesOrderLoadOptions` |
+| **salesOrder/SalesOrderProperties.ts** | Sales Order UI property definitions (`INodeProperties[]`) |
+| **salesOrder/SalesOrderBody.ts** | Sales Order request body builders (`buildSalesOrderBody`, `buildAddSalesOrderItemBody`, `buildModifySalesOrderItemBody`) |
+| **salesOrder/SalesOrderLoadOptions.ts** | Sales Order dynamic picklist loaders (`salesOrderLoadOptions` object) |
 | **helpers.ts** | Shared utilities: HTTP request wrapper, Basic Auth builder, `X-Instance-Name` header injection, picklist loader, body flattener, `EntityConfig` interface, `OperationType` enum |
 | **RaynetApi.credentials.ts** | n8n credential type definition — declares the four credential fields, authenticate, and test |
 | **Raynet CRM v2 REST API** | External system — source of truth for all CRM data; accessed over HTTPS |
@@ -78,6 +82,11 @@ Raynet.node.ts              ← dispatches by resource + operation
     │       ├── QuoteBody.ts           → buildQuoteBody() / buildAddQuoteItemBody() / buildModifyQuoteItemBody() → request payload
     │       └── QuoteLoadOptions.ts    → quoteLoadOptions → picklist population
     │
+    ├── salesOrder/index.ts ← salesOrderConfig (EntityConfig)
+    │       ├── SalesOrderProperties.ts → n8n UI (INodeProperties[])
+    │       ├── SalesOrderBody.ts       → buildSalesOrderBody() / buildAddSalesOrderItemBody() / buildModifySalesOrderItemBody() → request payload
+    │       └── SalesOrderLoadOptions.ts → salesOrderLoadOptions → picklist population
+    │
     └── helpers.ts
             ├── raynetRequest()    → authenticated HTTP via n8n helpers
             ├── loadPicklist()     → shared picklist fetch
@@ -94,14 +103,14 @@ Raynet.node.ts              ← dispatches by resource + operation
 
 ### Allowed
 
-- `Raynet.node.ts` → `account/index.ts`, `deal/index.ts`, `person/index.ts`, `quote/index.ts`, `helpers.ts`
-- `account/*.ts`, `deal/*.ts`, `person/*.ts`, `quote/*.ts` → `helpers.ts`
+- `Raynet.node.ts` → `account/index.ts`, `deal/index.ts`, `person/index.ts`, `quote/index.ts`, `salesOrder/index.ts`, `helpers.ts`
+- `account/*.ts`, `deal/*.ts`, `person/*.ts`, `quote/*.ts`, `salesOrder/*.ts` → `helpers.ts`
 - All source files → `n8n-workflow` types (interfaces, enums)
 - `helpers.ts` → n8n `IExecuteFunctions` / `ILoadOptionsFunctions` for HTTP and credential access
 
 ### Forbidden
 
-- `*Body.ts`, `*Properties.ts`, `*LoadOptions.ts` must **not** make direct HTTP calls — all HTTP goes through `helpers.ts`
+- `*Body.ts`, `*Properties.ts`, `*LoadOptions.ts` (in any resource folder) must **not** make direct HTTP calls — all HTTP goes through `helpers.ts`
 - `helpers.ts` must **not** import from resource subfolders (no circular dependency)
 - No entity-specific logic in `Raynet.node.ts` — the router only reads `EntityConfig` properties
 

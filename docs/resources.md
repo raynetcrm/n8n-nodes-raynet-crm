@@ -319,6 +319,106 @@ Supports filtering by first/last name, company name, company ID, user ID, email,
 
 ---
 
+## Sales Order
+
+API endpoint: `GET|PUT|POST|DELETE /api/v2/salesOrder/`
+
+| Operation | Description |
+|---|---|
+| **Create** | Create a new sales order linked to an account and deal |
+| **Update** | Update any field on an existing sales order |
+| **Get** | Retrieve full sales order detail by ID |
+| **Get Many** | List sales orders with sorting, pagination, full-text search, field filters, and status / product filters |
+| **Delete** | Delete a sales order record |
+| **Lock** | Lock a sales order to prevent further changes |
+| **Unlock** | Unlock a previously locked sales order |
+| **Invalidate** | Mark a sales order as invalid |
+| **Renew Validity** | Restore a previously invalidated sales order |
+| **Add Tag** | Add a tag to a sales order |
+| **Remove Tag** | Remove a tag from a sales order |
+| **Add Item** | Add a product / service line item to a sales order |
+| **Modify Item** | Update a line item in a sales order |
+| **Delete Item** | Remove a line item from a sales order |
+
+### Required fields (Create)
+
+| Field | Type | Description |
+|---|---|---|
+| Name | string | Subject / name of the sales order |
+| Account ID | number | ID of the account the order is created for |
+| Deal ID | number | ID of the deal connected to the order |
+
+### Optional fields (Create & Update)
+
+| Field | Description |
+|---|---|
+| Owner | User responsible for the order (loaded from Raynet) |
+| Security Level | Access control level (loaded from Raynet) |
+| Contact Person ID | ID of a related person (contact) |
+| Quote ID | ID of the quote this order is linked to |
+| Final Price | Total order value (totalAmount) |
+| Estimated Costs | Estimated cost figure (estimatedValue) |
+| Open From | Date the order was opened (validFrom) — sent as `YYYY-MM-DD` |
+| Open Till | Date the order was closed (validTill) — sent as `YYYY-MM-DD` |
+| Valid To | Order expiration date (expirationDate) — sent as `YYYY-MM-DD` |
+| Deliver Before | Requested delivery date (requestDeliveryDate) — sent as `YYYY-MM-DD` |
+| Note | Free-text description |
+| Category | Order category (loaded from Raynet) |
+| Status | Order status (loaded from Raynet) |
+| Tags | Comma-separated list of tags |
+
+### Update-only fields
+
+| Field | Description |
+|---|---|
+| Name | Order name (not required in update) |
+| Account ID | Re-link to a different account |
+| Deal ID | Re-link to a different deal |
+
+### Get Many — filters
+
+Supports field filters with operators (Equals, Not equals, Like, In, Greater than, etc.) on: Name, Account ID, Deal ID, Open From, Open Till, Valid To, Deliver Before, Status ID, ID, Created At, Updated At, Last Modified At.
+
+Additional filter parameters:
+
+| Parameter | Description |
+|---|---|
+| Status | Filter by order status: Active, Won, Lost, Cancelled |
+| Product Category ID | Filter by product category (`productCategory[CUSTOM]`) |
+| Product Line ID | Filter by product line (`productLine[CUSTOM]`) |
+
+### Add Item — fields
+
+| Field | Description |
+|---|---|
+| Name | Item name |
+| Product ID | Raynet product ID |
+| Product Code | Product lookup by code |
+| Price List ID | Limit product search to a specific price list |
+| Selling Price | Price per unit |
+| Tax (%) | Tax rate |
+| Quantity | Number of units |
+| Discount (%) | Discount percentage |
+| Cost per Piece | Internal cost |
+| Unit | Unit of measure |
+| Note | Item description |
+
+### Modify Item — fields
+
+| Field | Description |
+|---|---|
+| Price List Item ID | Required to identify the price list item |
+| Name | Item name |
+| Selling Price | Price per unit |
+| Tax (%) | Tax rate |
+| Quantity | Number of units |
+| Discount (%) | Discount percentage |
+| Cost per Piece | Internal cost |
+| Unit | Unit of measure |
+| Note | Item description |
+
+---
+
 ## Common behaviour
 
 - **Picklist fields** (owner, category, classifications, security level, etc.) are populated dynamically from your Raynet instance at runtime.
