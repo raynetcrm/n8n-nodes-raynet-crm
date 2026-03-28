@@ -16,7 +16,9 @@
     "build": "n8n-node build",
     "dev": "n8n-node dev",
     "lint": "n8n-node lint",
-    "lint:fix": "n8n-node lint --fix"
+    "lint:fix": "n8n-node lint --fix",
+    "format": "oxfmt nodes/ credentials/",
+    "format:check": "oxfmt --check nodes/ credentials/"
   },
   "files": [
     "dist"
@@ -35,7 +37,7 @@
     "@types/node": "25.5.0",
     "eslint": "10.1.0",
     "eslint-plugin-n8n-nodes-base": "1.16.6",
-    "prettier": "3.8.1",
+    "oxfmt": "0.42.0",
     "typescript": "6.0.2"
   },
   "dependencies": {

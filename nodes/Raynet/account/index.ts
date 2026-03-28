@@ -5,8 +5,8 @@ export { getAccountProperties } from './AccountProperties';
 export { accountLoadOptions } from './AccountLoadOptions';
 
 export const accountConfig: EntityConfig = {
-  listPath: '/company/',
-  singlePath: '/company/',
-  idParam: 'accountId',
-  buildBody: buildAccountBody,
+    listPath: '/company/',
+    singlePath: '/company/',
+    idParam: 'accountId',
+    buildBody: buildAccountBody,
 };
