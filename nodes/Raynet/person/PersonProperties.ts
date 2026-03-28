@@ -1,10 +1,5 @@
-/**
- * Person (Contact) resource – UI properties, body builder, load options, entity config.
- */
-
-import type { INodeProperties, IExecuteFunctions, ILoadOptionsFunctions, INodePropertyOptions } from 'n8n-workflow';
-import { flattenFixedCollection, processCommonField, FILTER_OPERATORS, showOptionsForOp, createPicklistLoader } from './helpers';
-import { EntityConfig, OperationType } from './helpers';
+import type { INodeProperties } from 'n8n-workflow';
+import { FILTER_OPERATORS, OperationType, showOptionsForOp } from '../helpers';
 
 // ---------------------------------------------------------------------------
 // Static option lists
@@ -155,9 +150,7 @@ const SHARED_OPTIONAL_FIELDS: INodeProperties[] = [
 
 const UPDATE_OPTIONAL_FIELDS: INodeProperties[] = [{ displayName: 'Last Name', name: 'lastName', type: 'string', default: '' }, ...SHARED_OPTIONAL_FIELDS];
 
-const op = (operations: OperationType | OperationType[]) => {
-  return showOptionsForOp(operations, 'person');
-};
+const op = (operations: OperationType | OperationType[]) => showOptionsForOp(operations, 'person');
 
 // ---------------------------------------------------------------------------
 // UI properties
@@ -337,89 +330,3 @@ export function getPersonProperties(): INodeProperties[] {
     { displayName: 'Tag', name: 'tag', type: 'string', required: true, default: '', displayOptions: op([OperationType.DELETE_TAG]) },
   ];
 }
-
-// ---------------------------------------------------------------------------
-// Body builder
-// ---------------------------------------------------------------------------
-
-export function buildPersonBody(ctx: IExecuteFunctions, operation: 'create' | 'update'): Record<string, unknown> {
-  const body: Record<string, unknown> = {};
-
-  if (operation === 'create') {
-    body.lastName = ctx.getNodeParameter('lastName', 0);
-  }
-
-  const paramName = operation === 'update' ? 'updateAdditionalFields' : 'additionalFields';
-  const additional = ctx.getNodeParameter(paramName, 0, {}) as Record<string, unknown>;
-
-  for (const [key, value] of Object.entries(additional)) {
-    if (value === undefined || value === null || value === '') continue;
-    if (processCommonField(body, key, value)) continue;
-
-    if (key === 'contactInfo') {
-      const flat = flattenFixedCollection(value, 'contactInfoValues');
-      if (flat) body.contactInfo = flat;
-      continue;
-    }
-    if (key === 'privateAddress') {
-      const flat = flattenFixedCollection(value, 'addressValues');
-      if (flat) body.privateAddress = flat;
-      continue;
-    }
-    if (key === 'socialNetworkContact') {
-      const flat = flattenFixedCollection(value, 'socialValues');
-      if (flat) body.socialNetworkContact = flat;
-      continue;
-    }
-    if (key === 'relationship') {
-      const flat = flattenFixedCollection(value, 'relationshipValues', true);
-      if (flat) body.relationship = flat;
-      continue;
-    }
-
-    body[key] = value;
-  }
-
-  return body;
-}
-
-// ---------------------------------------------------------------------------
-// LoadOptions map
-// ---------------------------------------------------------------------------
-
-const PICKLIST_PATHS = {
-  personCategories: '/personCategory/',
-  personClassifications1: '/personClassification1/',
-  personClassifications2: '/personClassification2/',
-  personClassifications3: '/personClassification3/',
-  languages: '/language/',
-  maritalStatuses: '/maritalStatus/',
-  telTypes: '/telType/',
-} as const;
-
-export const personLoadOptions: Record<string, (this: ILoadOptionsFunctions) => Promise<INodePropertyOptions[]>> = {
-  getPersonCategories: createPicklistLoader(PICKLIST_PATHS.personCategories),
-  getPersonClassifications1: createPicklistLoader(PICKLIST_PATHS.personClassifications1),
-  getPersonClassifications2: createPicklistLoader(PICKLIST_PATHS.personClassifications2),
-  getPersonClassifications3: createPicklistLoader(PICKLIST_PATHS.personClassifications3),
-  getLanguages: createPicklistLoader(PICKLIST_PATHS.languages),
-  getMaritalStatuses: createPicklistLoader(PICKLIST_PATHS.maritalStatuses),
-  getTelTypes: createPicklistLoader(PICKLIST_PATHS.telTypes),
-};
-
-// ---------------------------------------------------------------------------
-// Entity config
-// ---------------------------------------------------------------------------
-
-export const personConfig: EntityConfig = {
-  listPath: '/person/',
-  singlePath: '/person/',
-  idParam: 'personId',
-  buildBody: buildPersonBody,
-  getManyExtraQs(ctx: IExecuteFunctions) {
-    const qs: Record<string, string | number | boolean | undefined> = {};
-    const relCompany = ctx.getNodeParameter('personRelationshipCustom', 0, 0) as number;
-    if (relCompany) qs['personRelationship[CUSTOM]'] = relCompany;
-    return qs;
-  },
-};

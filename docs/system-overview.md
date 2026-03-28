@@ -28,10 +28,16 @@ This document covers component relationships and dependency rules. It does not c
 |-----------|------|
 | **n8n workflow runtime** | Hosts and executes the node; provides `IExecuteFunctions`, `ILoadOptionsFunctions`, item context, and credential resolution |
 | **Raynet.node.ts** | Main node class registered with n8n; thin operation router; holds node metadata and dispatches to entity configs |
-| **AccountDescription.ts** | `EntityConfig` for the Account resource — owns UI property definitions, body builder, and loadOptions methods |
-| **PersonDescription.ts** | `EntityConfig` for the Person resource — same structure as AccountDescription |
-| **helpers.ts** | Shared utilities: HTTP request wrapper, Basic Auth builder, `X-Instance-Name` header injection, picklist loader, body flattener |
-| **RaynetApi.credentials.ts** | n8n credential type definition — declares the four credential fields and sets up Basic Auth test |
+| **account/index.ts** | `EntityConfig` for the Account resource — exports `accountConfig`, `getAccountProperties`, `accountLoadOptions` |
+| **account/AccountProperties.ts** | Account UI property definitions (`INodeProperties[]`) |
+| **account/AccountBody.ts** | Account request body builder (`buildAccountBody`) |
+| **account/AccountLoadOptions.ts** | Account dynamic picklist loaders (`accountLoadOptions` object) |
+| **person/index.ts** | `EntityConfig` for the Person resource — exports `personConfig`, `getPersonProperties`, `personLoadOptions` |
+| **person/PersonProperties.ts** | Person UI property definitions (`INodeProperties[]`) |
+| **person/PersonBody.ts** | Person request body builder (`buildPersonBody`) |
+| **person/PersonLoadOptions.ts** | Person dynamic picklist loaders (`personLoadOptions` object) |
+| **helpers.ts** | Shared utilities: HTTP request wrapper, Basic Auth builder, `X-Instance-Name` header injection, picklist loader, body flattener, `EntityConfig` interface, `OperationType` enum |
+| **RaynetApi.credentials.ts** | n8n credential type definition — declares the four credential fields, authenticate, and test |
 | **Raynet CRM v2 REST API** | External system — source of truth for all CRM data; accessed over HTTPS |
 
 ---
@@ -42,21 +48,22 @@ This document covers component relationships and dependency rules. It does not c
 n8n workflow
     │
     ▼
-Raynet.node.ts          ← dispatches by resource + operation
+Raynet.node.ts              ← dispatches by resource + operation
     │
-    ├── AccountDescription.ts (EntityConfig)
-    │       ├── properties[]       → n8n UI
-    │       ├── buildBody()        → request payload
-    │       └── loadOptions.*()    → picklist population
+    ├── account/index.ts    ← accountConfig (EntityConfig)
+    │       ├── AccountProperties.ts   → n8n UI (INodeProperties[])
+    │       ├── AccountBody.ts         → buildAccountBody() → request payload
+    │       └── AccountLoadOptions.ts  → accountLoadOptions → picklist population
     │
-    ├── PersonDescription.ts (EntityConfig)
-    │       └── (same structure)
+    ├── person/index.ts     ← personConfig (EntityConfig)
+    │       ├── PersonProperties.ts    → n8n UI (INodeProperties[])
+    │       ├── PersonBody.ts          → buildPersonBody() → request payload
+    │       └── PersonLoadOptions.ts   → personLoadOptions → picklist population
     │
     └── helpers.ts
             ├── raynetRequest()    → authenticated HTTP via n8n helpers
-            ├── buildBasicAuth()   → Base64 username:apiKey
             ├── loadPicklist()     → shared picklist fetch
-            └── flattenBody()      → nested → flat payload transform
+            └── flattenFixedCollection() → nested → flat payload transform
                     │
                     ▼
             Raynet CRM v2 REST API
@@ -69,15 +76,15 @@ Raynet.node.ts          ← dispatches by resource + operation
 
 ### Allowed
 
-- `Raynet.node.ts` → `AccountDescription.ts`, `PersonDescription.ts`, `helpers.ts`
-- `AccountDescription.ts`, `PersonDescription.ts` → `helpers.ts`
+- `Raynet.node.ts` → `account/index.ts`, `person/index.ts`, `helpers.ts`
+- `account/*.ts`, `person/*.ts` → `helpers.ts`
 - All source files → `n8n-workflow` types (interfaces, enums)
 - `helpers.ts` → n8n `IExecuteFunctions` / `ILoadOptionsFunctions` for HTTP and credential access
 
 ### Forbidden
 
-- Description files (`*Description.ts`) must **not** make direct HTTP calls — all HTTP goes through `helpers.ts`
-- `helpers.ts` must **not** import from description files (no circular dependency)
+- `*Body.ts`, `*Properties.ts`, `*LoadOptions.ts` must **not** make direct HTTP calls — all HTTP goes through `helpers.ts`
+- `helpers.ts` must **not** import from resource subfolders (no circular dependency)
 - No entity-specific logic in `Raynet.node.ts` — the router only reads `EntityConfig` properties
 
 ---

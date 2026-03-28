@@ -2,7 +2,7 @@
  * Shared helpers for Raynet CRM node.
  */
 
-import type { IExecuteFunctions, ILoadOptionsFunctions, INodeProperties, INodePropertyOptions, NodePropertyTypes } from 'n8n-workflow';
+import type { IExecuteFunctions, ILoadOptionsFunctions, INodePropertyOptions } from 'n8n-workflow';
 
 // ---------------------------------------------------------------------------
 // Auth & request

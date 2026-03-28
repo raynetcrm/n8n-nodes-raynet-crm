@@ -1,4 +1,4 @@
-import type { ICredentialType, INodeProperties } from 'n8n-workflow';
+import type { IAuthenticateGeneric, ICredentialTestRequest, ICredentialType, INodeProperties } from 'n8n-workflow';
 
 /**
  * Raynet CRM v2 API credentials (Basic auth + instance name).
@@ -9,6 +9,26 @@ export class RaynetApi implements ICredentialType {
   displayName = 'Raynet CRM API';
 
   documentationUrl = 'https://app.raynet.cz/api/doc/index-en.html';
+
+  icon = 'file:../nodes/Raynet/raynetCrm.svg' as const;
+
+  authenticate: IAuthenticateGeneric = {
+    type: 'generic',
+    properties: {
+      headers: {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        Authorization: '=Basic {{Buffer.from($credentials.username + ":" + $credentials.apiKey).toString("base64")}}' as any,
+        'X-Instance-Name': '={{$credentials.instanceName}}',
+      },
+    },
+  };
+
+  test: ICredentialTestRequest = {
+    request: {
+      baseURL: '={{$credentials.server}}/api/v2',
+      url: '/securityLevel/',
+    },
+  };
 
   properties: INodeProperties[] = [
     {

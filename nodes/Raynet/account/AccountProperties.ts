@@ -1,18 +1,5 @@
-/**
- * Account resource – UI properties, body builder, load options, entity config.
- */
-
-import type { INodeProperties, IExecuteFunctions, ILoadOptionsFunctions, INodePropertyOptions } from 'n8n-workflow';
-import {
-  flattenFixedCollection,
-  processCommonField,
-  FILTER_OPERATORS,
-  getCustomFields,
-  createPicklistLoader,
-  OperationType,
-  showOptionsForOp,
-} from './helpers';
-import type { EntityConfig } from './helpers';
+import type { INodeProperties } from 'n8n-workflow';
+import { FILTER_OPERATORS, OperationType, showOptionsForOp } from '../helpers';
 
 // ---------------------------------------------------------------------------
 // Static option lists
@@ -151,12 +138,7 @@ const UPDATE_OPTIONAL_FIELDS: INodeProperties[] = [
   ...CREATE_OPTIONAL_FIELDS,
 ];
 
-/** Converts operation types to display options.
- *  @param operations Single operation or array of operations that the options should be shown for
- */
-const op = (operations: OperationType | OperationType[]) => {
-  return showOptionsForOp(operations, 'account');
-};
+const op = (operations: OperationType | OperationType[]) => showOptionsForOp(operations, 'account');
 
 // ---------------------------------------------------------------------------
 // UI properties
@@ -344,95 +326,3 @@ export function getAccountProperties(): INodeProperties[] {
     { displayName: 'Tag', name: 'tag', type: 'string', required: true, default: '', displayOptions: op(OperationType.DELETE_TAG) },
   ];
 }
-
-// ---------------------------------------------------------------------------
-// Body builder
-// ---------------------------------------------------------------------------
-
-export function buildAccountBody(ctx: IExecuteFunctions, operation: 'create' | 'update'): Record<string, unknown> {
-  const body: Record<string, unknown> = {};
-
-  if (operation === 'create') {
-    body.name = ctx.getNodeParameter('name', 0);
-    body.rating = ctx.getNodeParameter('rating', 0);
-    body.state = ctx.getNodeParameter('state', 0);
-    body.role = ctx.getNodeParameter('role', 0);
-  }
-
-  const paramName = operation === 'update' ? 'updateAdditionalFields' : 'additionalFields';
-  const additional = ctx.getNodeParameter(paramName, 0, {}) as Record<string, unknown>;
-
-  for (const [key, value] of Object.entries(additional)) {
-    if (value === undefined || value === null || value === '') continue;
-    if (processCommonField(body, key, value)) continue;
-
-    if (key === 'addresses') {
-      const items = (value as { address?: Array<Record<string, unknown>> })?.address;
-      if (Array.isArray(items) && items.length > 0) {
-        body.addresses = items.map((item) => {
-          const address: Record<string, unknown> = {};
-          const contactInfo: Record<string, unknown> = {};
-          for (const f of ['name', 'street', 'city', 'province', 'zipCode', 'country']) {
-            if (item[f]) address[f] = item[f];
-          }
-          if (item.lat != null) address.lat = item.lat;
-          if (item.lng != null) address.lng = item.lng;
-          for (const f of ['email', 'email2', 'tel1', 'tel1Type', 'tel2', 'tel2Type', 'fax', 'www', 'otherContact']) {
-            if (item[f]) contactInfo[f] = item[f];
-          }
-          const entry: Record<string, unknown> = { address, contactInfo };
-          if (item.territory != null) entry.territory = item.territory;
-          return entry;
-        });
-      }
-      continue;
-    }
-
-    body[key] = value;
-  }
-
-  return body;
-}
-
-// ---------------------------------------------------------------------------
-// LoadOptions map
-// ---------------------------------------------------------------------------
-
-const PICKLIST_PATHS = {
-  accountCategories: '/companyCategory/',
-  contactSources: '/contactSource/',
-  employeesNumbers: '/employeesNumber/',
-  legalForms: '/legalForm/',
-  paymentTerms: '/paymentTerm/',
-  companyTurnovers: '/companyTurnover/',
-  economyActivities: '/economyActivity/',
-  companyClassifications1: '/companyClassification1/',
-  companyClassifications2: '/companyClassification2/',
-  companyClassifications3: '/companyClassification3/',
-  territories: '/territory/',
-} as const;
-
-export const accountLoadOptions: Record<string, (this: ILoadOptionsFunctions) => Promise<INodePropertyOptions[]>> = {
-  getAccountCategories: createPicklistLoader(PICKLIST_PATHS.accountCategories),
-  getContactSources: createPicklistLoader(PICKLIST_PATHS.contactSources),
-  getEmployeesNumbers: createPicklistLoader(PICKLIST_PATHS.employeesNumbers),
-  getLegalForms: createPicklistLoader(PICKLIST_PATHS.legalForms),
-  getPaymentTerms: createPicklistLoader(PICKLIST_PATHS.paymentTerms),
-  getCompanyTurnovers: createPicklistLoader(PICKLIST_PATHS.companyTurnovers),
-  getEconomyActivities: createPicklistLoader(PICKLIST_PATHS.economyActivities),
-  getCompanyClassifications1: createPicklistLoader(PICKLIST_PATHS.companyClassifications1),
-  getCompanyClassifications2: createPicklistLoader(PICKLIST_PATHS.companyClassifications2),
-  getCompanyClassifications3: createPicklistLoader(PICKLIST_PATHS.companyClassifications3),
-  getTerritories: createPicklistLoader(PICKLIST_PATHS.territories),
-};
-
-// ---------------------------------------------------------------------------
-// Entity config
-// ---------------------------------------------------------------------------
-
-export const accountConfig: EntityConfig = {
-  listPath: '/company/',
-  singlePath: '/company/',
-  idParam: 'accountId',
-  buildBody: buildAccountBody,
-};

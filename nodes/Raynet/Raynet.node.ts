@@ -5,11 +5,10 @@
 
 import type { IExecuteFunctions, INodeExecutionData, INodeType, INodeTypeDescription, ILoadOptionsFunctions, INodePropertyOptions, IDataObject } from 'n8n-workflow';
 
-import { raynetRequest, getListParams, loadOwners, loadSecurityLevels, stringToOperationType } from './helpers';
-import { EntityConfig, OperationType } from './helpers';
+import { raynetRequest, getListParams, loadOwners, loadSecurityLevels, stringToOperationType, EntityConfig, OperationType  } from './helpers';
 
-import { getAccountProperties, accountLoadOptions, accountConfig } from './AccountDescription';
-import { getPersonProperties, personLoadOptions, personConfig } from './PersonDescription';
+import { getAccountProperties, accountLoadOptions, accountConfig } from './account';
+import { getPersonProperties, personLoadOptions, personConfig } from './person';
 
 // ---------------------------------------------------------------------------
 // Resources & entity registry
@@ -62,6 +61,7 @@ export class Raynet implements INodeType {
       ...getAccountProperties(),
       ...getPersonProperties(),
     ],
+		usableAsTool: true,
   };
 
   methods = {
@@ -104,15 +104,15 @@ export class Raynet implements INodeType {
     for (let i = 0; i < iterations; i++) {
       let id: number;
       let body: object | undefined;
-      let res: any;
       let tag: string;
       try {
         switch (operation) {
-          case OperationType.CREATE:
+          case OperationType.CREATE: {
             body = config.buildBody(this, 'create');
-            res = (await raynetRequest.call(this, 'PUT', config.listPath, body)) as { success?: boolean; data?: { id: number } };
-            returnData.push({ json: { id: res?.data?.id, success: res?.success } as IDataObject, pairedItem: { item: i } });
+            const createRes = (await raynetRequest.call(this, 'PUT', config.listPath, body)) as { success?: boolean; data?: { id: number } };
+            returnData.push({ json: { id: createRes?.data?.id, success: createRes?.success } as IDataObject, pairedItem: { item: i } });
             break;
+          }
 
           case OperationType.UPDATE:
             id = this.getNodeParameter(config.idParam, i) as number;
@@ -121,11 +121,12 @@ export class Raynet implements INodeType {
             returnData.push({ json: { id, success: true } as IDataObject, pairedItem: { item: i } });
             break;
 
-          case OperationType.GET:
+          case OperationType.GET: {
             id = this.getNodeParameter(config.idParam, i) as number;
-            res = (await raynetRequest.call(this, 'GET', `${config.singlePath}${id}/`)) as { data?: unknown };
-            returnData.push({ json: (res?.data as IDataObject) ?? {}, pairedItem: { item: i } });
+            const getRes = (await raynetRequest.call(this, 'GET', `${config.singlePath}${id}/`)) as { data?: unknown };
+            returnData.push({ json: (getRes?.data as IDataObject) ?? {}, pairedItem: { item: i } });
             break;
+          }
 
           case OperationType.DELETE:
             id = this.getNodeParameter(config.idParam, i) as number;
