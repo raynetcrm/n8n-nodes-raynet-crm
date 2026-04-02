@@ -305,6 +305,35 @@ See [Shared item fields](#shared-item-fields-deal--quote--sales-order).
 
 ---
 
+## Folder
+
+API path: `/api/v2/dms/folder/`
+
+Operations: Create, Delete only
+
+### Required (Create)
+
+| Field | Type |
+|---|---|
+| Name | string |
+
+### Optional (Create)
+
+| Field | Notes |
+|---|---|
+| Parent Folder ID (`parent`) | ID of the parent folder; find in Raynet CRM URL `?en=Folder&ei={id}` |
+| Security Level | Loaded from Raynet |
+| Category | Document category, loaded from Raynet |
+
+### Delete options
+
+| Field | Notes |
+|---|---|
+| Folder ID | Required |
+| Cascade Delete | If enabled, deletes all contents recursively (`DELETE /dms/folder/{id}/cascade`) |
+
+---
+
 ## Document
 
 API path: `/api/v2/dms/document/`

@@ -18,6 +18,7 @@ import { getPriceListProperties, priceListLoadOptions, priceListConfig } from '.
 import { getProductProperties, productLoadOptions, productConfig } from './product';
 import { getInvoiceProperties, invoiceLoadOptions, invoiceConfig } from './invoice';
 import { getDocumentProperties, documentLoadOptions, documentConfig } from './document';
+import { getFolderProperties, folderLoadOptions, folderConfig } from './folder';
 
 // ---------------------------------------------------------------------------
 // Resources & entity registry
@@ -33,6 +34,7 @@ const RESOURCE_OPTIONS = [
     { name: 'Product', value: 'product', description: 'Product' },
     { name: 'Project', value: 'project', description: 'Project' },
     { name: 'Document', value: 'document', description: 'Document (DMS)' },
+    { name: 'Folder', value: 'folder', description: 'DMS folder' },
     { name: 'Invoice', value: 'invoice', description: 'Invoice' },
     { name: 'Sales Order', value: 'salesOrder', description: 'Sales order' },
 ];
@@ -47,6 +49,7 @@ const ENTITY_MAP: Record<string, EntityConfig> = {
     product: productConfig,
     invoice: invoiceConfig,
     document: documentConfig,
+    folder: folderConfig,
     project: projectConfig,
     salesOrder: salesOrderConfig,
 };
@@ -65,6 +68,7 @@ const allLoadOptions: Record<string, (this: ILoadOptionsFunctions) => Promise<IN
     ...productLoadOptions,
     ...invoiceLoadOptions,
     ...documentLoadOptions,
+    ...folderLoadOptions,
 };
 
 // ---------------------------------------------------------------------------
@@ -105,6 +109,7 @@ export class Raynet implements INodeType {
             ...getProductProperties(),
             ...getInvoiceProperties(),
             ...getDocumentProperties(),
+            ...getFolderProperties(),
         ],
         usableAsTool: true,
     };
@@ -194,7 +199,7 @@ export class Raynet implements INodeType {
 
                     case OperationType.DELETE:
                         id = this.getNodeParameter(config.idParam, i) as number;
-                        await raynetRequest.call(this, 'DELETE', `${config.singlePath}${id}/`);
+                        await raynetRequest.call(this, 'DELETE', `${config.singlePath}${id}/${config.getDeleteSuffix?.(this, i) ?? ''}`);
                         returnData.push({
                             json: { id, success: true } as IDataObject,
                             pairedItem: { item: i },

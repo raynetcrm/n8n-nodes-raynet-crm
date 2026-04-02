@@ -1,6 +1,6 @@
 ---
 doc_id: features-raynet-crm
-version: 9
+version: 10
 source_of_truth: true
 owner: n8n-nodes-raynet maintainer
 last_reviewed: 2026-03-28
@@ -10,7 +10,7 @@ last_reviewed: 2026-03-28
 
 ## Purpose and Product Scope
 
-The **Raynet CRM** n8n node lets users read and manage CRM data from inside any n8n workflow without writing custom API code. It exposes eleven core Raynet CRM entities — **Accounts**, **Persons**, **Deals**, **Quotes**, **Sales Orders**, **Projects**, **Leads**, **Price Lists**, **Products**, **Invoices**, and **Documents** — with full CRUD, lifecycle management, tagging, and (for Deals, Quotes, and Sales Orders) item management operations. Projects additionally support participant management.
+The **Raynet CRM** n8n node lets users read and manage CRM data from inside any n8n workflow without writing custom API code. It exposes twelve core Raynet CRM entities — **Accounts**, **Persons**, **Deals**, **Quotes**, **Sales Orders**, **Projects**, **Leads**, **Price Lists**, **Products**, **Invoices**, **Documents**, and **Folders** — with full CRUD, lifecycle management, tagging, and (for Deals, Quotes, and Sales Orders) item management operations. Projects additionally support participant management.
 
 All picklist fields (categories, classifications, owners, security levels, phone types, etc.) are populated dynamically at runtime from the user's own Raynet instance, so dropdown options always reflect the actual CRM configuration.
 
@@ -66,6 +66,7 @@ Then restart n8n. The **Raynet CRM** node will appear in the node palette.
 | Product | Product catalogue item | [product.md](product.md) |
 | Invoice | Invoice (light) | [invoice.md](invoice.md) |
 | Document | Document management (DMS) | [document.md](document.md) |
+| Folder | DMS folder management | [folder.md](folder.md) |
 
 ---
 

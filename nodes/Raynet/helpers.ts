@@ -225,6 +225,8 @@ export interface EntityConfig {
     participantIdParam?: string;
     /** Body builder for Add Participant sub-operation */
     buildAddParticipantBody?: (ctx: IExecuteFunctions, i: number) => Record<string, unknown>;
+    /** Optional suffix appended to the DELETE path, e.g. 'cascade' → DELETE /path/{id}/cascade */
+    getDeleteSuffix?: (ctx: IExecuteFunctions, i: number) => string;
 }
 
 /**
