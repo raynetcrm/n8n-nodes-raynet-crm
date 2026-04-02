@@ -1,6 +1,6 @@
 ---
 doc_id: features-raynet-crm
-version: 5
+version: 6
 source_of_truth: true
 owner: n8n-nodes-raynet maintainer
 last_reviewed: 2026-03-28
@@ -10,7 +10,7 @@ last_reviewed: 2026-03-28
 
 ## Purpose and Product Scope
 
-The **Raynet CRM** n8n node lets users read and manage CRM data from inside any n8n workflow without writing custom API code. It exposes seven core Raynet CRM entities — **Accounts**, **Persons**, **Deals**, **Quotes**, **Sales Orders**, **Projects**, and **Leads** — with full CRUD, lifecycle management, tagging, and (for Deals, Quotes, and Sales Orders) item management operations. Projects additionally support participant management.
+The **Raynet CRM** n8n node lets users read and manage CRM data from inside any n8n workflow without writing custom API code. It exposes eight core Raynet CRM entities — **Accounts**, **Persons**, **Deals**, **Quotes**, **Sales Orders**, **Projects**, **Leads**, and **Price Lists** — with full CRUD, lifecycle management, tagging, and (for Deals, Quotes, and Sales Orders) item management operations. Projects additionally support participant management.
 
 All picklist fields (categories, classifications, owners, security levels, phone types, etc.) are populated dynamically at runtime from the user's own Raynet instance, so dropdown options always reflect the actual CRM configuration.
 
@@ -61,6 +61,7 @@ Then restart n8n. The **Raynet CRM** node will appear in the node palette.
 | Person | Individual contact | [person.md](person.md) |
 | Sales Order | Sales order | [sales-order.md](sales-order.md) |
 | Lead | Inbound lead | [lead.md](lead.md) |
+| Price List | Product price list | [price-list.md](price-list.md) |
 | Project | Project | [project.md](project.md) |
 
 ---

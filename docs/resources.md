@@ -152,6 +152,40 @@ First/last name, company name, company ID, user ID, email, owner, category, clas
 
 ---
 
+## Price List
+
+API path: `/api/v2/priceList/`
+
+Operations: Create, Update, Get, Get Many, Delete, Lock, Unlock — **no** Invalidate / Renew Validity, no tags
+
+### Required (Create)
+
+| Field | Type | Notes |
+|---|---|---|
+| Name | string | |
+| Code | string | Unique code |
+| Currency | options | Loaded from Raynet |
+| Open From (`validFrom`) | dateTime | Sent as `YYYY-MM-DD` |
+
+### Optional (Create & Update)
+
+| Field | Notes |
+|---|---|
+| Owner, Security Level, Category | Loaded from Raynet |
+| Valid To (`validTill`) | Sent as `YYYY-MM-DD` |
+| Note (`description`) | |
+
+### Update-only
+
+Name, Code, Currency, Open From
+
+### Get Many — filters
+
+Name, Code, Open From, Valid To, Owner ID, ID, Created/Updated/LastModified At.
+Extra: Primary (`YES` / `NO`), Currency (exact match).
+
+---
+
 ## Lead
 
 API path: `/api/v2/lead/`

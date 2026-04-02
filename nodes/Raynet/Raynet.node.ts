@@ -14,6 +14,7 @@ import { getQuoteProperties, quoteLoadOptions, quoteConfig } from './quote';
 import { getSalesOrderProperties, salesOrderLoadOptions, salesOrderConfig } from './salesOrder';
 import { getProjectProperties, projectLoadOptions, projectConfig } from './project';
 import { getLeadProperties, leadLoadOptions, leadConfig } from './lead';
+import { getPriceListProperties, priceListLoadOptions, priceListConfig } from './priceList';
 
 // ---------------------------------------------------------------------------
 // Resources & entity registry
@@ -25,6 +26,7 @@ const RESOURCE_OPTIONS = [
     { name: 'Person', value: 'person', description: 'Contact – person (individual contact)' },
     { name: 'Quote', value: 'quote', description: 'Quote (offer)' },
     { name: 'Lead', value: 'lead', description: 'Lead' },
+    { name: 'Price List', value: 'priceList', description: 'Price list' },
     { name: 'Project', value: 'project', description: 'Project' },
     { name: 'Sales Order', value: 'salesOrder', description: 'Sales order' },
 ];
@@ -35,6 +37,7 @@ const ENTITY_MAP: Record<string, EntityConfig> = {
     person: personConfig,
     quote: quoteConfig,
     lead: leadConfig,
+    priceList: priceListConfig,
     project: projectConfig,
     salesOrder: salesOrderConfig,
 };
@@ -47,6 +50,7 @@ const allLoadOptions: Record<string, (this: ILoadOptionsFunctions) => Promise<IN
     ...dealLoadOptions,
     ...quoteLoadOptions,
     ...leadLoadOptions,
+    ...priceListLoadOptions,
     ...projectLoadOptions,
     ...salesOrderLoadOptions,
 };
@@ -83,6 +87,7 @@ export class Raynet implements INodeType {
             ...getPersonProperties(),
             ...getQuoteProperties(),
             ...getLeadProperties(),
+            ...getPriceListProperties(),
             ...getProjectProperties(),
             ...getSalesOrderProperties(),
         ],
