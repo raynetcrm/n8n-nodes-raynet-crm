@@ -16,6 +16,7 @@ import { getProjectProperties, projectLoadOptions, projectConfig } from './proje
 import { getLeadProperties, leadLoadOptions, leadConfig } from './lead';
 import { getPriceListProperties, priceListLoadOptions, priceListConfig } from './priceList';
 import { getProductProperties, productLoadOptions, productConfig } from './product';
+import { getInvoiceProperties, invoiceLoadOptions, invoiceConfig } from './invoice';
 
 // ---------------------------------------------------------------------------
 // Resources & entity registry
@@ -30,6 +31,7 @@ const RESOURCE_OPTIONS = [
     { name: 'Price List', value: 'priceList', description: 'Price list' },
     { name: 'Product', value: 'product', description: 'Product' },
     { name: 'Project', value: 'project', description: 'Project' },
+    { name: 'Invoice', value: 'invoice', description: 'Invoice' },
     { name: 'Sales Order', value: 'salesOrder', description: 'Sales order' },
 ];
 
@@ -41,6 +43,7 @@ const ENTITY_MAP: Record<string, EntityConfig> = {
     lead: leadConfig,
     priceList: priceListConfig,
     product: productConfig,
+    invoice: invoiceConfig,
     project: projectConfig,
     salesOrder: salesOrderConfig,
 };
@@ -57,6 +60,7 @@ const allLoadOptions: Record<string, (this: ILoadOptionsFunctions) => Promise<IN
     ...projectLoadOptions,
     ...salesOrderLoadOptions,
     ...productLoadOptions,
+    ...invoiceLoadOptions,
 };
 
 // ---------------------------------------------------------------------------
@@ -95,6 +99,7 @@ export class Raynet implements INodeType {
             ...getProjectProperties(),
             ...getSalesOrderProperties(),
             ...getProductProperties(),
+            ...getInvoiceProperties(),
         ],
         usableAsTool: true,
     };

@@ -305,6 +305,59 @@ See [Shared item fields](#shared-item-fields-deal--quote--sales-order).
 
 ---
 
+## Invoice
+
+API path: `/api/v2/invoiceLight/`
+
+Operations: Create, Update, Get, Get Many, Delete, Lock, Unlock — **no** Invalidate / Renew Validity
+
+### Required (Create)
+
+| Field | Type | Notes |
+|---|---|---|
+| Code | string | Unique invoice code |
+| Account ID (`company`) | number | |
+| Currency | options | Loaded from Raynet |
+| Due Date (`dueDate`) | dateTime | Sent as `YYYY-MM-DD` |
+| Issue Date (`issueDate`) | dateTime | Sent as `YYYY-MM-DD` |
+| Invoice Type (`invoiceType`) | options | `NORMAL` / `PROFORMA` / `CREDIT_NOTE` |
+| Invoice State (`invoiceState`) | options | `UNPAID` / `PARTIALLY_PAID` / `PAID` / `CANCELLED` |
+| Payment Type | options | Loaded from Raynet |
+| Taxable Supply Date | dateTime | Sent as `YYYY-MM-DD` |
+| Tax Payer | options | `YES` / `NO` |
+| Customer Name (`billingName`) | string | |
+
+### Optional (Create & Update)
+
+| Field | Notes |
+|---|---|
+| Customer Address (`billingAddress`) | Street, city, ZIP, province, country code |
+| Title, Variable / Specific / Constant Symbol | Invoice header fields |
+| Exchange Rate (`currencyExchangeRate`) | |
+| Payment Date | Sent as `YYYY-MM-DD` |
+| Security Level, Owner, Category | Loaded from Raynet |
+| Deal ID (`businessCase`), Sales Order ID | Related record IDs |
+| Note for Receiver, Internal Note, Reason for Correction | Text fields |
+| Customer ID / Tax / VAT ID no. | `billingRegNumber`, `billingTaxNumber`, `billingTaxNumber2` |
+| Vendor fields | Name, reg numbers, address, email, phone, website, bank details |
+| Financial totals | `discount`, `discountPercent`, `baseAmount`, `totalAmount`, `taxAmount`, `roundingBalance` |
+| Flags | `reverseTax` (boolean), `proformaTaxMove` (boolean) |
+| Link to Other Invoice (`normalInvoice`) | For corrective / advance invoices |
+| Decimal Precision | |
+| Tags | Comma-separated |
+| Items | Array: name, unitPrice, taxRate, amount, unitLabel, discountPercent, totalPrice, sequenceNumber, id (update: positive=modify, negative=delete, empty=create) |
+| Payments | Array: date, amount, id (same id semantics as Items) |
+
+### Update-only fields
+
+Code, Account ID, Currency, Due Date, Issue Date, Invoice Type, Invoice State, Payment Type, Taxable Supply Date, Tax Payer, Customer Name
+
+### Get Many — filters
+
+Title, Code, Owner ID, Deal ID, Issue Date, Invoice Type, Taxable Supply Date, Due Date, Payment Date, Variable Symbol, Specific Symbol, Constant Symbol, ID, Created/Updated/LastModified At.
+
+---
+
 ## Product
 
 API path: `/api/v2/product/`
