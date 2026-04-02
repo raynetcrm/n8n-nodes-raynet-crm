@@ -305,6 +305,36 @@ See [Shared item fields](#shared-item-fields-deal--quote--sales-order).
 
 ---
 
+## Document
+
+API path: `/api/v2/dms/document/`
+
+Operations: Create, Update, Get, Delete, Lock, Unlock, Invalidate, Renew Validity — **no** Get Many
+
+### Required (Create)
+
+| Field | Notes |
+|---|---|
+| Content Type (`infoType`) | `link` or `file` |
+| Folder ID (`folder`) | Find in Raynet CRM URL: `?view=ListView&en=Folder&ei={id}` |
+| Link URL + Link Name | Required when `infoType = link` |
+| File UUID + File Name | Required when `infoType = file` — UUID from prior `/fileUpload` call |
+
+### Optional (Create & Update)
+
+| Field | Notes |
+|---|---|
+| Status | `A_DRAFT` / `E_WIN` / `G_STORNO` |
+| Security Level | Loaded from Raynet |
+| Template | Boolean |
+| Valid From / Valid Until | Sent as `YYYY-MM-DD` |
+
+### Update-only fields
+
+Folder ID, Link (collection: link URL + link name), File (collection: UUID, file name, content type, file size)
+
+---
+
 ## Invoice
 
 API path: `/api/v2/invoiceLight/`
