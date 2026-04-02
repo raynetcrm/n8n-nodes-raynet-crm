@@ -152,6 +152,43 @@ First/last name, company name, company ID, user ID, email, owner, category, clas
 
 ---
 
+## Lead
+
+API path: `/api/v2/lead/`
+
+Operations: Create, Update, Get, Get Many, Delete, Lock, Unlock — **no** Invalidate / Renew Validity, no tags
+
+### Required (Create)
+
+| Field | Type | Values |
+|---|---|---|
+| Topic | string | |
+| Priority | options | Critical (`CRITICAL`) / Default (`DEFAULT`) / Minor (`MINOR`) |
+
+### Optional (Create & Update)
+
+| Field | Notes |
+|---|---|
+| Owner, Security Level, Category, Contact Source | Loaded from Raynet |
+| Lead Phase | Status in the lead pipeline (loaded from Raynet) |
+| Territory | Loaded from Raynet |
+| Company Name, First Name, Last Name, Title Before/After | Name / company fields |
+| ID no. (`regNumber`) | Registration number |
+| Email, Phone, Website | Contact info |
+| Address | Street, city, ZIP, province, country code |
+| Tags, Note (`notice`) | |
+
+### Update-only
+
+Topic, Priority
+
+### Get Many — filters
+
+Topic, Company Name, Last Name, Priority, Lead Phase ID, Owner ID, Contact Source ID, Lead Date, ID, Created/Updated/LastModified At.
+Extra: Status (Active `B_ACTIVE` / Done `D_DONE` / Cancelled `G_STORNO`).
+
+---
+
 ## Project
 
 API path: `/api/v2/project/`
