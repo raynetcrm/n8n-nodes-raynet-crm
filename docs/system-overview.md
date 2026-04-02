@@ -1,6 +1,6 @@
 ---
 doc_id: system-overview-raynet-crm
-version: 6
+version: 7
 source_of_truth: true
 ---
 
@@ -47,6 +47,7 @@ Every resource lives under `nodes/Raynet/{resource}/` with 4 files:
 | `lead/` | `leadConfig` | `/lead/` |
 | `priceList/` | `priceListConfig` | `/priceList/` |
 | `project/` | `projectConfig` | `/project/` |
+| `product/` | `productConfig` | `/product/` |
 
 ### Other components
 
@@ -68,7 +69,7 @@ n8n workflow
     ▼
 Raynet.node.ts                     ← dispatches by resource + operation
     │
-    ├── {resource}/index.ts         ← EntityConfig (account, deal, quote, person, salesOrder, project, lead, priceList)
+    ├── {resource}/index.ts         ← EntityConfig (account, deal, quote, person, salesOrder, project, lead, priceList, product)
     │       ├── {Resource}Properties.ts  → INodeProperties[]
     │       ├── {Resource}Body.ts        → request payload
     │       └── {Resource}LoadOptions.ts → picklist population

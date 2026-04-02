@@ -305,6 +305,38 @@ See [Shared item fields](#shared-item-fields-deal--quote--sales-order).
 
 ---
 
+## Product
+
+API path: `/api/v2/product/`
+
+Operations: Create, Update, Get, Get Many, Delete, Invalidate, Renew Validity — **no** Lock / Unlock, no tags
+
+### Required (Create)
+
+| Field | Type |
+|---|---|
+| Code | string — unique product code |
+| Name | string |
+
+### Optional (Create & Update)
+
+| Field | Notes |
+|---|---|
+| Unit | Unit of measure |
+| Description | Free text |
+| VAT Rate (%) | Tax rate |
+| Category | Loaded from Raynet |
+| Product Line | Loaded from Raynet |
+| Cost | Internal cost |
+| Standard Price | List price |
+| Tags | Comma-separated |
+
+### Get Many — filters
+
+Name, Code, Category ID, Product Line ID, ID, Created/Updated/LastModified At.
+
+---
+
 ## Shared item fields (Deal / Quote / Sales Order)
 
 ### Add Item
