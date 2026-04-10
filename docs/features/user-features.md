@@ -1,16 +1,16 @@
 ---
 doc_id: features-raynet-crm
-version: 10
+version: 11
 source_of_truth: true
 owner: n8n-nodes-raynet maintainer
-last_reviewed: 2026-03-28
+last_reviewed: 2026-04-10
 ---
 
 # Raynet CRM Node — Product Capabilities
 
 ## Purpose and Product Scope
 
-The **Raynet CRM** n8n node lets users read and manage CRM data from inside any n8n workflow without writing custom API code. It exposes twelve core Raynet CRM entities — **Accounts**, **Persons**, **Deals**, **Quotes**, **Sales Orders**, **Projects**, **Leads**, **Price Lists**, **Products**, **Invoices**, **Documents**, and **Folders** — with full CRUD, lifecycle management, tagging, and (for Deals, Quotes, and Sales Orders) item management operations. Projects additionally support participant management.
+The **Raynet CRM** n8n node lets users read and manage CRM data from inside any n8n workflow without writing custom API code. It exposes nineteen Raynet CRM entities — **Accounts**, **Persons**, **Deals**, **Quotes**, **Sales Orders**, **Projects**, **Leads**, **Price Lists**, **Products**, **Invoices**, **Documents**, **Folders**, **Tasks**, **Calls**, **Meetings**, **Emails**, **Events**, **Letters**, and **Mass Emails** — with full CRUD, lifecycle management, tagging, and (for Deals, Quotes, and Sales Orders) item management operations. Projects additionally support participant management.
 
 All picklist fields (categories, classifications, owners, security levels, phone types, etc.) are populated dynamically at runtime from the user's own Raynet instance, so dropdown options always reflect the actual CRM configuration.
 
@@ -67,6 +67,13 @@ Then restart n8n. The **Raynet CRM** node will appear in the node palette.
 | Invoice | Invoice (light) | [invoice.md](invoice.md) |
 | Document | Document management (DMS) | [document.md](document.md) |
 | Folder | DMS folder management | [folder.md](folder.md) |
+| Task | Task activity | [task.md](task.md) |
+| Call | Phone call activity | [call.md](call.md) |
+| Meeting | Meeting activity | [meeting.md](meeting.md) |
+| Email | Email activity | [email.md](email.md) |
+| Event | Event activity | [event.md](event.md) |
+| Letter | Letter activity | [letter.md](letter.md) |
+| Mass Email | Mass email campaign | [mass-email.md](mass-email.md) |
 
 ---
 

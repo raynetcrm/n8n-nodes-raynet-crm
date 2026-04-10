@@ -474,3 +474,238 @@ Name, Code, Category ID, Product Line ID, ID, Created/Updated/LastModified At.
 | Price List Item ID | Required — identifies the line item |
 | Name | |
 | Selling Price, Tax (%), Quantity, Discount (%), Cost per Piece, Unit, Note | Same as Add Item |
+
+---
+
+## Task
+
+API path: `/api/v2/task/`
+
+Operations: Create, Update, Get, Get Many, Delete, Lock, Unlock
+
+### Required (Create)
+
+| Field | Type |
+|---|---|
+| Title | string |
+| Priority | MINOR / DEFAULT / CRITICAL |
+| Owner | user lookup |
+| Resolver | user lookup |
+| Deadline | dateTime |
+
+### Optional (Create & Update)
+
+| Field | Notes |
+|---|---|
+| Status | NEW / SCHEDULED / COMPLETED / CANCELLED |
+| Category | activityCategory picklist |
+| Security Level | securityLevel picklist |
+| Scheduled From / Till | dateTime |
+| Date of Completion | dateTime — requires Status COMPLETED or CANCELLED |
+| Task Description | string |
+| Task Solution | string |
+| Tags | comma-separated string |
+| Contact ID, Account ID, Deal ID, Quote ID, Sales Order ID, Project ID, Activity ID | relation IDs |
+
+### Get Many — Filters
+
+id, title, status, owner-id, category-id, scheduledFrom, scheduledTill, completed, deadline, personFilter, companyContextFilter, leadContextFilter, businessCase, rowInfo.createdAt, rowInfo.updatedAt, rowInfo.lastModifiedAt
+
+---
+
+## Call
+
+API path: `/api/v2/phoneCall/`
+
+Operations: Create, Update, Get, Get Many, Delete, Lock, Unlock
+
+### Required (Create)
+
+| Field | Type |
+|---|---|
+| Title | string |
+| Priority | MINOR / DEFAULT / CRITICAL |
+| Owner | user lookup |
+
+### Optional (Create & Update)
+
+| Field | Notes |
+|---|---|
+| Status | NEW / SCHEDULED / COMPLETED / CANCELLED |
+| Category | activityCategory picklist |
+| Security Level | securityLevel picklist |
+| Scheduled From / Till | dateTime |
+| Date of Completion | dateTime |
+| Phone Call Description | string |
+| Phone Call Outcome | string |
+| Tags | comma-separated string |
+| Contact ID, Account ID, Deal ID, Quote ID, Sales Order ID, Project ID, Activity ID | relation IDs |
+
+### Get Many — Filters
+
+id, title, status, owner-id, category-id, scheduledFrom, scheduledTill, completed, personFilter, companyContextFilter, leadContextFilter, businessCase, rowInfo.*
+
+---
+
+## Meeting
+
+API path: `/api/v2/meeting/`
+
+Operations: Create, Update, Get, Get Many, Delete, Lock, Unlock
+
+### Required (Create)
+
+| Field | Type |
+|---|---|
+| Title | string |
+| Priority | MINOR / DEFAULT / CRITICAL |
+| Owner | user lookup |
+
+### Optional (Create & Update)
+
+| Field | Notes |
+|---|---|
+| Status | NEW / SCHEDULED / COMPLETED / CANCELLED |
+| Category | activityCategory picklist |
+| Security Level | securityLevel picklist |
+| Scheduled From / Till | dateTime |
+| Date of Completion | dateTime |
+| Questions to Discuss | string |
+| Meeting Outcome | string |
+| Tags | comma-separated string |
+| Contact ID, Account ID, Deal ID, Quote ID, Sales Order ID, Project ID, Activity ID | relation IDs |
+
+### Get Many — Filters
+
+id, title, status, owner-id, category-id, scheduledFrom, scheduledTill, completed, personFilter, companyContextFilter, leadContextFilter, businessCase, rowInfo.*
+
+---
+
+## Email
+
+API path: `/api/v2/email/`
+
+Operations: Create, Update, Get, Get Many, Delete, Lock, Unlock
+
+### Required (Create)
+
+| Field | Type |
+|---|---|
+| Title | string |
+| Priority | MINOR / DEFAULT / CRITICAL |
+| Owner | user lookup |
+
+### Optional (Create & Update)
+
+| Field | Notes |
+|---|---|
+| Status | NEW / SCHEDULED / COMPLETED / CANCELLED |
+| Category | activityCategory picklist |
+| Security Level | securityLevel picklist |
+| Scheduled From / Till | dateTime |
+| Date of Completion | dateTime |
+| Email Content | string |
+| Tags | comma-separated string |
+| Contact ID, Account ID, Deal ID, Quote ID, Sales Order ID, Project ID, Activity ID | relation IDs |
+
+### Get Many — Filters
+
+id, title, status, owner-id, category-id, scheduledFrom, scheduledTill, completed, personFilter, companyContextFilter, leadContextFilter, businessCase, rowInfo.*
+
+---
+
+## Event
+
+API path: `/api/v2/event/`
+
+Operations: Create, Update, Get, Get Many, Delete, Lock, Unlock
+
+### Required (Create)
+
+| Field | Type |
+|---|---|
+| Title | string |
+| Priority | MINOR / DEFAULT / CRITICAL |
+| Owner | user lookup |
+
+### Optional (Create & Update)
+
+| Field | Notes |
+|---|---|
+| Status | NEW / SCHEDULED / COMPLETED / CANCELLED |
+| Category | activityCategory picklist |
+| Security Level | securityLevel picklist |
+| Scheduled From / Till | dateTime |
+| Date of Completion | dateTime |
+| Event Info | string |
+| Tags | comma-separated string |
+| Contact ID, Account ID, Deal ID, Quote ID, Sales Order ID, Project ID, Activity ID | relation IDs |
+
+### Get Many — Filters
+
+id, title, status, owner-id, category-id, scheduledFrom, scheduledTill, completed, personFilter, companyContextFilter, leadContextFilter, businessCase, rowInfo.*
+
+---
+
+## Letter
+
+API path: `/api/v2/letter/`
+
+Operations: Create, Update, Get, Get Many, Delete, Lock, Unlock
+
+### Required (Create)
+
+| Field | Type |
+|---|---|
+| Title | string |
+| Priority | MINOR / DEFAULT / CRITICAL |
+| Owner | user lookup |
+
+### Optional (Create & Update)
+
+| Field | Notes |
+|---|---|
+| Status | NEW / SCHEDULED / COMPLETED / CANCELLED |
+| Category | activityCategory picklist |
+| Security Level | securityLevel picklist |
+| Scheduled From / Till | dateTime |
+| Date of Completion | dateTime |
+| Content of the Letter | string |
+| Tags | comma-separated string |
+| Contact ID, Account ID, Deal ID, Quote ID, Sales Order ID, Project ID, Activity ID | relation IDs |
+
+### Get Many — Filters
+
+id, title, status, owner-id, category-id, scheduledFrom, scheduledTill, completed, personFilter, companyContextFilter, leadContextFilter, businessCase, rowInfo.*
+
+---
+
+## Mass Email
+
+API path: `/api/v2/massEmail/`
+
+Operations: Create, Update, Get, Get Many, Delete
+
+### Required (Create)
+
+| Field | Type |
+|---|---|
+| Title | string |
+| Source | QUANDA / SMARTEMAILING / MAILCHIMP / MAILGUN / SENDGRID / SPARKPOST / ECOMAIL |
+| External ID | string |
+
+### Optional (Create & Update)
+
+| Field | Notes |
+|---|---|
+| Date Sent | dateTime |
+| Description | string |
+| Tags | comma-separated string |
+| Campaign Name | string |
+| External Overview URL | string |
+| External Thumbnail URL | string |
+| Stats | fixedCollection: sent, clicked, opened, unsubscribed (numbers) |
+
+### Get Many — Filters
+
+title, completed, campaignName, source, tags, rowInfo.createdAt, rowInfo.updatedAt, rowInfo.lastModifiedAt

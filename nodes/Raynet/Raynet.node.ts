@@ -19,6 +19,13 @@ import { getProductProperties, productLoadOptions, productConfig } from './produ
 import { getInvoiceProperties, invoiceLoadOptions, invoiceConfig } from './invoice';
 import { getDocumentProperties, documentLoadOptions, documentConfig } from './document';
 import { getFolderProperties, folderLoadOptions, folderConfig } from './folder';
+import { getTaskProperties, taskLoadOptions, taskConfig } from './task';
+import { getCallProperties, callLoadOptions, callConfig } from './call';
+import { getMeetingProperties, meetingLoadOptions, meetingConfig } from './meeting';
+import { getEmailProperties, emailLoadOptions, emailConfig } from './email';
+import { getEventProperties, eventLoadOptions, eventConfig } from './event';
+import { getLetterProperties, letterLoadOptions, letterConfig } from './letter';
+import { getMassEmailProperties, massEmailLoadOptions, massEmailConfig } from './massEmail';
 
 // ---------------------------------------------------------------------------
 // Resources & entity registry
@@ -37,6 +44,13 @@ const RESOURCE_OPTIONS = [
     { name: 'Folder', value: 'folder', description: 'DMS folder' },
     { name: 'Invoice', value: 'invoice', description: 'Invoice' },
     { name: 'Sales Order', value: 'salesOrder', description: 'Sales order' },
+    { name: 'Task', value: 'task', description: 'Task' },
+    { name: 'Call', value: 'call', description: 'Phone call' },
+    { name: 'Meeting', value: 'meeting', description: 'Meeting' },
+    { name: 'Email', value: 'email', description: 'Email activity' },
+    { name: 'Event', value: 'event', description: 'Event' },
+    { name: 'Letter', value: 'letter', description: 'Letter' },
+    { name: 'Mass Email', value: 'massEmail', description: 'Mass email campaign' },
 ];
 
 const ENTITY_MAP: Record<string, EntityConfig> = {
@@ -52,6 +66,13 @@ const ENTITY_MAP: Record<string, EntityConfig> = {
     folder: folderConfig,
     project: projectConfig,
     salesOrder: salesOrderConfig,
+    task: taskConfig,
+    call: callConfig,
+    meeting: meetingConfig,
+    email: emailConfig,
+    event: eventConfig,
+    letter: letterConfig,
+    massEmail: massEmailConfig,
 };
 
 const allLoadOptions: Record<string, (this: ILoadOptionsFunctions) => Promise<INodePropertyOptions[]>> = {
@@ -69,6 +90,13 @@ const allLoadOptions: Record<string, (this: ILoadOptionsFunctions) => Promise<IN
     ...invoiceLoadOptions,
     ...documentLoadOptions,
     ...folderLoadOptions,
+    ...taskLoadOptions,
+    ...callLoadOptions,
+    ...meetingLoadOptions,
+    ...emailLoadOptions,
+    ...eventLoadOptions,
+    ...letterLoadOptions,
+    ...massEmailLoadOptions,
 };
 
 // ---------------------------------------------------------------------------
@@ -110,6 +138,13 @@ export class Raynet implements INodeType {
             ...getInvoiceProperties(),
             ...getDocumentProperties(),
             ...getFolderProperties(),
+            ...getTaskProperties(),
+            ...getCallProperties(),
+            ...getMeetingProperties(),
+            ...getEmailProperties(),
+            ...getEventProperties(),
+            ...getLetterProperties(),
+            ...getMassEmailProperties(),
         ],
         usableAsTool: true,
     };

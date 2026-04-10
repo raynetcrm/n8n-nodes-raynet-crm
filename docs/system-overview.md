@@ -1,6 +1,6 @@
 ---
 doc_id: system-overview-raynet-crm
-version: 10
+version: 11
 source_of_truth: true
 ---
 
@@ -51,6 +51,13 @@ Every resource lives under `nodes/Raynet/{resource}/` with 4 files:
 | `invoice/` | `invoiceConfig` | `/invoiceLight/` |
 | `document/` | `documentConfig` | `/dms/document/` |
 | `folder/` | `folderConfig` | `/dms/folder/` |
+| `task/` | `taskConfig` | `/task/` |
+| `call/` | `callConfig` | `/phoneCall/` |
+| `meeting/` | `meetingConfig` | `/meeting/` |
+| `email/` | `emailConfig` | `/email/` |
+| `event/` | `eventConfig` | `/event/` |
+| `letter/` | `letterConfig` | `/letter/` |
+| `massEmail/` | `massEmailConfig` | `/massEmail/` |
 
 ### Other components
 
@@ -72,10 +79,13 @@ n8n workflow
     ▼
 Raynet.node.ts                     ← dispatches by resource + operation
     │
-    ├── {resource}/index.ts         ← EntityConfig (account, deal, quote, person, salesOrder, project, lead, priceList, product, invoice, document, folder)
+    ├── {resource}/index.ts         ← EntityConfig (account, deal, quote, person, salesOrder, project, lead, priceList, product, invoice, document, folder, task, call, meeting, email, event, letter, massEmail)
     │       ├── {Resource}Properties.ts  → INodeProperties[]
     │       ├── {Resource}Body.ts        → request payload
     │       └── {Resource}LoadOptions.ts → picklist population
+    │
+    │
+    ├── activity/activityShared.ts  ← shared factory for task/call/meeting/email/event/letter
     │
     └── helpers.ts
             ├── raynetRequest()          → HTTP via httpRequestWithAuthentication
