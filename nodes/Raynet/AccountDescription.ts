@@ -10,6 +10,7 @@ import {
   getCustomFields,
   createPicklistLoader,
   OperationType,
+  CustomFieldEntity,
   showOptionsForOp,
 } from './helpers';
 import type { EntityConfig } from './helpers';
@@ -140,6 +141,33 @@ const CREATE_OPTIONAL_FIELDS: INodeProperties[] = [
   { displayName: 'Birthday/Anniversary', name: 'birthday', type: 'dateTime', default: '' },
   ADDRESSES_FIELD,
   { displayName: 'Tags', name: 'tags', type: 'string', default: '', description: 'Comma-separated list of tags' },
+  {
+    displayName: 'Custom Fields',
+    name: 'customFields',
+    type: 'fixedCollection',
+    placeholder: 'Add custom field',
+    typeOptions: { multipleValues: true },
+    default: {},
+    options: [
+      {
+        name: 'field',
+        displayName: 'Field',
+        values: [
+          // Field selector
+          {
+            displayName: 'Field',
+            name: 'fieldId',
+            type: 'options',
+            typeOptions: {
+              loadOptionsMethod: 'getCompanyCustomFields',
+            },
+            default: '',
+          },
+          { displayName: 'Value', name: 'value', type: 'string', default: '' },
+        ],
+      },
+    ],
+  },
 ];
 
 // Update has the same fields plus Name, Rating, Status, Relationship
@@ -388,6 +416,11 @@ export function buildAccountBody(ctx: IExecuteFunctions, operation: 'create' | '
       continue;
     }
 
+    if (key === 'customFields') {
+      body.customFields = flattenFixedCollection(value as Record<string, unknown>, 'field');
+      continue;
+    }
+
     body[key] = value;
   }
 
@@ -424,6 +457,15 @@ export const accountLoadOptions: Record<string, (this: ILoadOptionsFunctions) =>
   getCompanyClassifications2: createPicklistLoader(PICKLIST_PATHS.companyClassifications2),
   getCompanyClassifications3: createPicklistLoader(PICKLIST_PATHS.companyClassifications3),
   getTerritories: createPicklistLoader(PICKLIST_PATHS.territories),
+  async getCompanyCustomFields(this: ILoadOptionsFunctions) {
+    const currentFields = this.getCurrentNodeParameters() as any;
+    const usedFields = (currentFields.customFields?.field || []).map((f: Record<string, unknown>) => f.fieldId);
+    const allFields = await getCustomFields.call(this, CustomFieldEntity.COMPANY);
+
+    return allFields
+      .filter((field: any) => !usedFields.includes(field.id))
+      .map((field: any) => ({ name: field.name, value: field.id })) as INodePropertyOptions[];
+  },
 };
 
 // ---------------------------------------------------------------------------

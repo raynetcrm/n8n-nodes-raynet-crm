@@ -227,6 +227,82 @@ export interface EntityConfig {
   getManyExtraQs?: (ctx: IExecuteFunctions) => Record<string, string | number | boolean | undefined>;
 }
 
+/** A single item representing a custom field */
+export type CustomFieldItem = {
+  label: string;
+  dataType: string;
+  enumeration: any[];
+  groupName: string;
+  name: string;
+};
+
+/** Represents the response structure for custom field data. */
+type CustomFieldResponse = {
+  success: true;
+  data: Record<CustomFieldEntity, CustomFieldItem[]>;
+};
+
+/**
+ * Entities that support custom fields, used for loading them in the UI and building the body in create/update operations.
+ */
+export enum CustomFieldEntity {
+  COMPANY = 'Company',
+  PERSON = 'Person',
+  LEAD = 'Lead',
+  BUSINESS_CASE = 'BusinessCase',
+  OFFER = 'Offer',
+  SALES_ORDER = 'SalesOrder',
+  PRODUCT = 'Product',
+  PROJECT = 'Project',
+  TASK = 'Task',
+  MEETING = 'Meeting',
+  EVENT = 'Event',
+  LETTER = 'Letter',
+  EMAIL = 'Email',
+  PHONE_CALL = 'PhoneCall',
+}
+
+/**
+ * Maps from Raynet field types to n8n field types for the custom fields endpoint.
+ */
+const raynetToN8nTypes: Record<string, NodePropertyTypes> = {
+  STRING: 'string',
+  TEXT: 'string',
+  ENUMERATION: 'options',
+  HYPERLINK: 'string',
+  DATE: 'dateTime',
+  DATETIME: 'dateTime',
+  TIME: 'dateTime',
+  BIG_DECIMAL: 'number',
+  MONETARY: 'number',
+  PERCENT: 'number',
+  BOOLEAN: 'boolean',
+};
+
+/**
+ * Loads custom fields for the given entity, which can be used in create/update operations.
+ * @returns An array of INodePropertyOptions representing the custom fields, with types mapped from Raynet to n8n types and options generated for enumeration fields.
+ */
+export async function getCustomFields(this: ILoadOptionsFunctions, entity: CustomFieldEntity): Promise<INodePropertyOptions[]> {
+  const res = (await raynetRequest.call(this, 'GET', '/customField/config/')) as CustomFieldResponse;
+  return res.data?.[entity].map((item) => {
+    let ret: INodePropertyOptions = {} as INodePropertyOptions;
+    ret.name = item.label + (item.dataType === 'ENUMERATION' ? ' (Dropdown)' : '');
+    ret.value = item.name;
+    if (item.dataType === 'ENUMERATION') {
+      ret.description = 'Allows values: ' + item.enumeration.join(', ');
+    }
+    // if (Object.keys(raynetToN8nTypes).includes(item.dataType)) {
+    //   ret.type = raynetToN8nTypes[item.dataType];
+    // } else {
+    //   ret.type = 'string';
+    // }
+    // if (item.dataType === 'ENUMERATION') {
+    //   ret.options = item.enumeration.map((o) => ({ name: o, value: o }));
+    // }
+    return ret;
+  });
+}
 
 /**
  * Standard set of operations across all entities, plus some extra ones for specific entities (e.g. lock/unlock for companies and contacts).
