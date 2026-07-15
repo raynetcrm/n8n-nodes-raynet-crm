@@ -34,7 +34,7 @@ import { getMassEmailProperties, massEmailLoadOptions, massEmailConfig } from '.
 const RESOURCE_OPTIONS = [
     { name: 'Account', value: 'account', description: 'Contact – account (company or individual)' },
     { name: 'Deal', value: 'deal', description: 'Business case / deal' },
-    { name: 'Person', value: 'person', description: 'Contact – person (individual contact)' },
+    { name: 'Contact', value: 'person', description: 'Contact – person (individual contact)' },
     { name: 'Quote', value: 'quote', description: 'Quote (offer)' },
     { name: 'Lead', value: 'lead', description: 'Lead' },
     { name: 'Price List', value: 'priceList', description: 'Price list' },
@@ -201,7 +201,23 @@ export class Raynet implements INodeType {
             try {
                 switch (operation) {
                     case OperationType.CREATE: {
-                        body = config.buildBody(this, 'create');
+                        // special case for file upload in document creation
+                        if (resource === 'document' && this.getNodeParameter('infoType', i) === 'file') {
+                            const binaryBody = this.getNodeParameter('binaryData', i);
+                            // call /fileUpload endpoint to upload the file and get a UUID
+                            const response = await raynetRequest.call(this, 'POST', '/fileUpload', {file: binaryBody}) as { data?: { uuid: string, fileName: string, contentType: string, fileSize: number } };
+                            if (!response?.data?.uuid) {
+                                throw new Error('File upload failed: no UUID returned');
+                            }
+                            // add the received info to the body for document creation
+                            body = {
+                                ...config.buildBody(this, 'create'),
+                                file: response.data,
+                            }
+                        }
+                        else { // normal create
+                            body = config.buildBody(this, 'create');
+                        }
                         const createRes = (await raynetRequest.call(this, 'PUT', config.listPath, body)) as {
                             success?: boolean;
                             data?: { id: number };

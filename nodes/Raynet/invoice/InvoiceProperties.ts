@@ -451,8 +451,10 @@ function getGetManyProperties(): INodeProperties[] {
                             type: 'options',
                             default: 'title',
                             options: [
+                                { name: "ID", value: "id" },
                                 { name: 'Title', value: 'title' },
                                 { name: 'Code', value: 'code' },
+                                { name: 'Account ID', value: 'company' },
                                 { name: 'Owner ID', value: 'owner' },
                                 { name: 'Deal ID', value: 'businessCase' },
                                 { name: 'Issue Date', value: 'issueDate' },
@@ -489,6 +491,14 @@ function getGetManyProperties(): INodeProperties[] {
             description: "Pass 'rowInfo' to return only status metadata",
             displayOptions: op(OperationType.GET_MANY),
         },
+        {
+            displayName: 'Tags',
+            name: 'tags',
+            type: 'string',
+            default: '',
+            description: 'Comma-separated list of tags to filter by',
+            displayOptions: op(OperationType.GET_MANY),
+        }
     ];
 }
 

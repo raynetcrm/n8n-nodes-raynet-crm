@@ -19,6 +19,7 @@ export function buildSalesOrderBody(ctx: IExecuteFunctions, operation: 'create' 
         if (value === undefined || value === null || value === '') {
             continue;
         }
+
         if (processCommonField(body, key, value)) {
             continue;
         }

@@ -118,7 +118,6 @@ const UPDATE_OPTIONAL_FIELDS: INodeProperties[] = [
 // ---------------------------------------------------------------------------
 
 const ADD_ITEM_FIELDS: INodeProperties[] = [
-    { displayName: 'Name', name: 'name', type: 'string', default: '' },
     { displayName: 'Product ID', name: 'product', type: 'number', default: 0 },
     { displayName: 'Product Code', name: 'productCode', type: 'string', default: '' },
     { displayName: 'Price List ID', name: 'priceList', type: 'number', default: 0 },
@@ -326,10 +325,11 @@ function getGetManyProperties(): INodeProperties[] {
                             default: 'name',
                             options: [
                                 { name: 'Name', value: 'name' },
-                                { name: 'Account ID', value: 'company.id' },
-                                { name: 'Deal ID', value: 'businessCase.id' },
+                                { name: 'Code', value: 'code' },
+                                { name: 'Account ID', value: 'company' },
+                                { name: 'Deal ID', value: 'businessCase' },
                                 { name: 'Open From', value: 'validFrom' },
-                                { name: 'Open Till', value: 'validTill' },
+                                { name: 'Closed', value: 'validTill' },
                                 { name: 'Valid To', value: 'expirationDate' },
                                 { name: 'ID', value: 'id' },
                                 { name: 'Created At', value: 'rowInfo.createdAt' },
@@ -350,6 +350,14 @@ function getGetManyProperties(): INodeProperties[] {
             ],
         },
         {
+            displayName: 'Owner',
+            name: 'owner',
+            type: 'options',
+            default: '',
+            typeOptions: { loadOptionsMethod: 'getUsers' },
+            displayOptions: op(OperationType.GET_MANY),
+        },
+        {
             displayName: 'Status',
             name: 'offerStatus',
             type: 'options',
@@ -360,7 +368,7 @@ function getGetManyProperties(): INodeProperties[] {
         },
         {
             displayName: 'Product Category ID',
-            name: 'productCategoryCustom',
+            name: 'productCategory[CUSTOM]',
             type: 'number',
             default: 0,
             description: 'Filter by product category ID',
@@ -368,7 +376,7 @@ function getGetManyProperties(): INodeProperties[] {
         },
         {
             displayName: 'Product Line ID',
-            name: 'productLineCustom',
+            name: 'productLine[CUSTOM]',
             type: 'number',
             default: 0,
             description: 'Filter by product line ID',
@@ -458,6 +466,14 @@ function getAddItemProperties(): INodeProperties[] {
             default: 0,
             displayOptions: op(OperationType.ADD_ITEM),
         },
+        {
+            displayName: "Name",
+            name: 'name',
+            type: 'string',
+            required: true,
+            default: '',
+            displayOptions: op(OperationType.ADD_ITEM),
+       },
         {
             displayName: 'Item Fields',
             name: 'itemFields',

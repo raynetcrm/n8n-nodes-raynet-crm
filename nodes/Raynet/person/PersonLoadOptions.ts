@@ -18,5 +18,5 @@ export const personLoadOptions: Record<string, (this: ILoadOptionsFunctions) => 
     getPersonClassifications3: createPicklistLoader(PICKLIST_PATHS.personClassifications3),
     getLanguages: createPicklistLoader(PICKLIST_PATHS.languages),
     getMaritalStatuses: createPicklistLoader(PICKLIST_PATHS.maritalStatuses),
-    getTelTypes: createPicklistLoader(PICKLIST_PATHS.telTypes),
+    getTelTypes: createPicklistLoader(PICKLIST_PATHS.telTypes, true), // allows empty string as a value (the field is not mandatory)
 };

@@ -194,6 +194,7 @@ const SHARED_OPTIONAL_FIELDS: INodeProperties[] = [
         description: 'Comma-separated list of tags',
     },
     { displayName: 'Key Person', name: 'keyman', type: 'boolean', default: false },
+    { displayName: 'Original Lead ID', name: 'originLead', type: 'number', default: 0, description: 'ID of the lead from which this contact was created' }
 ];
 
 const UPDATE_OPTIONAL_FIELDS: INodeProperties[] = [{ displayName: 'Last Name', name: 'lastName', type: 'string', default: '' }, ...SHARED_OPTIONAL_FIELDS];
@@ -397,7 +398,7 @@ function getGetManyProperties(): INodeProperties[] {
         },
         {
             displayName: 'Relationship Company ID',
-            name: 'personRelationshipCustom',
+            name: 'personRelationship[CUSTOM]',
             type: 'number',
             default: 0,
             description: 'Filter by the ID of a related company',

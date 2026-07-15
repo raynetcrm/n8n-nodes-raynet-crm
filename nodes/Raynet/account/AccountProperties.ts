@@ -69,6 +69,27 @@ const ADDRESS_VALUES: INodeProperties[] = [
     { displayName: 'Other Contact', name: 'otherContact', type: 'string', default: '' },
 ];
 
+const SOCIAL_NETWORKS_FIELD: INodeProperties = {
+    displayName: 'Social Networks',
+    name: 'socialNetworkContact',
+    type: 'fixedCollection',
+    default: {},
+    options: [
+        {
+            displayName: 'Social Network',
+            name: 'socialValues',
+            values: [
+                { displayName: 'Facebook', name: 'facebook', type: 'string', default: '' },
+                { displayName: 'Twitter/X', name: 'twitter', type: 'string', default: '' },
+                { displayName: 'Instagram', name: 'instagram', type: 'string', default: '' },
+                { displayName: 'YouTube', name: 'youtube', type: 'string', default: '' },
+                { displayName: 'Pinterest', name: 'pinterest', type: 'string', default: '' },
+                { displayName: 'Google+', name: 'googleplus', type: 'string', default: '' },
+            ],
+        },
+    ],
+};
+
 const ADDRESSES_FIELD: INodeProperties = {
     displayName: 'Addresses',
     name: 'addresses',
@@ -186,6 +207,7 @@ const CREATE_OPTIONAL_FIELDS: INodeProperties[] = [
     { displayName: 'Reference number (Court)', name: 'court', type: 'string', default: '' },
     { displayName: 'Birthday/Anniversary', name: 'birthday', type: 'dateTime', default: '' },
     ADDRESSES_FIELD,
+    SOCIAL_NETWORKS_FIELD,
     {
         displayName: 'Tags',
         name: 'tags',
@@ -193,6 +215,13 @@ const CREATE_OPTIONAL_FIELDS: INodeProperties[] = [
         default: '',
         description: 'Comma-separated list of tags',
     },
+    {
+        displayName: 'Original Lead ID',
+        name: 'originLead',
+        type: 'number',
+        default: 0,
+        description: 'ID of the lead from which this account was created',
+    }
 ];
 
 // Update has the same fields plus Name, Rating, Status, Relationship

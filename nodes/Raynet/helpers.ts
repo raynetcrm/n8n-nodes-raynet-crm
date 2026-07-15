@@ -65,17 +65,18 @@ export async function raynetRequest(
  * Loads a generic picklist from the given API path, mapping it to an array of INodePropertyOptions.
  * @param this Current ILoadOptionsFunctions context, used to get credentials and make the HTTP request
  * @param path The API endpoint for the picklist, e.g '/securityLevel/'
+ * @param allowEmpty Whether to include an empty option in the returned array. Defaults to false.
  * @returns A promise resolving to an array of INodePropertyOptions
  */
-export async function loadPicklist(this: ILoadOptionsFunctions, path: string): Promise<INodePropertyOptions[]> {
+export async function loadPicklist(this: ILoadOptionsFunctions, path: string, allowEmpty: boolean = false): Promise<INodePropertyOptions[]> {
     const credentials = await this.getCredentials('raynetApi');
     const res = (await this.helpers.httpRequestWithAuthentication.call(this as IAllExecuteFunctions, 'raynetApi', {
         url: `${getBaseUrl(credentials as { server?: string })}${path}`,
     } as IHttpRequestOptions)) as { data?: Array<{ id: number; code01?: string; value?: string; name?: string }> };
-    return (res?.data ?? []).map((p) => ({
+    return [...(res?.data ?? []).map((p) => ({
         name: p.code01 ?? p.value ?? p.name ?? `ID ${p.id}`,
         value: p.id,
-    }));
+    })), ...(allowEmpty ? [{ name: 'None', value: '' }] : [])];
 }
 
 export async function loadSecurityLevels(this: ILoadOptionsFunctions): Promise<INodePropertyOptions[]> {
@@ -250,6 +251,7 @@ export enum OperationType {
     ADD_PARTICIPANT = 'addParticipant',
     DELETE_PARTICIPANT = 'deleteParticipant',
     LIST_PARTICIPANTS = 'listParticipants',
+    UPLOAD_DOCUMENT = 'uploadDocument',
 }
 
 /**
@@ -266,11 +268,12 @@ export function stringToOperationType(s: string): OperationType {
 /**
  * Generates a function to load picklists for a specific API path, which can be used in the options of node parameters.
  * @param path The API endpoint for the picklist, e.g. '/securityLevel/'
+ * @param allowEmpty Whether to include an empty option in the returned array. Defaults to false.
  * @returns A function that can be used in the options of node parameters to load the picklist options from the API
  */
-export function createPicklistLoader(path: string) {
+export function createPicklistLoader(path: string, allowEmpty: boolean = false) {
     return function (this: ILoadOptionsFunctions): Promise<INodePropertyOptions[]> {
-        return loadPicklist.call(this, path);
+        return loadPicklist.call(this, path, allowEmpty);
     };
 }
 

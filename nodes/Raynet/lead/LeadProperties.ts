@@ -30,6 +30,60 @@ const STATUS_OPTIONS = [
     { name: 'Cancelled', value: 'G_STORNO' },
 ];
 
+const CONTACT_INFO_VALUES: INodeProperties[] = [
+    { displayName: 'Email', name: 'email', type: 'string', default: '' },
+    { displayName: 'Email 2', name: 'email2', type: 'string', default: '' },
+    { displayName: 'Phone 1', name: 'tel1', type: 'string', default: '' },
+    {
+        displayName: 'Phone 1 Type',
+        name: 'tel1Type',
+        type: 'options',
+        default: '',
+        typeOptions: { loadOptionsMethod: 'getTelTypes' },
+    },
+    { displayName: 'Phone 2', name: 'tel2', type: 'string', default: '' },
+    {
+        displayName: 'Phone 2 Type',
+        name: 'tel2Type',
+        type: 'options',
+        default: '',
+        typeOptions: { loadOptionsMethod: 'getTelTypes' },
+    },
+    { displayName: 'WWW', name: 'www', type: 'string', default: '' },
+    { displayName: 'Fax', name: 'fax', type: 'string', default: '' },
+    { displayName: 'Other Contact', name: 'otherContact', type: 'string', default: '' },
+];
+
+const CONTACT_INFO_FIELD: INodeProperties = {
+    displayName: 'Contact Info',
+    name: 'contactInfo',
+    type: 'fixedCollection',
+    default: {},
+    options: [{ displayName: 'Contact Info', name: 'contactInfoValues', values: CONTACT_INFO_VALUES }],
+};
+
+const SOCIAL_NETWORKS_FIELD: INodeProperties = {
+    displayName: 'Social Networks',
+    name: 'socialNetworkContact',
+    type: 'fixedCollection',
+    default: {},
+    options: [
+        {
+            displayName: 'Social Network',
+            name: 'socialValues',
+            values: [
+                { displayName: 'Facebook', name: 'facebook', type: 'string', default: '' },
+                { displayName: 'Twitter/X', name: 'twitter', type: 'string', default: '' },
+                { displayName: 'Instagram', name: 'instagram', type: 'string', default: '' },
+                { displayName: 'YouTube', name: 'youtube', type: 'string', default: '' },
+                { displayName: 'Pinterest', name: 'pinterest', type: 'string', default: '' },
+                { displayName: 'Google+', name: 'googleplus', type: 'string', default: '' },
+            ],
+        },
+    ],
+};
+
+
 // ---------------------------------------------------------------------------
 // Shared optional fields
 // ---------------------------------------------------------------------------
@@ -83,28 +137,27 @@ const SHARED_OPTIONAL_FIELDS: INodeProperties[] = [
     { displayName: 'Title Before', name: 'titleBefore', type: 'string', default: '' },
     { displayName: 'Title After', name: 'titleAfter', type: 'string', default: '' },
     { displayName: 'ID no.', name: 'regNumber', type: 'string', default: '' },
-    { displayName: 'Email', name: 'email1', type: 'string', default: '' },
-    { displayName: 'Phone', name: 'phone1', type: 'string', default: '' },
-    { displayName: 'Website', name: 'www', type: 'string', default: '' },
+    { displayName: 'Tax ID', name: 'taxNumber', type: 'string', default: '' },
+    { displayName: 'VAT ID', name: 'taxNumber2', type: 'string', default: '' },
+    { displayName: 'Data box', name: 'databox', type: 'string', default: '' },
+
+    CONTACT_INFO_FIELD,
+    SOCIAL_NETWORKS_FIELD,
     {
         displayName: 'Address',
         name: 'address',
         type: 'fixedCollection',
         default: {},
         options: [
-            {
-                displayName: 'Address Data',
-                name: 'addressData',
-                values: [
                     { displayName: 'Street', name: 'street', type: 'string', default: '' },
                     { displayName: 'City', name: 'city', type: 'string', default: '' },
                     { displayName: 'ZIP Code', name: 'zipCode', type: 'string', default: '' },
                     { displayName: 'Province', name: 'province', type: 'string', default: '' },
                     { displayName: 'Country Code', name: 'countryCode', type: 'string', default: '' },
-                ],
-            },
         ],
     },
+    { displayName: 'Lead Date', name: 'leadDate', type: 'dateTime', default: '' },
+    { displayName: 'Individual Person', name: 'leadPerson', type: 'boolean', default: false },
     {
         displayName: 'Tags',
         name: 'tags',
@@ -155,7 +208,7 @@ function getCreateProperties(): INodeProperties[] {
             displayName: 'Topic',
             name: 'topic',
             type: 'string',
-            required: true,
+            required: true  ,
             default: '',
             description: 'Subject / topic of the lead',
             displayOptions: op(OperationType.CREATE),
@@ -287,9 +340,9 @@ function getGetManyProperties(): INodeProperties[] {
                                 { name: 'Company Name', value: 'companyName' },
                                 { name: 'Last Name', value: 'lastName' },
                                 { name: 'Priority', value: 'priority' },
-                                { name: 'Lead Phase ID', value: 'leadPhase.id' },
-                                { name: 'Owner ID', value: 'owner.id' },
-                                { name: 'Contact Source ID', value: 'contactSource.id' },
+                                { name: 'Lead Phase ID', value: 'leadPhase' },
+                                { name: 'Owner ID', value: 'owner' },
+                                { name: 'Contact Source ID', value: 'contactSource' },
                                 { name: 'Lead Date', value: 'leadDate' },
                                 { name: 'ID', value: 'id' },
                                 { name: 'Created At', value: 'rowInfo.createdAt' },

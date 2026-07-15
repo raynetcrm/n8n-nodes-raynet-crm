@@ -26,6 +26,13 @@ export function buildLeadBody(ctx: IExecuteFunctions, operation: 'create' | 'upd
             }
             continue;
         }
+                if (key === 'socialNetworkContact') {
+            const flat = flattenFixedCollection(value, 'socialValues');
+            if (flat) {
+                body.socialNetworkContact = flat;
+            }
+            continue;
+        }
         body[key] = value;
     }
 

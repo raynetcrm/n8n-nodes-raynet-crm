@@ -102,6 +102,12 @@ const SHARED_OPTIONAL_FIELDS: INodeProperties[] = [
         typeOptions: { loadOptionsMethod: 'getDealClassifications3' },
     },
     {
+        displayName: 'Lead ID',
+        name: 'originLead',
+        type: 'number',
+        default: 0,
+    },
+    {
         displayName: 'Tags',
         name: 'tags',
         type: 'string',
@@ -289,12 +295,13 @@ function getGetManyProperties(): INodeProperties[] {
                             default: 'name',
                             options: [
                                 { name: 'Name', value: 'name' },
+                                { name: 'Code' , value: 'code' },
                                 { name: 'Account ID', value: 'company.id' },
                                 { name: 'Valid From', value: 'validFrom' },
                                 { name: 'Valid Till', value: 'validTill' },
                                 { name: 'Scheduled End', value: 'scheduledEnd' },
-                                { name: 'Phase ID', value: 'businessCasePhase.id' },
-                                { name: 'Deal Type ID', value: 'businessCaseType.id' },
+                                { name: 'Phase ID', value: 'businessCasePhase' },
+                                { name: 'Deal Type ID', value: 'businessCaseType' },
                                 { name: 'ID', value: 'id' },
                                 { name: 'Created At', value: 'rowInfo.createdAt' },
                                 { name: 'Updated At', value: 'rowInfo.updatedAt' },
@@ -422,6 +429,14 @@ function getAddItemProperties(): INodeProperties[] {
             default: 0,
             displayOptions: op([OperationType.ADD_ITEM]),
         },
+        { 
+            displayName: 'Name',
+            name: 'name',
+            type: 'string',
+            required: true,
+            default: '',
+            displayOptions: op([OperationType.ADD_ITEM]),
+        },
         {
             displayName: 'Item Fields',
             name: 'itemFields',
@@ -430,7 +445,6 @@ function getAddItemProperties(): INodeProperties[] {
             default: {},
             displayOptions: op([OperationType.ADD_ITEM]),
             options: [
-                { displayName: 'Name', name: 'name', type: 'string', default: '' },
                 { displayName: 'Product ID', name: 'product', type: 'number', default: 0 },
                 { displayName: 'Product Code', name: 'productCode', type: 'string', default: '' },
                 { displayName: 'Price List ID', name: 'priceList', type: 'number', default: 0 },
@@ -473,7 +487,6 @@ function getModifyItemProperties(): INodeProperties[] {
             displayOptions: op([OperationType.MODIFY_ITEM]),
             options: [
                 { displayName: 'Name', name: 'name', type: 'string', default: '' },
-                { displayName: 'Price List Item ID', name: 'priceListItem', type: 'number', default: 0 },
                 { displayName: 'Selling Price', name: 'price', type: 'number', default: 0 },
                 { displayName: 'Tax (%)', name: 'taxRate', type: 'number', default: 0 },
                 { displayName: 'Quantity', name: 'count', type: 'number', default: 0 },

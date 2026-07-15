@@ -34,7 +34,7 @@ const SHARED_OPTIONAL_FIELDS: INodeProperties[] = [
     },
     { displayName: 'Cost', name: 'cost', type: 'number', default: 0 },
     { displayName: 'Standard Price', name: 'price', type: 'number', default: 0 },
-    { displayName: 'Tags', name: 'tags', type: 'string', default: '', description: 'Comma-separated list of tags' },
+    { displayName: 'Tags', name: 'tags', type: 'string', default: '', description: 'Comma-separated list of tags to assign to the product' },
 ];
 
 const UPDATE_OPTIONAL_FIELDS: INodeProperties[] = [
@@ -202,12 +202,13 @@ function getGetManyProperties(): INodeProperties[] {
                             options: [
                                 { name: 'Name', value: 'name' },
                                 { name: 'Code', value: 'code' },
-                                { name: 'Category ID', value: 'category.id' },
-                                { name: 'Product Line ID', value: 'productLine.id' },
+                                { name: 'Category ID', value: 'category' },
+                                { name: 'Product Line ID', value: 'productLine' },
                                 { name: 'ID', value: 'id' },
                                 { name: 'Created At', value: 'rowInfo.createdAt' },
                                 { name: 'Updated At', value: 'rowInfo.updatedAt' },
                                 { name: 'Last Modified At', value: 'rowInfo.lastModifiedAt' },
+                                { name: 'Unit', value: 'unit'}
                             ],
                         },
                         {
@@ -230,6 +231,14 @@ function getGetManyProperties(): INodeProperties[] {
             description: "Pass 'rowInfo' to return only status metadata",
             displayOptions: op(OperationType.GET_MANY),
         },
+        {
+            displayName: 'Tags',
+            name: 'tags',
+            type: 'string',
+            default: '',
+            description: 'Comma-separated list of tags to filter by. The record must contain at least one of the tags.',
+            displayOptions: op(OperationType.GET_MANY),
+        }
     ];
 }
 

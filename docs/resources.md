@@ -31,6 +31,7 @@ Operations: Create, Update, Get, Get Many, Delete, Lock, Unlock, Invalidate, Ren
 | ID no., Tax ID no., VAT ID no., VAT Payer | Registration / tax |
 | Bank account, Databox, Reference number (Court) | Financial / legal |
 | Birthday / Anniversary | Truncated to `YYYY-MM-DD` |
+| Social Network Contacts | Facebook, Google+, Twitter/X, LinkedIn, Pinterest, Instagram, Youtube, WhatsApp, TikTok, Thread 
 | Addresses | Street, city, ZIP, country, territory, phone, email, fax, www |
 | Tags | Comma-separated |
 | Note | Free text |
@@ -60,7 +61,7 @@ Operations: Create, Update, Get, Get Many, Delete, Lock, Unlock, Invalidate, Ren
 |---|---|
 | Owner, Security Level, Contact Source, Category | Loaded from Raynet |
 | Phase, Classification 1 / 2 / 3, Currency | Loaded from Raynet |
-| Contact Person ID, Project ID | Related record IDs |
+| Contact Person ID, Project ID, Lead ID | Related record IDs |
 | Final Price, Estimated Costs, Probability (%) | Numbers |
 | Open From (`validFrom`) | `YYYY-MM-DD` |
 | Tags, Note | |
@@ -71,7 +72,7 @@ Name, Account ID, Closed Date (`validTill`), Scheduled End (`scheduledEnd`)
 
 ### Get Many — filters
 
-Name, Account ID, Valid From, Valid Till, Scheduled End, Phase ID, Deal Type ID, ID, Created/Updated/LastModified At.
+Name, Code, Account ID, Valid From, Valid Till, Scheduled End, Phase ID, Deal Type ID, ID, Created/Updated/LastModified At.
 Extra: Status (Active / Won / Lost / Cancelled), Product Category ID, Product Line ID.
 
 ### Items
@@ -119,7 +120,7 @@ See [Shared item fields](#shared-item-fields-deal--quote--sales-order).
 
 ---
 
-## Person
+## Contact
 
 API path: `/api/v2/person/`
 
@@ -296,7 +297,7 @@ Name, Account ID, Deal ID
 
 ### Get Many — filters
 
-Name, Account ID, Deal ID, Open From, Open Till, Valid To, Deliver Before, Status ID, ID, Created/Updated/LastModified At.
+Name, Account ID, Deal ID, Open From, Open Till, Valid To, Deliver Before, Status ID, ID, Created/Updated/LastModified At, Unit.
 Extra: Status (Active / Won / Lost / Cancelled), Product Category ID (`productCategory[CUSTOM]`), Product Line ID (`productLine[CUSTOM]`).
 
 ### Items
@@ -471,7 +472,7 @@ Name, Code, Category ID, Product Line ID, ID, Created/Updated/LastModified At.
 
 | Field | Notes |
 |---|---|
-| Price List Item ID | Required — identifies the line item |
+| Item ID | Required — identifies the line item |
 | Name | |
 | Selling Price, Tax (%), Quantity, Discount (%), Cost per Piece, Unit, Note | Same as Add Item |
 

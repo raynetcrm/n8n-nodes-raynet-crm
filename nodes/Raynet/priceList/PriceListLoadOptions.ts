@@ -3,5 +3,5 @@ import { createPicklistLoader } from '../helpers';
 
 export const priceListLoadOptions: Record<string, (this: ILoadOptionsFunctions) => Promise<INodePropertyOptions[]>> = {
     getPriceListCategories: createPicklistLoader('/priceListCategory/'),
-    getCurrencies: createPicklistLoader('/currency/'),
+    getCurrencies: createPicklistLoader('/currency/', true),
 };

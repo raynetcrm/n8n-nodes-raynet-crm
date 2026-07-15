@@ -25,6 +25,15 @@ const STATUS_OPTIONS = [
     { name: 'Cancelled', value: 'G_STORNO' },
 ];
 
+const ADDRESS_FIELDS: INodeProperties[] = [
+    { displayName: 'Name', name: 'name', type: 'string', default: '' },
+    { displayName: 'Street', name: 'street', type: 'string', default: '' },
+    { displayName: 'City', name: 'city', type: 'string', default: '' },
+    { displayName: 'Region', name: 'province', type: 'string', default: '' },
+    { displayName: 'ZIP Code', name: 'zipCode', type: 'string', default: '' },
+    { displayName: 'Country', name: 'countryCode', type: 'number', default: 0, description: 'Country code from standard ISO-3166-1 alpha-2, i.e. CZ' },
+];
+
 // ---------------------------------------------------------------------------
 // Shared optional fields
 // ---------------------------------------------------------------------------
@@ -68,6 +77,20 @@ const SHARED_OPTIONAL_FIELDS: INodeProperties[] = [
         typeOptions: { loadOptionsMethod: 'getSalesOrderStatuses' },
     },
     {
+        displayName: 'Delivery Address',
+        name: 'deliveryAddress',
+        type: 'collection',
+        options: ADDRESS_FIELDS,
+        default: {},
+    },
+    {
+        displayName: 'Billing Address',
+        name: 'invoiceAddress',
+        type: 'collection',
+        options: ADDRESS_FIELDS,
+        default: {},
+    },
+    {
         displayName: 'Tags',
         name: 'tags',
         type: 'string',
@@ -88,10 +111,11 @@ const UPDATE_OPTIONAL_FIELDS: INodeProperties[] = [
 // ---------------------------------------------------------------------------
 
 const ADD_ITEM_FIELDS: INodeProperties[] = [
-    { displayName: 'Name', name: 'name', type: 'string', default: '' },
+    { displayName: 'Name', name: 'name', type: 'string', default: '', required: true },
     { displayName: 'Product ID', name: 'product', type: 'number', default: 0 },
     { displayName: 'Product Code', name: 'productCode', type: 'string', default: '' },
     { displayName: 'Price List ID', name: 'priceList', type: 'number', default: 0 },
+    { displayName: 'Price List Item ID', name: 'priceListItem', type: 'number', default: 0 },
     { displayName: 'Selling Price', name: 'price', type: 'number', default: 0 },
     { displayName: 'Tax (%)', name: 'taxRate', type: 'number', default: 0 },
     { displayName: 'Quantity', name: 'count', type: 'number', default: 0 },
@@ -291,14 +315,17 @@ function getGetManyProperties(): INodeProperties[] {
                             type: 'options',
                             default: 'name',
                             options: [
+                                { name: 'Code', value: 'code' },
                                 { name: 'Name', value: 'name' },
-                                { name: 'Account ID', value: 'company.id' },
-                                { name: 'Deal ID', value: 'businessCase.id' },
+                                { name: 'Account ID', value: 'company' },
+                                { name: 'Contact Person ID', value: 'person' },
+                                { name: 'Deal ID', value: 'businessCase' },
+                                { name: 'Owner ID', value: 'owner' },
                                 { name: 'Open From', value: 'validFrom' },
                                 { name: 'Open Till', value: 'validTill' },
                                 { name: 'Valid To', value: 'expirationDate' },
                                 { name: 'Deliver Before', value: 'requestDeliveryDate' },
-                                { name: 'Status ID', value: 'salesOrderStatus.id' },
+                                { name: 'Status (SalesOrderStatus) ID', value: 'salesOrderStatus' },
                                 { name: 'ID', value: 'id' },
                                 { name: 'Created At', value: 'rowInfo.createdAt' },
                                 { name: 'Updated At', value: 'rowInfo.updatedAt' },
@@ -319,7 +346,7 @@ function getGetManyProperties(): INodeProperties[] {
         },
         {
             displayName: 'Status',
-            name: 'salesOrderStatus',
+            name: 'status',
             type: 'options',
             default: '',
             description: 'Filter by sales order status',
@@ -328,15 +355,23 @@ function getGetManyProperties(): INodeProperties[] {
         },
         {
             displayName: 'Product Category ID',
-            name: 'productCategoryCustom',
+            name: 'productCategory[CUSTOM]',
             type: 'number',
             default: 0,
             description: 'Filter by product category ID',
             displayOptions: op(OperationType.GET_MANY),
         },
         {
+            displayName: 'Contains product with ID',
+            name: 'containsProduct[CUSTOM]',
+            type: 'number',
+            default: 0,
+            description: 'Filter by whether the sales order contains products with the specified ID',
+            displayOptions: op(OperationType.GET_MANY),
+        },
+        {
             displayName: 'Product Line ID',
-            name: 'productLineCustom',
+            name: 'productLine[CUSTOM]',
             type: 'number',
             default: 0,
             description: 'Filter by product line ID',
@@ -348,6 +383,14 @@ function getGetManyProperties(): INodeProperties[] {
             type: 'string',
             default: '',
             description: "Pass 'rowInfo' to return only status metadata",
+            displayOptions: op(OperationType.GET_MANY),
+        },
+        {
+            displayName: 'Tags',
+            name: 'tags',
+            type: 'string',
+            default: '',
+            description: 'Comma-separated list of tags to filter by',
             displayOptions: op(OperationType.GET_MANY),
         },
     ];
