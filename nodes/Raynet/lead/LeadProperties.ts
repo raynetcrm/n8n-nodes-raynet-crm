@@ -83,6 +83,13 @@ const SOCIAL_NETWORKS_FIELD: INodeProperties = {
     ],
 };
 
+const ADDRESS_VALUES: INodeProperties[] = [
+    { displayName: 'Street', name: 'street', type: 'string', default: '' },
+    { displayName: 'City', name: 'city', type: 'string', default: '' },
+    { displayName: 'ZIP Code', name: 'zipCode', type: 'string', default: '' },
+    { displayName: 'Province', name: 'province', type: 'string', default: '' },
+    { displayName: 'Country Code', name: 'countryCode', type: 'string', default: '' },
+]
 
 // ---------------------------------------------------------------------------
 // Shared optional fields
@@ -148,13 +155,7 @@ const SHARED_OPTIONAL_FIELDS: INodeProperties[] = [
         name: 'address',
         type: 'fixedCollection',
         default: {},
-        options: [
-                    { displayName: 'Street', name: 'street', type: 'string', default: '' },
-                    { displayName: 'City', name: 'city', type: 'string', default: '' },
-                    { displayName: 'ZIP Code', name: 'zipCode', type: 'string', default: '' },
-                    { displayName: 'Province', name: 'province', type: 'string', default: '' },
-                    { displayName: 'Country Code', name: 'countryCode', type: 'string', default: '' },
-        ],
+        options: [{ displayName: 'Address', name: 'address', values: ADDRESS_VALUES }],
     },
     { displayName: 'Lead Date', name: 'leadDate', type: 'dateTime', default: '' },
     { displayName: 'Individual Person', name: 'leadPerson', type: 'boolean', default: false },

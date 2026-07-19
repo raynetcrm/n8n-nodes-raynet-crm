@@ -202,22 +202,25 @@ export class Raynet implements INodeType {
                 switch (operation) {
                     case OperationType.CREATE: {
                         // special case for file upload in document creation
-                        if (resource === 'document' && this.getNodeParameter('infoType', i) === 'file') {
-                            const binaryBody = this.getNodeParameter('binaryData', i);
-                            // call /fileUpload endpoint to upload the file and get a UUID
-                            const response = await raynetRequest.call(this, 'POST', '/fileUpload', {file: binaryBody}) as { data?: { uuid: string, fileName: string, contentType: string, fileSize: number } };
-                            if (!response?.data?.uuid) {
-                                throw new Error('File upload failed: no UUID returned');
-                            }
-                            // add the received info to the body for document creation
-                            body = {
-                                ...config.buildBody(this, 'create'),
-                                file: response.data,
-                            }
-                        }
-                        else { // normal create
+                        // if (resource === 'document' && this.getNodeParameter('infoType', i) === 'file') {
+                        //     const binaryPropertyName = this.getNodeParameter('binaryPropertyName', i);
+                        //     const buffer = await this.helpers.getBinaryDataBuffer(i, binaryPropertyName);
+                        //     if (!buffer) {
+                        //         throw new Error(`No binary data found on item ${i} in property "${binaryPropertyName}"`);
+                        //     }
+
+                        //     const form = new FormData();
+                        //     form.append('file', buffer);
+                        //     // call /fileUpload endpoint to upload the file and get a UUID
+                        //     const response = await raynetRequest.call(this, 'POST', '/fileUpload/', form, undefined, 'multipart/form-data') as { data?: { uuid: string, fileName: string, contentType: string, fileSize: number } };
+                        //     body = {
+                        //         ...config.buildBody(this, 'create'),
+                        //         file: response.data,
+                        //     }
+                        // }
+                        // else { // normal create
                             body = config.buildBody(this, 'create');
-                        }
+                        // }
                         const createRes = (await raynetRequest.call(this, 'PUT', config.listPath, body)) as {
                             success?: boolean;
                             data?: { id: number };

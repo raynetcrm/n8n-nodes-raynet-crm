@@ -111,7 +111,6 @@ const UPDATE_OPTIONAL_FIELDS: INodeProperties[] = [
 // ---------------------------------------------------------------------------
 
 const ADD_ITEM_FIELDS: INodeProperties[] = [
-    { displayName: 'Name', name: 'name', type: 'string', default: '', required: true },
     { displayName: 'Product ID', name: 'product', type: 'number', default: 0 },
     { displayName: 'Product Code', name: 'productCode', type: 'string', default: '' },
     { displayName: 'Price List ID', name: 'priceList', type: 'number', default: 0 },
@@ -467,6 +466,14 @@ function getAddItemProperties(): INodeProperties[] {
             type: 'number',
             required: true,
             default: 0,
+            displayOptions: op(OperationType.ADD_ITEM),
+        },
+        {
+            displayName: 'Item Name',
+            name: 'name',
+            type: 'string',
+            required: true,
+            default: '',
             displayOptions: op(OperationType.ADD_ITEM),
         },
         {
