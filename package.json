@@ -16,11 +16,14 @@
   },
   "scripts": {
     "build": "n8n-node build",
+		"build:watch": "tsc --watch",
     "dev": "n8n-node dev",
     "lint": "n8n-node lint",
     "lint:fix": "n8n-node lint --fix",
     "format": "oxfmt nodes/ credentials/",
-    "format:check": "oxfmt --check nodes/ credentials/"
+    "format:check": "oxfmt --check nodes/ credentials/",
+    "release": "n8n-node release",
+    "prepublishOnly": "n8n-node prerelease"
   },
   "files": [
     "dist"
