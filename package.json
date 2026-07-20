@@ -9,9 +9,11 @@
   ],
   "license": "MIT",
   "homepage": "https://n8n.io",
-  "author": {},
   "repository": {},
   "main": "index.js",
+  "bugs": {
+    "email": "manasek@raynet.cz"
+  },
   "scripts": {
     "build": "n8n-node build",
     "dev": "n8n-node dev",
