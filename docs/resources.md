@@ -1,128 +1,712 @@
 # Resources & Operations
 
-Full reference for all resources and operations implemented in the Raynet CRM node.
+Full field reference for all resources. All entities support the standard filter operators: Equals, Not equals, Like, Like (case insensitive), In, Greater than, Greater or equal, Less than, Less or equal, Equals or null, Not equals or null.
 
 ---
 
-## Account (company / individual)
+## Account
 
-API endpoint: `GET|PUT|POST|DELETE /api/v2/company/`
+API path: `/api/v2/company/`
 
-| Operation        | Description |
-|------------------|-------------|
-| **Create**       | Create a new account with addresses and optional fields |
-| **Update**       | Update any field on an existing account |
-| **Get**          | Retrieve full account detail by ID |
-| **Get Many**     | List accounts with sorting, pagination, full-text search, and field filters |
-| **Delete**       | Delete an account record |
-| **Lock**         | Lock an account to prevent further changes |
-| **Unlock**       | Unlock a previously locked account |
-| **Invalidate**   | Mark an account as invalid |
-| **Renew Validity** | Restore a previously invalidated account |
-| **Add Tag**      | Add a tag to an account |
-| **Remove Tag**   | Remove a tag from an account |
+Operations: Create, Update, Get, Get Many, Delete, Lock, Unlock, Invalidate, Renew Validity, Add Tag, Remove Tag
 
-### Required fields (Create)
+### Required (Create)
 
-| Field | Type | Description |
-|-------|------|-------------|
-| Name | string | Account name |
-| Rating | options (A / B / C) | Account rating |
-| Status | options | Potential / Actual / Deferred / Unattractive |
-| Relationship | options | Subscriber / Partner / Supplier / Rival |
+| Field | Type |
+|---|---|
+| Name | string |
+| Rating | A / B / C |
+| Status | Potential / Actual / Deferred / Unattractive |
+| Relationship | Subscriber / Partner / Supplier / Rival |
 
-### Optional fields (Create & Update)
+### Optional (Create & Update)
 
-| Field | Description |
-|-------|-------------|
-| This is an individual | Boolean flag for individual accounts |
-| First / Last name | Name of the individual |
-| Title before / after | Titles around the name |
-| Salutation | Salutation text |
-| Security Level | Loaded from your Raynet instance |
-| Owner | User who owns the account (loaded from Raynet) |
-| Note | Free-text note |
-| Category | Loaded from Raynet |
-| Contact Source | Loaded from Raynet |
-| Employees Number | Loaded from Raynet |
-| Legal Form | Loaded from Raynet |
-| Payment Terms | Loaded from Raynet |
-| Turnover | Loaded from Raynet |
-| Industry | Loaded from Raynet |
+| Field | Notes |
+|---|---|
+| This is an individual | Boolean |
+| First / Last name, Title before/after, Salutation | Name fields |
+| Security Level, Owner, Category, Contact Source | Loaded from Raynet |
+| Employees Number, Legal Form, Payment Terms, Turnover, Industry | Loaded from Raynet |
 | Classification 1 / 2 / 3 | Loaded from Raynet |
-| ID no. | Registration number |
-| Tax ID no. | Tax identification number |
-| VAT ID no. | VAT identification number |
-| VAT Payer | Yes / No |
-| Bank account | Bank account number |
-| Databox | Databox ID |
-| Reference number (Court) | Court reference |
-| Birthday / Anniversary | Date picker |
-| Addresses | Multiple addresses, each with street, city, ZIP, country, territory, and full contact info (email, phone 1/2, fax, www) |
-| Tags | Comma-separated list of tags |
+| ID no., Tax ID no., VAT ID no., VAT Payer | Registration / tax |
+| Bank account, Databox, Reference number (Court) | Financial / legal |
+| Birthday / Anniversary | Truncated to `YYYY-MM-DD` |
+| Social Network Contacts | Facebook, Google+, Twitter/X, LinkedIn, Pinterest, Instagram, Youtube, WhatsApp, TikTok, Thread 
+| Addresses | Street, city, ZIP, country, territory, phone, email, fax, www |
+| Tags | Comma-separated |
+| Note | Free text |
 
 ### Get Many — filters
 
-Supports any account field as a filter. Available operators: Equals, Not equals, Like, Like (case insensitive), In, Greater than, Greater or equal, Less than, Less or equal, Equals or null, Not equals or null.
+Any account field. Supports all standard filter operators.
 
 ---
 
-## Person (individual contact)
+## Deal
 
-API endpoint: `GET|PUT|POST|DELETE /api/v2/person/`
+API path: `/api/v2/businessCase/`
 
-| Operation        | Description |
-|------------------|-------------|
-| **Create**       | Create a new contact person |
-| **Update**       | Update any field on an existing contact person |
-| **Get**          | Retrieve full person detail by ID |
-| **Get Many**     | List persons with sorting, pagination, full-text search, field filters, and company relationship filter |
-| **Delete**       | Delete a contact person |
-| **Lock**         | Lock a contact to prevent changes |
-| **Unlock**       | Unlock a locked contact |
-| **Invalidate**   | Mark a contact as invalid |
-| **Renew Validity** | Restore a previously invalidated contact |
-| **Add Tag**      | Add a tag to a contact |
-| **Remove Tag**   | Remove a tag from a contact |
+Operations: Create, Update, Get, Get Many, Delete, Lock, Unlock, Invalidate, Renew Validity, Add Tag, Remove Tag, Add Item, Modify Item, Delete Item
 
-### Required fields (Create)
+### Required (Create)
 
-| Field | Type | Description |
-|-------|------|-------------|
-| Last Name | string | Contact's last name |
+| Field | Type |
+|---|---|
+| Name | string |
+| Account ID | number |
 
-### Optional fields (Create & Update)
+### Optional (Create & Update)
 
-| Field | Description |
-|-------|-------------|
-| Title before / after | Titles around the name |
-| First / Last name | Name of the contact |
-| Salutation | Salutation text |
-| Security Level | Loaded from your Raynet instance |
-| Owner | User who owns the contact (loaded from Raynet) |
-| Category | Loaded from Raynet |
-| Classification 1 / 2 / 3 | Loaded from Raynet |
-| Birthday | Date picker |
-| Language | Loaded from Raynet |
-| Marital Status | Loaded from Raynet |
+| Field | Notes |
+|---|---|
+| Owner, Security Level, Contact Source, Category | Loaded from Raynet |
+| Phase, Classification 1 / 2 / 3, Currency | Loaded from Raynet |
+| Contact Person ID, Project ID, Lead ID | Related record IDs |
+| Final Price, Estimated Costs, Probability (%) | Numbers |
+| Open From (`validFrom`) | `YYYY-MM-DD` |
+| Tags, Note | |
+
+### Update-only
+
+Name, Account ID, Closed Date (`validTill`), Scheduled End (`scheduledEnd`)
+
+### Get Many — filters
+
+Name, Code, Account ID, Valid From, Valid Till, Scheduled End, Phase ID, Deal Type ID, ID, Created/Updated/LastModified At.
+Extra: Status (Active / Won / Lost / Cancelled), Product Category ID, Product Line ID.
+
+### Items
+
+See [Shared item fields](#shared-item-fields-deal--quote--sales-order).
+
+---
+
+## Quote
+
+API path: `/api/v2/offer/`
+
+Operations: Create, Update, Get, Get Many, Delete, Lock, Unlock, Invalidate, Renew Validity, Add Tag, Remove Tag, Add Item, Modify Item, Delete Item
+
+### Required (Create)
+
+| Field | Type |
+|---|---|
+| Name | string |
+| Account ID | number |
+| Deal ID | number |
+
+### Optional (Create & Update)
+
+| Field | Notes |
+|---|---|
+| Owner, Security Level, Category, Status | Loaded from Raynet |
+| Contact Person ID | Related record ID |
+| Final Price (`totalAmount`), Estimated Costs (`estimatedValue`) | Numbers |
+| Open From (`validFrom`), Open Till (`validTill`), Valid To (`expirationDate`) | `YYYY-MM-DD` |
+| Tags, Note | |
+
+### Update-only
+
+Name, Account ID, Deal ID
+
+### Get Many — filters
+
+Name, Account ID, Deal ID, Open From, Open Till, Valid To, ID, Created/Updated/LastModified At.
+Extra: Status (Active / Won / Lost / Cancelled), Product Category ID, Product Line ID.
+
+### Items
+
+See [Shared item fields](#shared-item-fields-deal--quote--sales-order).
+
+---
+
+## Contact
+
+API path: `/api/v2/person/`
+
+Operations: Create, Update, Get, Get Many, Delete, Lock, Unlock, Invalidate, Renew Validity, Add Tag, Remove Tag
+
+### Required (Create)
+
+| Field | Type |
+|---|---|
+| Last Name | string |
+
+### Optional (Create & Update)
+
+| Field | Notes |
+|---|---|
+| First / Last name, Title before/after, Salutation | Name fields |
+| Security Level, Owner, Category | Loaded from Raynet |
+| Classification 1 / 2 / 3, Language, Marital Status | Loaded from Raynet |
 | Gender | Male / Female |
-| Contact Info | Email, email 2, phone 1/2 (with type), fax, www, other contact |
+| Birthday | Truncated to `YYYY-MM-DD` |
+| Contact Info | Email ×2, phone ×2 (with type), fax, www, other |
 | Private Address | Street, city, province, ZIP, country |
 | Social Networks | Facebook, Twitter/X, Instagram, YouTube, Pinterest, Google+ |
-| Note | Free-text note |
-| Relationship | Link to a company: company ID, address ID, job title, note |
-| Tags | Comma-separated list of tags |
-| Key Person | Boolean flag |
+| Relationship | Company ID, address ID, job title, note |
+| Tags, Note, Key Person | |
 
 ### Get Many — filters
 
-Supports filtering by first/last name, company name, company ID, user ID, email, owner, category, classifications, tags, and creation/update timestamps. Also supports filtering by **Relationship Company ID** (contacts related to a specific company).
+First/last name, company name, company ID, user ID, email, owner, category, classifications, tags, timestamps, Relationship Company ID.
 
 ---
 
-## Common behaviour
+## Price List
 
-- **Picklist fields** (owner, category, classifications, security level, etc.) are populated dynamically from your Raynet instance at runtime.
-- **Tags** accept a comma-separated string and are converted to an array before sending to the API.
-- **Birthday / Anniversary** accepts a full datetime input but only the date part (`YYYY-MM-DD`) is sent to the API.
-- **Continue on fail** is respected: if enabled, errors are captured per item and execution continues.
+API path: `/api/v2/priceList/`
+
+Operations: Create, Update, Get, Get Many, Delete, Lock, Unlock — **no** Invalidate / Renew Validity, no tags
+
+### Required (Create)
+
+| Field | Type | Notes |
+|---|---|---|
+| Name | string | |
+| Code | string | Unique code |
+| Currency | options | Loaded from Raynet |
+| Open From (`validFrom`) | dateTime | Sent as `YYYY-MM-DD` |
+
+### Optional (Create & Update)
+
+| Field | Notes |
+|---|---|
+| Owner, Security Level, Category | Loaded from Raynet |
+| Valid To (`validTill`) | Sent as `YYYY-MM-DD` |
+| Note (`description`) | |
+
+### Update-only
+
+Name, Code, Currency, Open From
+
+### Get Many — filters
+
+Name, Code, Open From, Valid To, Owner ID, ID, Created/Updated/LastModified At.
+Extra: Primary (`YES` / `NO`), Currency (exact match).
+
+---
+
+## Lead
+
+API path: `/api/v2/lead/`
+
+Operations: Create, Update, Get, Get Many, Delete, Lock, Unlock — **no** Invalidate / Renew Validity, no tags
+
+### Required (Create)
+
+| Field | Type | Values |
+|---|---|---|
+| Topic | string | |
+| Priority | options | Critical (`CRITICAL`) / Default (`DEFAULT`) / Minor (`MINOR`) |
+
+### Optional (Create & Update)
+
+| Field | Notes |
+|---|---|
+| Owner, Security Level, Category, Contact Source | Loaded from Raynet |
+| Lead Phase | Status in the lead pipeline (loaded from Raynet) |
+| Territory | Loaded from Raynet |
+| Company Name, First Name, Last Name, Title Before/After | Name / company fields |
+| ID no. (`regNumber`) | Registration number |
+| Email, Phone, Website | Contact info |
+| Address | Street, city, ZIP, province, country code |
+| Tags, Note (`notice`) | |
+
+### Update-only
+
+Topic, Priority
+
+### Get Many — filters
+
+Topic, Company Name, Last Name, Priority, Lead Phase ID, Owner ID, Contact Source ID, Lead Date, ID, Created/Updated/LastModified At.
+Extra: Status (Active `B_ACTIVE` / Done `D_DONE` / Cancelled `G_STORNO`).
+
+---
+
+## Project
+
+API path: `/api/v2/project/`
+
+Operations: Create, Update, Get, Get Many, Delete, Lock, Unlock, Invalidate, Renew Validity, Add Participant, Delete Participant, List Participants
+
+### Required (Create)
+
+| Field | Type |
+|---|---|
+| Name | string |
+| Account ID | number |
+
+### Optional (Create & Update)
+
+| Field | Notes |
+|---|---|
+| Owner, Security Level, Category, Status | Loaded from Raynet |
+| Contact Person ID | Related record ID |
+| Final Price (`totalAmount`), Estimated Costs (`estimatedValue`) | Numbers |
+| Average / Min / Max Project Value | `avgValue.totalAmount`, `minValue.totalAmount`, `maxValue.totalAmount` |
+| Open From (`validFrom`), Closed (`validTill`), Scheduled End (`scheduledEnd`) | `YYYY-MM-DD` |
+| Tags, Note | |
+
+### Update-only
+
+Name, Account ID
+
+### Get Many — filters
+
+Name, Account ID, Contact Person ID, Status ID, Open From, Closed, Scheduled End, ID, Created/Updated/LastModified At.
+
+### Add Participant fields
+
+| Field | Notes |
+|---|---|
+| Account ID | Either Account ID or Contact ID required |
+| Contact ID | Either Account ID or Contact ID required |
+| Participation Category ID | Optional |
+| Note | Optional |
+
+---
+
+## Sales Order
+
+API path: `/api/v2/salesOrder/`
+
+Operations: Create, Update, Get, Get Many, Delete, Lock, Unlock, Invalidate, Renew Validity, Add Tag, Remove Tag, Add Item, Modify Item, Delete Item
+
+### Required (Create)
+
+| Field | Type |
+|---|---|
+| Name | string |
+| Account ID | number |
+| Deal ID | number |
+
+### Optional (Create & Update)
+
+| Field | Notes |
+|---|---|
+| Owner, Security Level, Category, Status | Loaded from Raynet |
+| Contact Person ID, Quote ID | Related record IDs |
+| Final Price (`totalAmount`), Estimated Costs (`estimatedValue`) | Numbers |
+| Open From (`validFrom`), Open Till (`validTill`), Valid To (`expirationDate`), Deliver Before (`requestDeliveryDate`) | `YYYY-MM-DD` |
+| Tags, Note | |
+
+### Update-only
+
+Name, Account ID, Deal ID
+
+### Get Many — filters
+
+Name, Account ID, Deal ID, Open From, Open Till, Valid To, Deliver Before, Status ID, ID, Created/Updated/LastModified At, Unit.
+Extra: Status (Active / Won / Lost / Cancelled), Product Category ID (`productCategory[CUSTOM]`), Product Line ID (`productLine[CUSTOM]`).
+
+### Items
+
+See [Shared item fields](#shared-item-fields-deal--quote--sales-order).
+
+---
+
+## Folder
+
+API path: `/api/v2/dms/folder/`
+
+Operations: Create, Delete only
+
+### Required (Create)
+
+| Field | Type |
+|---|---|
+| Name | string |
+
+### Optional (Create)
+
+| Field | Notes |
+|---|---|
+| Parent Folder ID (`parent`) | ID of the parent folder; find in Raynet CRM URL `?en=Folder&ei={id}` |
+| Security Level | Loaded from Raynet |
+| Category | Document category, loaded from Raynet |
+
+### Delete options
+
+| Field | Notes |
+|---|---|
+| Folder ID | Required |
+| Cascade Delete | If enabled, deletes all contents recursively (`DELETE /dms/folder/{id}/cascade`) |
+
+---
+
+## Document
+
+API path: `/api/v2/dms/document/`
+
+Operations: Create, Update, Get, Delete, Lock, Unlock, Invalidate, Renew Validity — **no** Get Many
+
+### Required (Create)
+
+| Field | Notes |
+|---|---|
+| Content Type (`infoType`) | `link` or `file` |
+| Folder ID (`folder`) | Find in Raynet CRM URL: `?view=ListView&en=Folder&ei={id}` |
+| Link URL + Link Name | Required when `infoType = link` |
+| File UUID + File Name | Required when `infoType = file` — UUID from prior `/fileUpload` call |
+
+### Optional (Create & Update)
+
+| Field | Notes |
+|---|---|
+| Status | `A_DRAFT` / `E_WIN` / `G_STORNO` |
+| Security Level | Loaded from Raynet |
+| Template | Boolean |
+| Valid From / Valid Until | Sent as `YYYY-MM-DD` |
+
+### Update-only fields
+
+Folder ID, Link (collection: link URL + link name), File (collection: UUID, file name, content type, file size)
+
+---
+
+## Invoice
+
+API path: `/api/v2/invoiceLight/`
+
+Operations: Create, Update, Get, Get Many, Delete, Lock, Unlock — **no** Invalidate / Renew Validity
+
+### Required (Create)
+
+| Field | Type | Notes |
+|---|---|---|
+| Code | string | Unique invoice code |
+| Account ID (`company`) | number | |
+| Currency | options | Loaded from Raynet |
+| Due Date (`dueDate`) | dateTime | Sent as `YYYY-MM-DD` |
+| Issue Date (`issueDate`) | dateTime | Sent as `YYYY-MM-DD` |
+| Invoice Type (`invoiceType`) | options | `NORMAL` / `PROFORMA` / `CREDIT_NOTE` |
+| Invoice State (`invoiceState`) | options | `UNPAID` / `PARTIALLY_PAID` / `PAID` / `CANCELLED` |
+| Payment Type | options | Loaded from Raynet |
+| Taxable Supply Date | dateTime | Sent as `YYYY-MM-DD` |
+| Tax Payer | options | `YES` / `NO` |
+| Customer Name (`billingName`) | string | |
+
+### Optional (Create & Update)
+
+| Field | Notes |
+|---|---|
+| Customer Address (`billingAddress`) | Street, city, ZIP, province, country code |
+| Title, Variable / Specific / Constant Symbol | Invoice header fields |
+| Exchange Rate (`currencyExchangeRate`) | |
+| Payment Date | Sent as `YYYY-MM-DD` |
+| Security Level, Owner, Category | Loaded from Raynet |
+| Deal ID (`businessCase`), Sales Order ID | Related record IDs |
+| Note for Receiver, Internal Note, Reason for Correction | Text fields |
+| Customer ID / Tax / VAT ID no. | `billingRegNumber`, `billingTaxNumber`, `billingTaxNumber2` |
+| Vendor fields | Name, reg numbers, address, email, phone, website, bank details |
+| Financial totals | `discount`, `discountPercent`, `baseAmount`, `totalAmount`, `taxAmount`, `roundingBalance` |
+| Flags | `reverseTax` (boolean), `proformaTaxMove` (boolean) |
+| Link to Other Invoice (`normalInvoice`) | For corrective / advance invoices |
+| Decimal Precision | |
+| Tags | Comma-separated |
+| Items | Array: name, unitPrice, taxRate, amount, unitLabel, discountPercent, totalPrice, sequenceNumber, id (update: positive=modify, negative=delete, empty=create) |
+| Payments | Array: date, amount, id (same id semantics as Items) |
+
+### Update-only fields
+
+Code, Account ID, Currency, Due Date, Issue Date, Invoice Type, Invoice State, Payment Type, Taxable Supply Date, Tax Payer, Customer Name
+
+### Get Many — filters
+
+Title, Code, Owner ID, Deal ID, Issue Date, Invoice Type, Taxable Supply Date, Due Date, Payment Date, Variable Symbol, Specific Symbol, Constant Symbol, ID, Created/Updated/LastModified At.
+
+---
+
+## Product
+
+API path: `/api/v2/product/`
+
+Operations: Create, Update, Get, Get Many, Delete, Invalidate, Renew Validity — **no** Lock / Unlock, no tags
+
+### Required (Create)
+
+| Field | Type |
+|---|---|
+| Code | string — unique product code |
+| Name | string |
+
+### Optional (Create & Update)
+
+| Field | Notes |
+|---|---|
+| Unit | Unit of measure |
+| Description | Free text |
+| VAT Rate (%) | Tax rate |
+| Category | Loaded from Raynet |
+| Product Line | Loaded from Raynet |
+| Cost | Internal cost |
+| Standard Price | List price |
+| Tags | Comma-separated |
+
+### Get Many — filters
+
+Name, Code, Category ID, Product Line ID, ID, Created/Updated/LastModified At.
+
+---
+
+## Shared item fields (Deal / Quote / Sales Order)
+
+### Add Item
+
+| Field | Notes |
+|---|---|
+| Name | Required if no Product ID or code |
+| Product ID | Raynet product ID |
+| Product Code | Product lookup by code |
+| Price List ID | Limit product search to a price list |
+| Selling Price | Price per unit |
+| Tax (%) | Tax rate |
+| Quantity | Number of units |
+| Discount (%) | Discount percentage |
+| Cost per Piece | Internal cost |
+| Unit | Unit of measure |
+| Note | Item description |
+
+### Modify Item
+
+| Field | Notes |
+|---|---|
+| Item ID | Required — identifies the line item |
+| Name | |
+| Selling Price, Tax (%), Quantity, Discount (%), Cost per Piece, Unit, Note | Same as Add Item |
+
+---
+
+## Task
+
+API path: `/api/v2/task/`
+
+Operations: Create, Update, Get, Get Many, Delete, Lock, Unlock
+
+### Required (Create)
+
+| Field | Type |
+|---|---|
+| Title | string |
+| Priority | MINOR / DEFAULT / CRITICAL |
+| Owner | user lookup |
+| Resolver | user lookup |
+| Deadline | dateTime |
+
+### Optional (Create & Update)
+
+| Field | Notes |
+|---|---|
+| Status | NEW / SCHEDULED / COMPLETED / CANCELLED |
+| Category | activityCategory picklist |
+| Security Level | securityLevel picklist |
+| Scheduled From / Till | dateTime |
+| Date of Completion | dateTime — requires Status COMPLETED or CANCELLED |
+| Task Description | string |
+| Task Solution | string |
+| Tags | comma-separated string |
+| Contact ID, Account ID, Deal ID, Quote ID, Sales Order ID, Project ID, Activity ID | relation IDs |
+
+### Get Many — Filters
+
+id, title, status, owner-id, category-id, scheduledFrom, scheduledTill, completed, deadline, personFilter, companyContextFilter, leadContextFilter, businessCase, rowInfo.createdAt, rowInfo.updatedAt, rowInfo.lastModifiedAt
+
+---
+
+## Call
+
+API path: `/api/v2/phoneCall/`
+
+Operations: Create, Update, Get, Get Many, Delete, Lock, Unlock
+
+### Required (Create)
+
+| Field | Type |
+|---|---|
+| Title | string |
+| Priority | MINOR / DEFAULT / CRITICAL |
+| Owner | user lookup |
+
+### Optional (Create & Update)
+
+| Field | Notes |
+|---|---|
+| Status | NEW / SCHEDULED / COMPLETED / CANCELLED |
+| Category | activityCategory picklist |
+| Security Level | securityLevel picklist |
+| Scheduled From / Till | dateTime |
+| Date of Completion | dateTime |
+| Phone Call Description | string |
+| Phone Call Outcome | string |
+| Tags | comma-separated string |
+| Contact ID, Account ID, Deal ID, Quote ID, Sales Order ID, Project ID, Activity ID | relation IDs |
+
+### Get Many — Filters
+
+id, title, status, owner-id, category-id, scheduledFrom, scheduledTill, completed, personFilter, companyContextFilter, leadContextFilter, businessCase, rowInfo.*
+
+---
+
+## Meeting
+
+API path: `/api/v2/meeting/`
+
+Operations: Create, Update, Get, Get Many, Delete, Lock, Unlock
+
+### Required (Create)
+
+| Field | Type |
+|---|---|
+| Title | string |
+| Priority | MINOR / DEFAULT / CRITICAL |
+| Owner | user lookup |
+
+### Optional (Create & Update)
+
+| Field | Notes |
+|---|---|
+| Status | NEW / SCHEDULED / COMPLETED / CANCELLED |
+| Category | activityCategory picklist |
+| Security Level | securityLevel picklist |
+| Scheduled From / Till | dateTime |
+| Date of Completion | dateTime |
+| Questions to Discuss | string |
+| Meeting Outcome | string |
+| Tags | comma-separated string |
+| Contact ID, Account ID, Deal ID, Quote ID, Sales Order ID, Project ID, Activity ID | relation IDs |
+
+### Get Many — Filters
+
+id, title, status, owner-id, category-id, scheduledFrom, scheduledTill, completed, personFilter, companyContextFilter, leadContextFilter, businessCase, rowInfo.*
+
+---
+
+## Email
+
+API path: `/api/v2/email/`
+
+Operations: Create, Update, Get, Get Many, Delete, Lock, Unlock
+
+### Required (Create)
+
+| Field | Type |
+|---|---|
+| Title | string |
+| Priority | MINOR / DEFAULT / CRITICAL |
+| Owner | user lookup |
+
+### Optional (Create & Update)
+
+| Field | Notes |
+|---|---|
+| Status | NEW / SCHEDULED / COMPLETED / CANCELLED |
+| Category | activityCategory picklist |
+| Security Level | securityLevel picklist |
+| Scheduled From / Till | dateTime |
+| Date of Completion | dateTime |
+| Email Content | string |
+| Tags | comma-separated string |
+| Contact ID, Account ID, Deal ID, Quote ID, Sales Order ID, Project ID, Activity ID | relation IDs |
+
+### Get Many — Filters
+
+id, title, status, owner-id, category-id, scheduledFrom, scheduledTill, completed, personFilter, companyContextFilter, leadContextFilter, businessCase, rowInfo.*
+
+---
+
+## Event
+
+API path: `/api/v2/event/`
+
+Operations: Create, Update, Get, Get Many, Delete, Lock, Unlock
+
+### Required (Create)
+
+| Field | Type |
+|---|---|
+| Title | string |
+| Priority | MINOR / DEFAULT / CRITICAL |
+| Owner | user lookup |
+
+### Optional (Create & Update)
+
+| Field | Notes |
+|---|---|
+| Status | NEW / SCHEDULED / COMPLETED / CANCELLED |
+| Category | activityCategory picklist |
+| Security Level | securityLevel picklist |
+| Scheduled From / Till | dateTime |
+| Date of Completion | dateTime |
+| Event Info | string |
+| Tags | comma-separated string |
+| Contact ID, Account ID, Deal ID, Quote ID, Sales Order ID, Project ID, Activity ID | relation IDs |
+
+### Get Many — Filters
+
+id, title, status, owner-id, category-id, scheduledFrom, scheduledTill, completed, personFilter, companyContextFilter, leadContextFilter, businessCase, rowInfo.*
+
+---
+
+## Letter
+
+API path: `/api/v2/letter/`
+
+Operations: Create, Update, Get, Get Many, Delete, Lock, Unlock
+
+### Required (Create)
+
+| Field | Type |
+|---|---|
+| Title | string |
+| Priority | MINOR / DEFAULT / CRITICAL |
+| Owner | user lookup |
+
+### Optional (Create & Update)
+
+| Field | Notes |
+|---|---|
+| Status | NEW / SCHEDULED / COMPLETED / CANCELLED |
+| Category | activityCategory picklist |
+| Security Level | securityLevel picklist |
+| Scheduled From / Till | dateTime |
+| Date of Completion | dateTime |
+| Content of the Letter | string |
+| Tags | comma-separated string |
+| Contact ID, Account ID, Deal ID, Quote ID, Sales Order ID, Project ID, Activity ID | relation IDs |
+
+### Get Many — Filters
+
+id, title, status, owner-id, category-id, scheduledFrom, scheduledTill, completed, personFilter, companyContextFilter, leadContextFilter, businessCase, rowInfo.*
+
+---
+
+## Mass Email
+
+API path: `/api/v2/massEmail/`
+
+Operations: Create, Update, Get, Get Many, Delete
+
+### Required (Create)
+
+| Field | Type |
+|---|---|
+| Title | string |
+| Source | QUANDA / SMARTEMAILING / MAILCHIMP / MAILGUN / SENDGRID / SPARKPOST / ECOMAIL |
+| External ID | string |
+
+### Optional (Create & Update)
+
+| Field | Notes |
+|---|---|
+| Date Sent | dateTime |
+| Description | string |
+| Tags | comma-separated string |
+| Campaign Name | string |
+| External Overview URL | string |
+| External Thumbnail URL | string |
+| Stats | fixedCollection: sent, clicked, opened, unsubscribed (numbers) |
+
+### Get Many — Filters
+
+title, completed, campaignName, source, tags, rowInfo.createdAt, rowInfo.updatedAt, rowInfo.lastModifiedAt
