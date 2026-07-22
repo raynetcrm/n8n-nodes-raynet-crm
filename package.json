@@ -8,8 +8,11 @@
     "crm"
   ],
   "license": "MIT",
-  "homepage": "https://n8n.io",
-  "repository": {},
+  "homepage": "https://github.com/raynetcrm/n8n-nodes-raynet-crm#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/raynetcrm/n8n-nodes-raynet-crm.git"
+  },
   "main": "index.js",
   "bugs": {
     "email": "manasek@raynet.cz"
