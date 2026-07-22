@@ -1,19 +1,22 @@
 {
   "name": "n8n-nodes-raynet",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "n8n custom node for Raynet CRM v2",
   "keywords": [
     "n8n-community-node-package",
     "raynet",
     "crm"
   ],
+  "author": {
+    "name": "Marek Maňásek",
+    "email": "manasek@raynet.cz"
+  },
   "license": "MIT",
   "homepage": "https://github.com/raynetcrm/n8n-nodes-raynet-crm#readme",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/raynetcrm/n8n-nodes-raynet-crm.git"
   },
-  "main": "index.js",
   "bugs": {
     "email": "manasek@raynet.cz"
   },
@@ -48,8 +51,8 @@
     "oxfmt": "0.42.0",
     "typescript": "6.0.2"
   },
-  "dependencies": {
-    "n8n-workflow": "2.13.1"
+  "peerDependencies": {
+    "n8n-workflow": "*"
   },
   "engines": {
     "node": ">=18.0.0"
