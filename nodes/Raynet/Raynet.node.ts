@@ -3,7 +3,7 @@
  * Thin router: delegates to entity-specific configs for body building / loadOptions.
  */
 
-import type { IExecuteFunctions, INodeExecutionData, INodeType, INodeTypeDescription, ILoadOptionsFunctions, INodePropertyOptions, IDataObject } from 'n8n-workflow';
+import { type IExecuteFunctions, type INodeExecutionData, type INodeType, type INodeTypeDescription, type ILoadOptionsFunctions, type INodePropertyOptions, type IDataObject, ApplicationError } from 'n8n-workflow';
 
 import { raynetRequest, getListParams, loadOwners, loadSecurityLevels, stringToOperationType, EntityConfig, OperationType } from './helpers';
 
@@ -36,20 +36,20 @@ const RESOURCE_OPTIONS = [
     { name: 'Deal', value: 'deal', description: 'Business case / deal' },
     { name: 'Contact', value: 'person', description: 'Contact – person (individual contact)' },
     { name: 'Quote', value: 'quote', description: 'Quote (offer)' },
-    { name: 'Lead', value: 'lead', description: 'Lead' },
-    { name: 'Price List', value: 'priceList', description: 'Price list' },
-    { name: 'Product', value: 'product', description: 'Product' },
-    { name: 'Project', value: 'project', description: 'Project' },
+    { name: 'Lead', value: 'lead' },
+    { name: 'Price List', value: 'priceList' },
+    { name: 'Product', value: 'product' },
+    { name: 'Project', value: 'project' },
     { name: 'Document', value: 'document', description: 'Document (DMS)' },
     { name: 'Folder', value: 'folder', description: 'DMS folder' },
-    { name: 'Invoice', value: 'invoice', description: 'Invoice' },
-    { name: 'Sales Order', value: 'salesOrder', description: 'Sales order' },
-    { name: 'Task', value: 'task', description: 'Task' },
+    { name: 'Invoice', value: 'invoice' },
+    { name: 'Sales Order', value: 'salesOrder' },
+    { name: 'Task', value: 'task' },
     { name: 'Call', value: 'call', description: 'Phone call' },
-    { name: 'Meeting', value: 'meeting', description: 'Meeting' },
+    { name: 'Meeting', value: 'meeting' },
     { name: 'Email', value: 'email', description: 'Email activity' },
-    { name: 'Event', value: 'event', description: 'Event' },
-    { name: 'Letter', value: 'letter', description: 'Letter' },
+    { name: 'Event', value: 'event' },
+    { name: 'Letter', value: 'letter' },
     { name: 'Mass Email', value: 'massEmail', description: 'Mass email campaign' },
 ];
 
@@ -161,7 +161,7 @@ export class Raynet implements INodeType {
 
         const config = ENTITY_MAP[resource];
         if (!config) {
-            throw new Error(`Resource "${resource}" is not implemented.`);
+            throw new ApplicationError(`Resource "${resource}" is not implemented.`);
         }
 
         // ----- Get Many -----
@@ -354,7 +354,7 @@ export class Raynet implements INodeType {
                                 pairedItem: { item: i },
                             });
                         } else {
-                            throw new Error(`Operation "${operation}" is not implemented for resource "${resource}".`);
+                            throw new ApplicationError(`Operation "${operation}" is not implemented for resource "${resource}".`);
                         }
                 }
             } catch (err) {

@@ -106,16 +106,16 @@ export async function loadOwners(this: ILoadOptionsFunctions): Promise<INodeProp
 /** Standard filter operators supported by all Raynet list endpoints. */
 export const FILTER_OPERATORS = [
     { name: 'Equals', value: 'EQ' },
-    { name: 'Not equals', value: 'NE' },
+    { name: 'Not Equals', value: 'NE' },
     { name: 'Like', value: 'LIKE' },
-    { name: 'Like (case insensitive)', value: 'LIKE_NOCASE' },
+    { name: 'Like (Case Insensitive)', value: 'LIKE_NOCASE' },
     { name: 'In', value: 'IN' },
-    { name: 'Greater than', value: 'GT' },
-    { name: 'Greater or equal', value: 'GE' },
-    { name: 'Less than', value: 'LT' },
-    { name: 'Less or equal', value: 'LE' },
-    { name: 'Equals or null', value: 'EQ_OR_NULL' },
-    { name: 'Not equals or null', value: 'NE_OR_NULL' },
+    { name: 'Greater Than', value: 'GT' },
+    { name: 'Greater or Equal', value: 'GE' },
+    { name: 'Less Than', value: 'LT' },
+    { name: 'Less or Equal', value: 'LE' },
+    { name: 'Equals or Null', value: 'EQ_OR_NULL' },
+    { name: 'Not Equals or Null', value: 'NE_OR_NULL' },
 ];
 
 // ---------------------------------------------------------------------------

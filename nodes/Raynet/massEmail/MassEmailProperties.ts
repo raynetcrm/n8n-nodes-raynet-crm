@@ -60,11 +60,11 @@ export const getMassEmailProperties = (): INodeProperties[] => [
         default: 'getMany',
         displayOptions: { show: { resource: [RESOURCE] } },
         options: [
-            { name: 'Create', value: 'create', description: 'Create a mass email campaign record' },
-            { name: 'Delete', value: 'delete', description: 'Delete a mass email record' },
-            { name: 'Get', value: 'get', description: 'Get a mass email record by ID' },
-            { name: 'Get Many', value: 'getMany', description: 'List mass email records with filters' },
-            { name: 'Update', value: 'update', description: 'Update a mass email record' },
+            { name: 'Create', value: 'create', description: 'Create a mass email campaign record', action: 'Create a mass email campaign record' },
+            { name: 'Delete', value: 'delete', description: 'Delete a mass email record', action: 'Delete a mass email record' },
+            { name: 'Get', value: 'get', description: 'Get a mass email record by ID', action: 'Get a mass email record by ID' },
+            { name: 'Get Many', value: 'getMany', description: 'List mass email records with filters', action: 'List mass email records with filters' },
+            { name: 'Update', value: 'update', description: 'Update a mass email record', action: 'Update a mass email record' },
         ],
     },
 
@@ -93,7 +93,7 @@ export const getMassEmailProperties = (): INodeProperties[] => [
     // Update
     { displayName: 'Mass Email ID', name: 'massEmailId', type: 'number', required: true, default: 0, displayOptions: op(OperationType.UPDATE) },
     {
-        displayName: 'Fields to Update',
+        displayName: 'Update Fields',
         name: 'updateAdditionalFields',
         type: 'collection',
         placeholder: 'Add field',
@@ -111,8 +111,8 @@ export const getMassEmailProperties = (): INodeProperties[] => [
     { displayName: 'Mass Email ID', name: 'massEmailId', type: 'number', required: true, default: 0, displayOptions: op(OperationType.GET) },
 
     // Get Many
-    { displayName: 'Return All', name: 'returnAll', type: 'boolean', default: false, description: 'Whether to return all results (max 1000)', displayOptions: op(OperationType.GET_MANY) },
-    { displayName: 'Limit', name: 'limit', type: 'number', default: 50, typeOptions: { minValue: 1, maxValue: 1000 }, displayOptions: op(OperationType.GET_MANY) },
+    { displayName: 'Return All', name: 'returnAll', type: 'boolean', default: false, description: 'Whether to return all results or only up to a given limit', displayOptions: op(OperationType.GET_MANY) },
+    { displayName: 'Limit', name: 'limit', type: 'number', default: 50, typeOptions: { minValue: 1 }, description: 'Max number of results to return', displayOptions: op(OperationType.GET_MANY) },
     { displayName: 'Offset', name: 'offset', type: 'number', default: 0, displayOptions: op(OperationType.GET_MANY) },
     {
         displayName: 'Sort Column',
@@ -130,7 +130,7 @@ export const getMassEmailProperties = (): INodeProperties[] => [
         options: [{ name: 'Ascending', value: 'ASC' }, { name: 'Descending', value: 'DESC' }],
         displayOptions: op(OperationType.GET_MANY),
     },
-    { displayName: 'Full-text Search', name: 'fulltext', type: 'string', default: '', displayOptions: op(OperationType.GET_MANY) },
+    { displayName: 'Full-Text Search', name: 'fulltext', type: 'string', default: '', displayOptions: op(OperationType.GET_MANY) },
     {
         displayName: 'Filters',
         name: 'filters',
@@ -150,14 +150,14 @@ export const getMassEmailProperties = (): INodeProperties[] => [
                         type: 'options',
                         default: 'title',
                         options: [
-                            { name: 'Title', value: 'title' },
-                            { name: 'Date Sent', value: 'completed' },
                             { name: 'Campaign Name', value: 'campaignName' },
+                            { name: 'Created At', value: 'rowInfo.createdAt' },
+                            { name: 'Date Sent', value: 'completed' },
+                            { name: 'Last Modified At', value: 'rowInfo.lastModifiedAt' },
                             { name: 'Source', value: 'source' },
                             { name: 'Tags', value: 'tags' },
-                            { name: 'Created At', value: 'rowInfo.createdAt' },
+                            { name: 'Title', value: 'title' },
                             { name: 'Updated At', value: 'rowInfo.updatedAt' },
-                            { name: 'Last Modified At', value: 'rowInfo.lastModifiedAt' },
                         ],
                     },
                     { displayName: 'Operator', name: 'operator', type: 'options', default: 'EQ', options: FILTER_OPERATORS },

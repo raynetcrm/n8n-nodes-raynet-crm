@@ -9,9 +9,10 @@ const DEF: ActivityDef = {
     solutionLabel: 'Task Solution',
     extraRequiredCreate: [
         {
-            displayName: 'Resolver',
+            displayName: 'Resolver Name or ID',
             name: 'resolver',
             type: 'options',
+            description: 'Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code/expressions/">expression</a>',
             required: true,
             default: '',
             typeOptions: { loadOptionsMethod: 'getUsers' },

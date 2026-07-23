@@ -34,12 +34,12 @@ export class RaynetApi implements ICredentialType {
 
     properties: INodeProperties[] = [
         {
-            displayName: 'Username (e-mail)',
+            displayName: 'Username (E-Mail)',
             name: 'username',
             type: 'string',
             default: '',
             required: true,
-            description: 'E-mail username of the user to whom the API key is tied.',
+            description: 'E-mail username of the user to whom the API key is tied',
             placeholder: 'user@example.com',
         },
         {
@@ -52,7 +52,7 @@ export class RaynetApi implements ICredentialType {
             description: 'API key generated through the RAYNET CRM app. This can be done in Settings > API keys.',
         },
         {
-            displayName: 'Name of instance',
+            displayName: 'Name of Instance',
             name: 'instanceName',
             type: 'string',
             default: '',
