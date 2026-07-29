@@ -3,7 +3,7 @@
  * Thin router: delegates to entity-specific configs for body building / loadOptions.
  */
 
-import { type IExecuteFunctions, type INodeExecutionData, type INodeType, type INodeTypeDescription, type ILoadOptionsFunctions, type INodePropertyOptions, type IDataObject, ApplicationError, NodeConnectionTypes, NodeOperationError } from 'n8n-workflow';
+import { type IExecuteFunctions, type INodeExecutionData, type INodeType, type INodeTypeDescription, type ILoadOptionsFunctions, type INodePropertyOptions, type IDataObject, ApplicationError, NodeConnectionTypes, NodeOperationError, JsonObject } from 'n8n-workflow';
 
 import { raynetRequest, getListParams, loadOwners, loadSecurityLevels, stringToOperationType, EntityConfig, OperationType } from './helpers';
 
@@ -364,7 +364,7 @@ export class Raynet implements INodeType {
                         pairedItem: { item: i },
                     });
                 } else {
-                    throw new NodeOperationError(this.getNode(), err as Error, { itemIndex: i });
+                    throw new NodeOperationError(this.getNode(), err as JsonObject);
                 }
             }
         }

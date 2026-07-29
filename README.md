@@ -1,59 +1,81 @@
-# n8n-nodes-raynet — Documentation Index
+# n8n-nodes-raynet
 
-A community node package for [n8n](https://n8n.io) that integrates with [Raynet CRM v2](https://app.raynet.cz) REST API.
+This is an n8n community node. It lets you read and manage data in [Raynet CRM](https://raynet.cz/) from your n8n workflows.
 
----
+Raynet CRM is a cloud CRM used to manage accounts, contacts, deals, quotes, and related sales activities. This node exposes nineteen Raynet entities — Accounts, Persons, Deals, Quotes, Sales Orders, Projects, Leads, Price Lists, Products, Invoices, Documents, Folders, Tasks, Calls, Meetings, Emails, Events, Letters, and Mass Emails — with full CRUD, lifecycle management, and tagging operations.
 
-## Purpose
+[n8n](https://n8n.io/) is a [fair-code licensed](https://docs.n8n.io/reference/license/) workflow automation platform.
 
-This index is the entry point for all documentation in this repository. Use the canonical sources table below to navigate to authoritative information about each area.
+## This file contains documentation on:
 
----
+- [Installation](#installation)
 
-## Canonical Sources
+- [Credentials](#credentials)
 
-| Topic | Canonical doc | Source of truth |
-|-------|---------------|-----------------|
-| Product capabilities, installation, credentials | [docs/features/user-features.md](docs/features/user-features.md) | Yes |
-| Account capabilities | [docs/features/account.md](docs/features/account.md) | Yes |
-| Deal capabilities | [docs/features/deal.md](docs/features/deal.md) | Yes |
-| Quote capabilities | [docs/features/quote.md](docs/features/quote.md) | Yes |
-| Person capabilities | [docs/features/person.md](docs/features/person.md) | Yes |
-| Architecture and component boundaries | [docs/system-overview.md](docs/system-overview.md) | Yes |
-| Raynet CRM API integration contract | [docs/integrations/raynet-api.md](docs/integrations/raynet-api.md) | No (mirrors API) |
-| Full resource & field reference | [docs/resources.md](docs/resources.md) | Yes |
-| Architecture decision records | [docs/adr/README.md](docs/adr/README.md) | Yes |
-| External Raynet API docs | [Raynet CRM v2 API (EN)](https://app.raynet.cz/api/doc/index-en.html) | External |
+- [Compatibility](#compatibility)
 
----
+- [Usage](#usage)
 
-## Reading Order
+- [Resources](#resources)
 
-**New users** (installing the node):
-1. [docs/features/user-features.md](docs/features/user-features.md) — what the node does and how to set it up
-2. [docs/resources.md](docs/resources.md) — full field reference for all operations
+## Installation
 
-**Developers** (contributing or extending):
-1. [docs/system-overview.md](docs/system-overview.md) — architecture and component map
-2. [docs/integrations/raynet-api.md](docs/integrations/raynet-api.md) — API runtime contract
-3. [docs/adr/README.md](docs/adr/README.md) — rationale behind key design decisions
+Follow the [n8n community nodes installation guide](https://docs.n8n.io/integrations/community-nodes/installation/).
 
----
+**Via the n8n UI (recommended):**
 
-## Change Rules
+1. Go to **Settings > Community Nodes**.
+2. Click **Install** and enter `n8n-nodes-raynet`.
+3. Confirm and restart n8n when prompted.
 
-- `docs/features/user-features.md` is the index for setup and common behaviour. `docs/features/<entity>.md` files are the source of truth for per-entity capabilities. Update the relevant entity file when adding or removing operations.
-- `docs/system-overview.md` is the source of truth for component boundaries. Update it when the node architecture changes.
-- `docs/resources.md` is the source of truth for field-level detail. Update it when fields, operations, or filters change.
-- `docs/integrations/raynet-api.md` mirrors the external API contract. Update it when Raynet API behaviour or supported endpoints change.
-- ADR records in `docs/adr/` are immutable once accepted. Add a new ADR to supersede an old one.
+**Manual install on a self-hosted instance:**
 
----
+```bash
+# In your n8n data directory (~/.n8n)
+npm install n8n-nodes-raynet
+```
 
-## Related Docs
+Then restart n8n. The **Raynet CRM** node will appear in the node palette.
 
-- [docs/features/user-features.md](docs/features/user-features.md)
-- [docs/system-overview.md](docs/system-overview.md)
-- [docs/resources.md](docs/resources.md)
-- [docs/integrations/raynet-api.md](docs/integrations/raynet-api.md)
-- [docs/adr/README.md](docs/adr/README.md)
+## Credentials
+
+The node authenticates with a **Raynet CRM API** credential. You'll need:
+
+| Field | Description |
+|-------|-------------|
+| **Username (E-Mail)** | E-mail of the Raynet user the API key belongs to |
+| **API Key** | Generated in your Raynet instance under **Settings > API Keys** |
+| **Name of Instance** | The name of your CRM instance — e.g. `demo` from `https://app.raynet.cz/demo/` |
+| **Server** | Your Raynet server: `https://app.raynet.cz`, `https://app.raynetcrm.sk`, `https://app.raynetcrm.com`, or `https://eu.raynetcrm.com` |
+
+To create the credential in n8n:
+
+1. In any Raynet CRM node, click the **Credential** dropdown and select **Create New**.
+2. Fill in the four fields above.
+3. Click **Save**. n8n tests the connection against your instance before saving.
+
+## Compatibility
+
+Requires n8n running with Node.js 18 or later. Created for Raynet CRM API v2.
+
+## Usage
+
+The node is organized by **Resource** (the Raynet entity, e.g. Account, Deal) and **Operation** (the action to perform, e.g. Create, Update, Get Many). Picklist fields such as owner, category, and security level are populated dynamically from your own Raynet instance at runtime.
+
+### Example: Create an Account
+
+1. Add a **Raynet CRM** node and select your credential.
+2. Set **Resource** to `Account` and **Operation** to `Create`.
+3. Fill in the required fields:
+   - **Name**: `Example Corp`
+   - **Rating**: `A`
+   - **Status**: `Potential`
+   - **Relationship**: `Partner`
+4. Optionally, expand **Additional Fields** to set address, email, phone, or other details.
+5. Execute the node. The output contains the newly created account, including its Raynet `id`, which you can reference in downstream nodes (e.g. to create a **Deal** linked to this account).
+
+## Resources
+
+- [n8n community nodes documentation](https://docs.n8n.io/integrations/community-nodes/)
+- [Raynet CRM v2 API documentation](https://app.raynet.cz/api/doc/index-en.html)
+- [docs/](docs/) — extended internal documentation (architecture and ADRs, full field reference), only accessible on [GitHub](https://github.com/raynetcrm/n8n-nodes-raynet-crm)

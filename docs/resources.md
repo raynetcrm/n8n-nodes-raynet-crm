@@ -1,6 +1,20 @@
+---
+doc_id: resources-raynet-crm
+version: 1
+source_of_truth: true
+---
+
 # Resources & Operations
 
 Full field reference for all resources. All entities support the standard filter operators: Equals, Not equals, Like, Like (case insensitive), In, Greater than, Greater or equal, Less than, Less or equal, Equals or null, Not equals or null.
+
+## Common Behaviour
+
+- **Dynamic picklists** — owner, category, classifications, security level, and similar fields are loaded from the user's Raynet instance at runtime; no hard-coded values.
+- **Continue on fail** — when enabled, per-item errors are captured and execution continues rather than aborting the workflow.
+- **Tags** — accept a comma-separated string and are split into an array before sending to the API; Add Tag / Remove Tag operate on individual tags, not the full tag set.
+- **Birthday / Anniversary** — accept a full datetime input but only the date portion (`YYYY-MM-DD`) is sent to the API. The same truncation applies to the date fields noted per-resource below (`validFrom`, `validTill`, `expirationDate`, `requestDeliveryDate`, etc.).
+- **Lock / Unlock, Invalidate / Renew Validity** — where present, locked records cannot be modified until unlocked; invalidated records can be restored with Renew Validity.
 
 ---
 
@@ -31,7 +45,7 @@ Operations: Create, Update, Get, Get Many, Delete, Lock, Unlock, Invalidate, Ren
 | ID no., Tax ID no., VAT ID no., VAT Payer | Registration / tax |
 | Bank account, Databox, Reference number (Court) | Financial / legal |
 | Birthday / Anniversary | Truncated to `YYYY-MM-DD` |
-| Social Network Contacts | Facebook, Google+, Twitter/X, LinkedIn, Pinterest, Instagram, Youtube, WhatsApp, TikTok, Thread 
+| Social Network Contacts | Facebook, Google+, Instagram, Pinterest, Twitter/X, YouTube |
 | Addresses | Street, city, ZIP, country, territory, phone, email, fax, www |
 | Tags | Comma-separated |
 | Note | Free text |
@@ -47,6 +61,8 @@ Any account field. Supports all standard filter operators.
 API path: `/api/v2/businessCase/`
 
 Operations: Create, Update, Get, Get Many, Delete, Lock, Unlock, Invalidate, Renew Validity, Add Tag, Remove Tag, Add Item, Modify Item, Delete Item
+
+Linked to an Account (required), and optionally to a Person and a Project.
 
 ### Required (Create)
 
@@ -87,6 +103,8 @@ API path: `/api/v2/offer/`
 
 Operations: Create, Update, Get, Get Many, Delete, Lock, Unlock, Invalidate, Renew Validity, Add Tag, Remove Tag, Add Item, Modify Item, Delete Item
 
+Linked to an Account (required) and a Deal (required).
+
 ### Required (Create)
 
 | Field | Type |
@@ -122,9 +140,13 @@ See [Shared item fields](#shared-item-fields-deal--quote--sales-order).
 
 ## Contact
 
+Internally the `person` entity — shown as **Contact** in the node's Resource dropdown and in Raynet CRM UI.
+
 API path: `/api/v2/person/`
 
 Operations: Create, Update, Get, Get Many, Delete, Lock, Unlock, Invalidate, Renew Validity, Add Tag, Remove Tag
+
+Can be linked to at most one company via the Relationship field.
 
 ### Required (Create)
 

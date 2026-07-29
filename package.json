@@ -1,6 +1,6 @@
 {
   "name": "n8n-nodes-raynet",
-  "version": "1.0.5",
+  "version": "1.0.6",
   "description": "n8n custom node for Raynet CRM v2",
   "keywords": [
     "n8n-community-node-package",
