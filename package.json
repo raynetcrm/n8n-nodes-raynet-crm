@@ -1,6 +1,6 @@
 {
   "name": "n8n-nodes-raynet",
-  "version": "1.0.6",
+  "version": "1.0.7",
   "description": "n8n custom node for Raynet CRM v2",
   "keywords": [
     "n8n-community-node-package",
@@ -22,7 +22,7 @@
   },
   "scripts": {
     "build": "n8n-node build",
-		"build:watch": "tsc --watch",
+    "build:watch": "tsc --watch",
     "dev": "n8n-node dev",
     "lint": "n8n-node lint",
     "lint:fix": "n8n-node lint --fix",
