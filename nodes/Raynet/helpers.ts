@@ -91,7 +91,7 @@ export async function loadOwners(this: ILoadOptionsFunctions): Promise<INodeProp
     const credentials = await this.getCredentials('raynetApi');
     const res = (await this.helpers.httpRequestWithAuthentication.call(this as IAllExecuteFunctions, 'raynetApi', {
         url: `${getBaseUrl(credentials as { server?: string })}/person/`,
-        qs: { 'userAccount-id[NE]': '', limit: 100, sortColumn: 'lastName', sortDirection: 'ASC' },
+        qs: { 'userAccount-id[NE]': '', limit: 500, sortColumn: 'lastName', sortDirection: 'ASC' },
     } as IHttpRequestOptions)) as { data?: Array<{ id: number; firstName?: string; lastName?: string; fullName?: string }> };
     return (res?.data ?? []).map((p) => ({
         name: (p.fullName ?? [p.firstName, p.lastName].filter(Boolean).join(' ')) || `ID ${p.id}`,
@@ -212,7 +212,7 @@ export interface EntityConfig {
     listPath: string;
     singlePath: string;
     idParam: string;
-    buildBody: (ctx: IExecuteFunctions, op: 'create' | 'update') => Record<string, unknown>;
+    buildBody: (ctx: IExecuteFunctions, op: 'create' | 'update', i: number) => Record<string, unknown>;
     getManyExtraQs?: (ctx: IExecuteFunctions) => Record<string, string | number | boolean | undefined>;
     /** Parameter name holding the sub-resource item ID (e.g. 'itemId') */
     itemIdParam?: string;

@@ -1,15 +1,15 @@
 import type { IExecuteFunctions } from 'n8n-workflow';
 import { flattenFixedCollection, processCommonField } from '../helpers';
 
-export function buildPersonBody(ctx: IExecuteFunctions, operation: 'create' | 'update'): Record<string, unknown> {
+export function buildPersonBody(ctx: IExecuteFunctions, operation: 'create' | 'update', i: number): Record<string, unknown> {
     const body: Record<string, unknown> = {};
 
     if (operation === 'create') {
-        body.lastName = ctx.getNodeParameter('lastName', 0);
+        body.lastName = ctx.getNodeParameter('lastName', i);
     }
 
     const paramName = operation === 'update' ? 'updateAdditionalFields' : 'additionalFields';
-    const additional = ctx.getNodeParameter(paramName, 0, {}) as Record<string, unknown>;
+    const additional = ctx.getNodeParameter(paramName, i, {}) as Record<string, unknown>;
 
     for (const [key, value] of Object.entries(additional)) {
         if (value === undefined || value === null || value === '') {

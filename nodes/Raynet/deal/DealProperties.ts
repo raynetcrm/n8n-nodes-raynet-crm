@@ -36,7 +36,7 @@ const SHARED_OPTIONAL_FIELDS: INodeProperties[] = [
         type: 'options',
         description: 'Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code/expressions/">expression</a>',
         default: '',
-        typeOptions: { loadOptionsMethod: 'getOwners' },
+        typeOptions: { loadOptionsMethod: 'getUsers' },
     },
     {
         displayName: 'Security Level Name or ID',
@@ -251,7 +251,7 @@ function getGetManyProperties(): INodeProperties[] {
             displayName: 'Limit',
             name: 'limit',
             type: 'number',
-            description: 'Max number of results to return',
+            description: 'Max number of results to return. The absolute maximum per request is 1000, even when Return All is enabled.',
             default: 50,
             typeOptions: { minValue: 1 },
             displayOptions: op([OperationType.GET_MANY]),

@@ -12,7 +12,7 @@ export const personConfig: EntityConfig = {
     buildBody: buildPersonBody,
     getManyExtraQs(ctx: IExecuteFunctions) {
         const qs: Record<string, string | number | boolean | undefined> = {};
-        const relCompany = ctx.getNodeParameter('personRelationshipCustom', 0, 0) as number;
+        const relCompany = ctx.getNodeParameter('personRelationship[CUSTOM]', 0, 0) as number;
         if (relCompany) {
             qs['personRelationship[CUSTOM]'] = relCompany;
         }

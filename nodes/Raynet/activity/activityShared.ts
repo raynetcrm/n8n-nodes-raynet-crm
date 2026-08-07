@@ -33,16 +33,16 @@ export interface ActivityDef {
 // ---------------------------------------------------------------------------
 
 export function buildActivityBody(def: ActivityDef) {
-    return function (ctx: IExecuteFunctions, operation: 'create' | 'update'): Record<string, unknown> {
+    return function (ctx: IExecuteFunctions, operation: 'create' | 'update', i: number): Record<string, unknown> {
         const body: Record<string, unknown> = {};
 
         if (operation === 'create') {
-            body.title = ctx.getNodeParameter('title', 0) as string;
-            body.priority = ctx.getNodeParameter('priority', 0) as string;
-            body.owner = ctx.getNodeParameter('owner', 0) as number;
+            body.title = ctx.getNodeParameter('title', i) as string;
+            body.priority = ctx.getNodeParameter('priority', i) as string;
+            body.owner = ctx.getNodeParameter('owner', i) as number;
 
             for (const prop of def.extraRequiredCreate ?? []) {
-                const val = ctx.getNodeParameter(prop.name, 0);
+                const val = ctx.getNodeParameter(prop.name, i);
                 if (val !== undefined && val !== null && val !== '') {
                     body[prop.name] = val;
                 }
@@ -50,7 +50,7 @@ export function buildActivityBody(def: ActivityDef) {
         }
 
         const paramName = operation === 'update' ? 'updateAdditionalFields' : 'additionalFields';
-        const additional = ctx.getNodeParameter(paramName, 0, {}) as Record<string, unknown>;
+        const additional = ctx.getNodeParameter(paramName, i, {}) as Record<string, unknown>;
 
         for (const [key, value] of Object.entries(additional)) {
             if (value === undefined || value === null || value === '') continue;
@@ -256,7 +256,7 @@ export function getActivityProperties(def: ActivityDef): INodeProperties[] {
             displayName: 'Limit',
             name: 'limit',
             type: 'number',
-            description: 'Max number of results to return',
+            description: 'Max number of results to return. The absolute maximum per request is 1000, even when Return All is enabled.',
             default: 50,
             typeOptions: { minValue: 1 },
             displayOptions: op(OperationType.GET_MANY),

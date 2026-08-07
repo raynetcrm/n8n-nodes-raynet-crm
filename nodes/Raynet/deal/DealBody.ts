@@ -3,16 +3,16 @@ import { processCommonField } from '../helpers';
 
 const DATE_FIELDS = new Set(['validFrom', 'validTill', 'scheduledEnd']);
 
-export function buildDealBody(ctx: IExecuteFunctions, operation: 'create' | 'update'): Record<string, unknown> {
+export function buildDealBody(ctx: IExecuteFunctions, operation: 'create' | 'update', i: number): Record<string, unknown> {
     const body: Record<string, unknown> = {};
 
     if (operation === 'create') {
-        body.name = ctx.getNodeParameter('name', 0) as string;
-        body.company = ctx.getNodeParameter('company', 0) as number;
+        body.name = ctx.getNodeParameter('name', i) as string;
+        body.company = ctx.getNodeParameter('company', i) as number;
     }
 
     const paramName = operation === 'update' ? 'updateAdditionalFields' : 'additionalFields';
-    const additional = ctx.getNodeParameter(paramName, 0, {}) as Record<string, unknown>;
+    const additional = ctx.getNodeParameter(paramName, i, {}) as Record<string, unknown>;
 
     for (const [key, value] of Object.entries(additional)) {
         if (value === undefined || value === null || value === '') {
@@ -32,7 +32,9 @@ export function buildDealBody(ctx: IExecuteFunctions, operation: 'create' | 'upd
 }
 
 export function buildAddItemBody(ctx: IExecuteFunctions, i: number): Record<string, unknown> {
-    const body: Record<string, unknown> = {};
+    const body: Record<string, unknown> = {
+        name: ctx.getNodeParameter('name', i) as string,
+    };
     const fields = ctx.getNodeParameter('itemFields', i, {}) as Record<string, unknown>;
     for (const [key, value] of Object.entries(fields)) {
         if (value === undefined || value === null || value === '') {

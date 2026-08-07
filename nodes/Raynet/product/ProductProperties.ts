@@ -149,7 +149,7 @@ function getGetManyProperties(): INodeProperties[] {
             displayName: 'Limit',
             name: 'limit',
             type: 'number',
-            description: 'Max number of results to return',
+            description: 'Max number of results to return. The absolute maximum per request is 1000, even when Return All is enabled.',
             default: 50,
             typeOptions: { minValue: 1 },
             displayOptions: op(OperationType.GET_MANY),
@@ -210,6 +210,7 @@ function getGetManyProperties(): INodeProperties[] {
                                 { name: 'Last Modified At', value: 'rowInfo.lastModifiedAt' },
                                 { name: 'Name', value: 'name' },
                                 { name: 'Product Line ID', value: 'productLine' },
+                                { name: 'Tags', value: 'tags' },
                                 { name: 'Unit', value: 'unit'},
                                 { name: 'Updated At', value: 'rowInfo.updatedAt' },
                             ],
@@ -234,14 +235,6 @@ function getGetManyProperties(): INodeProperties[] {
             description: "Pass 'rowInfo' to return only status metadata",
             displayOptions: op(OperationType.GET_MANY),
         },
-        {
-            displayName: 'Tags',
-            name: 'tags',
-            type: 'string',
-            default: '',
-            description: 'Comma-separated list of tags to filter by. The record must contain at least one of the tags.',
-            displayOptions: op(OperationType.GET_MANY),
-        }
     ];
 }
 

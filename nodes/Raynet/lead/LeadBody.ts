@@ -1,16 +1,16 @@
 import type { IExecuteFunctions } from 'n8n-workflow';
 import { flattenFixedCollection, processCommonField } from '../helpers';
 
-export function buildLeadBody(ctx: IExecuteFunctions, operation: 'create' | 'update'): Record<string, unknown> {
+export function buildLeadBody(ctx: IExecuteFunctions, operation: 'create' | 'update', i: number): Record<string, unknown> {
     const body: Record<string, unknown> = {};
 
     if (operation === 'create') {
-        body.topic = ctx.getNodeParameter('topic', 0) as string;
-        body.priority = ctx.getNodeParameter('priority', 0) as string;
+        body.topic = ctx.getNodeParameter('topic', i) as string;
+        body.priority = ctx.getNodeParameter('priority', i) as string;
     }
 
     const paramName = operation === 'update' ? 'updateAdditionalFields' : 'additionalFields';
-    const additional = ctx.getNodeParameter(paramName, 0, {}) as Record<string, unknown>;
+    const additional = ctx.getNodeParameter(paramName, i, {}) as Record<string, unknown>;
 
     for (const [key, value] of Object.entries(additional)) {
         if (value === undefined || value === null || value === '') {
@@ -19,8 +19,15 @@ export function buildLeadBody(ctx: IExecuteFunctions, operation: 'create' | 'upd
         if (processCommonField(body, key, value)) {
             continue;
         }
+        if (key === 'contactInfo') {
+            const flat = flattenFixedCollection(value, 'contactInfoValues');
+            if (flat) {
+                body.contactInfo = flat;
+            }
+            continue;
+        }
         if (key === 'address') {
-            const flat = flattenFixedCollection(value, 'addressData', true);
+            const flat = flattenFixedCollection(value, 'address', true);
             if (flat) {
                 body.address = flat;
             }

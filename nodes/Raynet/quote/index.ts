@@ -19,13 +19,17 @@ export const quoteConfig: EntityConfig = {
         if (status) {
             qs.offerStatus = status;
         }
-        const productCategory = ctx.getNodeParameter('productCategoryCustom', 0, 0) as number;
+        const productCategory = ctx.getNodeParameter('productCategory[CUSTOM]', 0, 0) as number;
         if (productCategory) {
             qs['productCategory[CUSTOM]'] = productCategory;
         }
-        const productLine = ctx.getNodeParameter('productLineCustom', 0, 0) as number;
+        const productLine = ctx.getNodeParameter('productLine[CUSTOM]', 0, 0) as number;
         if (productLine) {
             qs['productLine[CUSTOM]'] = productLine;
+        }
+        const owner = ctx.getNodeParameter('owner', 0, '') as string;
+        if (owner) {
+            qs.owner = owner;
         }
         return qs;
     },

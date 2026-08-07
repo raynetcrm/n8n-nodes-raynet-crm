@@ -219,7 +219,7 @@ export class Raynet implements INodeType {
                         //     }
                         // }
                         // else { // normal create
-                            body = config.buildBody(this, 'create');
+                            body = config.buildBody(this, 'create', i);
                         // }
                         const createRes = (await raynetRequest.call(this, 'PUT', config.listPath, body)) as {
                             success?: boolean;
@@ -234,7 +234,7 @@ export class Raynet implements INodeType {
 
                     case OperationType.UPDATE:
                         id = this.getNodeParameter(config.idParam, i) as number;
-                        body = config.buildBody(this, 'update');
+                        body = config.buildBody(this, 'update', i);
                         await raynetRequest.call(this, 'POST', `${config.singlePath}${id}/`, body);
                         returnData.push({
                             json: { id, success: true } as IDataObject,
@@ -285,7 +285,7 @@ export class Raynet implements INodeType {
                         const addBody = config.buildAddItemBody!(this, i);
                         await raynetRequest.call(this, 'PUT', `${config.singlePath}${id}/item`, addBody);
                         returnData.push({
-                            json: { dealId: id, success: true } as IDataObject,
+                            json: { [`${resource}Id`]: id, success: true } as IDataObject,
                             pairedItem: { item: i },
                         });
                         break;
@@ -297,7 +297,7 @@ export class Raynet implements INodeType {
                         const modifyBody = config.buildModifyItemBody!(this, i);
                         await raynetRequest.call(this, 'POST', `${config.singlePath}${id}/item/${itemId}/`, modifyBody);
                         returnData.push({
-                            json: { dealId: id, itemId, success: true } as IDataObject,
+                            json: { [`${resource}Id`]: id, itemId, success: true } as IDataObject,
                             pairedItem: { item: i },
                         });
                         break;
@@ -308,7 +308,7 @@ export class Raynet implements INodeType {
                         const itemId = this.getNodeParameter(config.itemIdParam!, i) as number;
                         await raynetRequest.call(this, 'DELETE', `${config.singlePath}${id}/item/${itemId}/`);
                         returnData.push({
-                            json: { dealId: id, itemId, success: true } as IDataObject,
+                            json: { [`${resource}Id`]: id, itemId, success: true } as IDataObject,
                             pairedItem: { item: i },
                         });
                         break;
@@ -329,7 +329,7 @@ export class Raynet implements INodeType {
                         const participantId = this.getNodeParameter(config.participantIdParam!, i) as number;
                         await raynetRequest.call(this, 'DELETE', `${config.singlePath}${id}/${config.participantPath}/${participantId}/`);
                         returnData.push({
-                            json: { projectId: id, participantId, success: true } as IDataObject,
+                            json: { [`${resource}Id`]: id, participantId, success: true } as IDataObject,
                             pairedItem: { item: i },
                         });
                         break;

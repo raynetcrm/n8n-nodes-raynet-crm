@@ -3,18 +3,18 @@ import { processCommonField } from '../helpers';
 
 const DATE_FIELDS = new Set(['validFrom', 'validTill']);
 
-export function buildPriceListBody(ctx: IExecuteFunctions, operation: 'create' | 'update'): Record<string, unknown> {
+export function buildPriceListBody(ctx: IExecuteFunctions, operation: 'create' | 'update', i: number): Record<string, unknown> {
     const body: Record<string, unknown> = {};
 
     if (operation === 'create') {
-        body.name = ctx.getNodeParameter('name', 0) as string;
-        body.code = ctx.getNodeParameter('code', 0) as string;
-        body.currency = ctx.getNodeParameter('currency', 0) as number;
-        body.validFrom = (ctx.getNodeParameter('validFrom', 0) as string).substring(0, 10);
+        body.name = ctx.getNodeParameter('name', i) as string;
+        body.code = ctx.getNodeParameter('code', i) as string;
+        body.currency = ctx.getNodeParameter('currency', i) as number;
+        body.validFrom = (ctx.getNodeParameter('validFrom', i) as string).substring(0, 10);
     }
 
     const paramName = operation === 'update' ? 'updateAdditionalFields' : 'additionalFields';
-    const additional = ctx.getNodeParameter(paramName, 0, {}) as Record<string, unknown>;
+    const additional = ctx.getNodeParameter(paramName, i, {}) as Record<string, unknown>;
 
     for (const [key, value] of Object.entries(additional)) {
         if (value === undefined || value === null || value === '') {

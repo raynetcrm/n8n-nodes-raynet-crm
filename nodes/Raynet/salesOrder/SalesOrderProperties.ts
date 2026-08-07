@@ -31,7 +31,7 @@ const ADDRESS_FIELDS: INodeProperties[] = [
     { displayName: 'City', name: 'city', type: 'string', default: '' },
     { displayName: 'Region', name: 'province', type: 'string', default: '' },
     { displayName: 'ZIP Code', name: 'zipCode', type: 'string', default: '' },
-    { displayName: 'Country', name: 'countryCode', type: 'number', default: 0, description: 'Country code from standard ISO-3166-1 alpha-2, i.e. CZ.' },
+    { displayName: 'Country', name: 'countryCode', type: 'string', default: '', description: 'Country code from standard ISO-3166-1 alpha-2, i.e. CZ.' },
 ];
 
 // ---------------------------------------------------------------------------
@@ -265,7 +265,7 @@ function getGetManyProperties(): INodeProperties[] {
             displayName: 'Limit',
             name: 'limit',
             type: 'number',
-            description: 'Max number of results to return',
+            description: 'Max number of results to return. The absolute maximum per request is 1000, even when Return All is enabled.',
             default: 50,
             typeOptions: { minValue: 1 },
             displayOptions: op(OperationType.GET_MANY),
@@ -332,6 +332,7 @@ function getGetManyProperties(): INodeProperties[] {
                                 { name: 'Open Till', value: 'validTill' },
                                 { name: 'Owner ID', value: 'owner' },
                                 { name: 'Status (SalesOrderStatus) ID', value: 'salesOrderStatus' },
+                                { name: 'Tags', value: 'tags' },
                                 { name: 'Updated At', value: 'rowInfo.updatedAt' },
                                 { name: 'Valid To', value: 'expirationDate' },
                             ],
@@ -355,6 +356,15 @@ function getGetManyProperties(): INodeProperties[] {
             default: '',
             description: 'Filter by sales order status',
             options: [{ name: '(Any)', value: '' }, ...STATUS_OPTIONS],
+            displayOptions: op(OperationType.GET_MANY),
+        },
+        {
+            displayName: 'Status Name or ID',
+            name: 'salesOrderStatus',
+            type: 'options',
+            description: 'Filter by sales order status ID. Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code/expressions/">expression</a>',
+            default: '',
+            typeOptions: { loadOptionsMethod: 'getSalesOrderStatuses' },
             displayOptions: op(OperationType.GET_MANY),
         },
         {
@@ -387,14 +397,6 @@ function getGetManyProperties(): INodeProperties[] {
             type: 'string',
             default: '',
             description: "Pass 'rowInfo' to return only status metadata",
-            displayOptions: op(OperationType.GET_MANY),
-        },
-        {
-            displayName: 'Tags',
-            name: 'tags',
-            type: 'string',
-            default: '',
-            description: 'Comma-separated list of tags to filter by',
             displayOptions: op(OperationType.GET_MANY),
         },
     ];

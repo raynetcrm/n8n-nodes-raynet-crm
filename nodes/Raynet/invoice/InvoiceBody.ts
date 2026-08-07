@@ -6,37 +6,41 @@ const DATE_FIELDS = new Set(['dueDate', 'issueDate', 'paymentDate', 'taxableSupp
 function cleanEntry(e: Record<string, unknown>): Record<string, unknown> {
     const out: Record<string, unknown> = {};
     for (const [k, v] of Object.entries(e)) {
-        if (v !== undefined && v !== null && v !== '') {
-            out[k] = v;
+        if (v === undefined || v === null || v === '') {
+            continue;
         }
+        if (k === 'id' && v === 0) {
+            continue;
+        }
+        out[k] = v;
     }
     return out;
 }
 
-export function buildInvoiceBody(ctx: IExecuteFunctions, operation: 'create' | 'update'): Record<string, unknown> {
+export function buildInvoiceBody(ctx: IExecuteFunctions, operation: 'create' | 'update', i: number): Record<string, unknown> {
     const body: Record<string, unknown> = {};
 
     if (operation === 'create') {
-        body.code = ctx.getNodeParameter('code', 0) as string;
-        body.company = ctx.getNodeParameter('company', 0) as number;
-        body.currency = ctx.getNodeParameter('currency', 0) as number;
-        body.dueDate = (ctx.getNodeParameter('dueDate', 0) as string).substring(0, 10);
-        body.issueDate = (ctx.getNodeParameter('issueDate', 0) as string).substring(0, 10);
-        body.invoiceType = ctx.getNodeParameter('invoiceType', 0) as string;
-        body.invoiceState = ctx.getNodeParameter('invoiceState', 0) as string;
-        body.paymentType = ctx.getNodeParameter('paymentType', 0) as number;
-        body.taxableSupplyDate = (ctx.getNodeParameter('taxableSupplyDate', 0) as string).substring(0, 10);
-        body.taxPayer = ctx.getNodeParameter('taxPayer', 0) as string;
-        body.billingName = ctx.getNodeParameter('billingName', 0) as string;
+        body.code = ctx.getNodeParameter('code', i) as string;
+        body.company = ctx.getNodeParameter('company', i) as number;
+        body.currency = ctx.getNodeParameter('currency', i) as number;
+        body.dueDate = (ctx.getNodeParameter('dueDate', i) as string).substring(0, 10);
+        body.issueDate = (ctx.getNodeParameter('issueDate', i) as string).substring(0, 10);
+        body.invoiceType = ctx.getNodeParameter('invoiceType', i) as string;
+        body.invoiceState = ctx.getNodeParameter('invoiceState', i) as string;
+        body.paymentType = ctx.getNodeParameter('paymentType', i) as number;
+        body.taxableSupplyDate = (ctx.getNodeParameter('taxableSupplyDate', i) as string).substring(0, 10);
+        body.taxPayer = ctx.getNodeParameter('taxPayer', i) as string;
+        body.billingName = ctx.getNodeParameter('billingName', i) as string;
 
-        const billingAddr = flattenFixedCollection(ctx.getNodeParameter('billingAddress', 0, {}) as unknown, 'billingAddressData', true);
+        const billingAddr = flattenFixedCollection(ctx.getNodeParameter('billingAddress', i, {}) as unknown, 'billingAddressData', true);
         if (billingAddr) {
             body.billingAddress = billingAddr;
         }
     }
 
     const paramName = operation === 'update' ? 'updateAdditionalFields' : 'additionalFields';
-    const additional = ctx.getNodeParameter(paramName, 0, {}) as Record<string, unknown>;
+    const additional = ctx.getNodeParameter(paramName, i, {}) as Record<string, unknown>;
 
     for (const [key, value] of Object.entries(additional)) {
         if (value === undefined || value === null || value === '') {

@@ -128,7 +128,7 @@ const SHARED_OPTIONAL_FIELDS: INodeProperties[] = [
                         name: 'id',
                         type: 'number',
                         default: 0,
-                        description: 'Positive → modify, negative → delete, empty → create',
+                        description: 'Positive → modify, negative → delete, leave at 0 → create',
                     },
                     {
                         displayName: 'Name',
@@ -184,7 +184,7 @@ const SHARED_OPTIONAL_FIELDS: INodeProperties[] = [
                 values: [
                     { displayName: 'Date', name: 'date', type: 'dateTime', default: '' },
                     { displayName: 'Amount', name: 'amount', type: 'number', default: 0 },
-                    { displayName: 'Payment ID (Update Only)', name: 'id', type: 'number', default: 0, description: 'Positive → modify, negative → delete, empty → create' },
+                    { displayName: 'Payment ID (Update Only)', name: 'id', type: 'number', default: 0, description: 'Positive → modify, negative → delete, leave at 0 → create' },
                 ],
             },
         ],
@@ -340,7 +340,7 @@ function getCreateProperties(): INodeProperties[] {
             placeholder: 'Add field',
             default: {},
             displayOptions: op(OperationType.CREATE),
-            options: SHARED_OPTIONAL_FIELDS,
+            options: SHARED_OPTIONAL_FIELDS.filter((f) => f.name !== 'billingAddress'),
         },
     ];
 }
@@ -451,7 +451,7 @@ function getGetManyProperties(): INodeProperties[] {
             displayName: 'Limit',
             name: 'limit',
             type: 'number',
-            description: 'Max number of results to return',
+            description: 'Max number of results to return. The absolute maximum per request is 1000, even when Return All is enabled.',
             default: 50,
             typeOptions: { minValue: 1 },
             displayOptions: op(OperationType.GET_MANY),
@@ -518,6 +518,7 @@ function getGetManyProperties(): INodeProperties[] {
                                 { name: 'Owner ID', value: 'owner' },
                                 { name: 'Payment Date', value: 'paymentDate' },
                                 { name: 'Specific Symbol', value: 'specificSymbol' },
+                                { name: 'Tags', value: 'tags' },
                                 { name: 'Taxable Supply Date', value: 'taxableSupplyDate' },
                                 { name: 'Title', value: 'title' },
                                 { name: 'Updated At', value: 'rowInfo.updatedAt' },
@@ -544,14 +545,6 @@ function getGetManyProperties(): INodeProperties[] {
             description: "Pass 'rowInfo' to return only status metadata",
             displayOptions: op(OperationType.GET_MANY),
         },
-        {
-            displayName: 'Tags',
-            name: 'tags',
-            type: 'string',
-            default: '',
-            description: 'Comma-separated list of tags to filter by',
-            displayOptions: op(OperationType.GET_MANY),
-        }
     ];
 }
 
