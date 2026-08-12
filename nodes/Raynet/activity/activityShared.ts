@@ -256,7 +256,7 @@ export function getActivityProperties(def: ActivityDef): INodeProperties[] {
             displayName: 'Limit',
             name: 'limit',
             type: 'number',
-            description: 'Max number of results to return. The absolute maximum per request is 1000, even when Return All is enabled.',
+            description: 'Max number of results to return',
             default: 50,
             typeOptions: { minValue: 1 },
             displayOptions: op(OperationType.GET_MANY),
